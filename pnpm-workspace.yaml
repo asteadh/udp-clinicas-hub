@@ -1,0 +1,14 @@
+packages:
+  - "apps/admin"
+  - "apps/api"
+  - "apps/studio"
+  - "apps/web"
+  - "packages/api-client"
+  - "packages/config"
+  - "packages/db"
+  - "packages/ui"
+allowBuilds:
+  "@prisma/engines": true
+  "@prisma/client": true
+  prisma: true
+  sharp: true

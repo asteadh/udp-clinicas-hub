@@ -1,0 +1,5 @@
+# Fast, staged-scoped checks. Heavier verification runs on pre-push.
+# - gofmt -w on staged Go files (auto-formatted and re-staged by lint-staged)
+# - design-token guard (cheap repo-wide invariant)
+pnpm lint-staged
+pnpm tokens:check

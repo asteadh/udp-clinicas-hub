@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AppUser {
+  id            String    @id
+  uid           String    @unique
+  email         String?   @unique
+  emailVerified Boolean   @default(false) @map("email_verified")
+  passwordHash  String    @default("") @map("password_hash")
+  firstName     String?   @map("first_name")
+  lastName      String?   @map("last_name")
+  imageUrl      String?   @map("image_url")
+  status        String    @default("invited")
+  suspended     Boolean   @default(false)
+  inactive      Boolean   @default(false)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  oauthIdentities    OAuthIdentity[]
+  adminRole          AdminRole?
+  auditLogs          AdminAuditLog[]
+  handledInquiries   ContactInquiry[]
+  updatedSettings    AppSetting[]
+  webauthnCredentials WebauthnCredential[]
+  webauthnSessions   WebauthnSession[]
+
+  @@map("app_users")
+}
+
+model OAuthIdentity {
+  provider       String
+  providerUserId String   @map("provider_user_id")
+  userId         String   @map("user_id")
+  email          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerUserId])
+  @@map("oauth_identities")
+}
+
+model Clinic {
+  slug              String   @id
+  name              String
+  shortDescription  String   @default("") @map("short_description")
+  descriptionHtml   String   @default("") @map("description_html")
+  icon              String   @default("")
+  colorPrimary      String   @default("#0B3D62") @map("color_primary")
+  imageUrl          String   @default("") @map("image_url")
+  contactEmail      String   @default("") @map("contact_email")
+  sortOrder         Int      @default(0) @map("sort_order")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @map("updated_at")
+
+  adminRoles   AdminRole[]
+  faqs         Faq[]
+  articles     Article[]
+  galleryAlbums GalleryAlbum[]
+  teamMembers  TeamMember[]
+  inquiries    ContactInquiry[]
+
+  @@map("clinics")
+}
+
+model AdminRole {
+  userId      String   @id @map("user_id")
+  role        String   @default("clinic_admin")
+  clinicSlug  String?  @map("clinic_slug")
+  permissions String[] @default([])
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  user   AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic Clinic? @relation(fields: [clinicSlug], references: [slug])
+
+  @@map("admin_roles")
+}
+
+model AdminAuditLog {
+  id         BigInt   @id @default(autoincrement())
+  actorId    String?  @map("actor_id")
+  action     String
+  targetType String   @map("target_type")
+  targetId   String?  @map("target_id")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor AppUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@map("admin_audit_logs")
+}
+
+model Faq {
+  id          String   @id
+  clinicSlug  String   @map("clinic_slug")
+  question    String
+  answerHtml  String   @default("") @map("answer_html")
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  clinic Clinic @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
+
+  @@map("faqs")
+}
+
+model Article {
+  id             String    @id
+  clinicSlug     String    @map("clinic_slug")
+  slug           String
+  title          String
+  excerpt        String    @default("")
+  bodyHtml       String    @default("") @map("body_html")
+  coverImageUrl  String    @default("") @map("cover_image_url")
+  authorName     String    @default("") @map("author_name")
+  isPublished    Boolean   @default(false) @map("is_published")
+  publishedAt    DateTime? @map("published_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @map("updated_at")
+
+  clinic Clinic @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
+
+  @@unique([clinicSlug, slug])
+  @@map("articles")
+}
+
+model GalleryAlbum {
+  id             String   @id
+  clinicSlug     String   @map("clinic_slug")
+  title          String
+  description    String   @default("")
+  coverImageUrl  String   @default("") @map("cover_image_url")
+  sortOrder      Int      @default(0) @map("sort_order")
+  isPublished    Boolean  @default(true) @map("is_published")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+
+  clinic Clinic         @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
+  photos GalleryPhoto[]
+
+  @@map("gallery_albums")
+}
+
+model GalleryPhoto {
+  id        String   @id
+  albumId   String   @map("album_id")
+  imageUrl  String   @map("image_url")
+  caption   String   @default("")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  album GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@map("gallery_photos")
+}
+
+model TeamMember {
+  id          String   @id
+  clinicSlug  String   @map("clinic_slug")
+  fullName    String   @map("full_name")
+  roleTitle   String   @default("") @map("role_title")
+  bioHtml     String   @default("") @map("bio_html")
+  photoUrl    String   @default("") @map("photo_url")
+  email       String   @default("")
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  clinic Clinic @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
+
+  @@map("team_members")
+}
+
+model ContactInquiry {
+  id            String   @id
+  clinicSlug    String   @map("clinic_slug")
+  fullName      String   @map("full_name")
+  email         String
+  phone         String   @default("")
+  message       String
+  status        String   @default("new")
+  handledBy     String?  @map("handled_by")
+  internalNotes String   @default("") @map("internal_notes")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @map("updated_at")
+
+  clinic  Clinic   @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
+  handler AppUser? @relation(fields: [handledBy], references: [id], onDelete: SetNull)
+
+  @@map("contact_inquiries")
+}
+
+model AppSetting {
+  key       String   @id
+  value     Json     @default("{}")
+  updatedBy String?  @map("updated_by")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  updater AppUser? @relation(fields: [updatedBy], references: [id], onDelete: SetNull)
+
+  @@map("app_settings")
+}
+
+model WebauthnCredential {
+  id           String    @id
+  userId       String    @map("user_id")
+  credentialId String    @unique @map("credential_id")
+  data         Json
+  label        String    @default("")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  lastUsedAt   DateTime? @map("last_used_at")
+
+  user AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("webauthn_credentials")
+}
+
+model WebauthnSession {
+  id        String   @id
+  userId    String?  @map("user_id")
+  purpose   String
+  data      Json
+  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at")
+
+  user AppUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("webauthn_sessions")
+}

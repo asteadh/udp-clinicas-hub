@@ -1,0 +1,39 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Node / pnpm / turbo
+node_modules/
+.next/
+dist/
+*.tsbuildinfo
+pnpm-debug.log*
+**/.turbo/
+.turbo-cache/
+**/next-env.d.ts
+.vercel/
+coverage/
+
+# Env files
+.env
+.env.*
+!.env.sample
+!.env.example
+
+# Go
+apps/api/tmp/
+apps/api/tmp/*
+apps/api/hubnegocios-api
+apps/api/*.exe
+
+# Prisma generated client
+packages/db/generated/
+
+# Harness-generated mirror of .claude/skills
+.agents/

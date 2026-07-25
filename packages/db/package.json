@@ -1,0 +1,21 @@
+{
+  "name": "@hubnegocios/db",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "DATABASE_URL=${DATABASE_URL:-postgres://hubnegocios:change-me@localhost:15432/hubnegocios?sslmode=disable} prisma validate --schema prisma/schema.prisma",
+    "lint": "DATABASE_URL=${DATABASE_URL:-postgres://hubnegocios:change-me@localhost:15432/hubnegocios?sslmode=disable} prisma validate --schema prisma/schema.prisma",
+    "typecheck": "DATABASE_URL=${DATABASE_URL:-postgres://hubnegocios:change-me@localhost:15432/hubnegocios?sslmode=disable} prisma validate --schema prisma/schema.prisma",
+    "test": "DATABASE_URL=${DATABASE_URL:-postgres://hubnegocios:change-me@localhost:15432/hubnegocios?sslmode=disable} prisma validate --schema prisma/schema.prisma",
+    "validate": "DATABASE_URL=${DATABASE_URL:-postgres://hubnegocios:change-me@localhost:15432/hubnegocios?sslmode=disable} prisma validate --schema prisma/schema.prisma",
+    "generate": "XDG_CACHE_HOME=${XDG_CACHE_HOME:-/private/tmp/hubnegocios-prisma-cache} DATABASE_URL=${DATABASE_URL:-postgres://hubnegocios:change-me@localhost:15432/hubnegocios?sslmode=disable} prisma generate --schema prisma/schema.prisma",
+    "studio": "XDG_CACHE_HOME=${XDG_CACHE_HOME:-/private/tmp/hubnegocios-prisma-cache} DATABASE_URL=${DATABASE_URL:-postgres://hubnegocios:change-me@localhost:15432/hubnegocios?sslmode=disable} prisma studio --browser none --port ${PRISMA_STUDIO_PORT:-5555}"
+  },
+  "dependencies": {
+    "@prisma/client": "7.8.0"
+  },
+  "devDependencies": {
+    "prisma": "7.8.0"
+  }
+}

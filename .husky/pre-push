@@ -1,0 +1,4 @@
+# Mirror CI prevalidate before code leaves the machine: lint + typecheck + tests
+# across the workspace, plus gofmt/go vet for the Go API. Turbo caches, so this
+# is incremental after the first run.
+pnpm verify:push

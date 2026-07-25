@@ -1,0 +1,39 @@
+{
+  "name": "hubnegocios-platform",
+  "private": true,
+  "packageManager": "pnpm@11.11.0",
+  "scripts": {
+    "dev": "turbo run dev --ui=tui --filter=@hubnegocios/api --filter=@hubnegocios/web --filter=@hubnegocios/admin --filter=@hubnegocios/studio",
+    "dev:platform": "turbo run dev --ui=tui --filter=@hubnegocios/api --filter=@hubnegocios/web --filter=@hubnegocios/admin --filter=@hubnegocios/studio",
+    "dev:stream": "turbo run dev --ui=stream --log-prefix=task --log-order=stream --filter=@hubnegocios/api --filter=@hubnegocios/web --filter=@hubnegocios/admin --filter=@hubnegocios/studio",
+    "dev:web": "pnpm --filter @hubnegocios/web dev",
+    "dev:admin": "pnpm --filter @hubnegocios/admin dev",
+    "dev:api": "pnpm --filter @hubnegocios/api dev",
+    "dev:studio": "pnpm --filter @hubnegocios/studio dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "seed": "pnpm --filter @hubnegocios/api seed",
+    "seed:demo": "pnpm --filter @hubnegocios/api seed:demo",
+    "db:validate": "pnpm --filter @hubnegocios/db validate",
+    "db:generate": "pnpm --filter @hubnegocios/db generate",
+    "db:migrate": "sh scripts/db_migrate.sh",
+    "db:studio": "pnpm --filter @hubnegocios/studio dev",
+    "tokens:check": "node scripts/validation/check-design-tokens.mjs",
+    "backend:test": "pnpm --filter @hubnegocios/api test",
+    "validate": "pnpm db:validate && pnpm tokens:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "verify:go": "cd apps/api && test -z \"$(gofmt -l .)\" && go vet ./...",
+    "verify:push": "turbo lint typecheck test && pnpm verify:go",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "apps/api/**/*.go": "gofmt -w"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
+    "turbo": "latest",
+    "typescript": "^5.9.3"
+  }
+}
