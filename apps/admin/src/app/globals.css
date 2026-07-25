@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* Palette utilities resolve at use-site to the --hub-* vars defined in
+   @hubnegocios/ui tokens.css, so dark mode ([data-theme="dark"]) flips them
+   automatically. Do not add literal hex colors here — tokens live in
+   packages/ui/src/tokens.ts (enforced by scripts/validation/check-design-tokens.mjs). */
+@theme inline {
+  --color-hub-blue: var(--hub-blue);
+  --color-hub-deep-blue: var(--hub-deep-blue);
+  --color-hub-blue-soft: var(--hub-blue-soft);
+  --color-hub-sky: var(--hub-sky);
+  --color-hub-gold: var(--hub-gold);
+  --color-hub-gold-deep: var(--hub-gold-deep);
+  --color-hub-honey: var(--hub-honey);
+  --color-hub-honey-soft: var(--hub-honey-soft);
+  --color-hub-coral: var(--hub-coral);
+  --color-hub-coral-soft: var(--hub-coral-soft);
+  --color-hub-coral-text: var(--hub-coral-text);
+  --color-hub-mint: var(--hub-mint);
+  --color-hub-mint-soft: var(--hub-mint-soft);
+  --color-hub-mint-text: var(--hub-mint-text);
+  --color-hub-warm: var(--hub-warm);
+  --color-hub-warm-surface: var(--hub-warm-surface);
+  --color-hub-surface: var(--hub-surface);
+  --color-hub-border: var(--hub-border);
+  --color-hub-muted: var(--hub-muted);
+  --color-hub-muted-soft: var(--hub-muted-soft);
+  --color-hub-ink: var(--hub-ink);
+}
+
+@theme {
+  --font-sans:
+    var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --shadow-hub-card: 0 1px 3px rgba(28, 39, 51, 0.04), 0 4px 12px rgba(28, 39, 51, 0.04);
+  --shadow-hub-cta: 0 2px 6px rgba(11, 61, 98, 0.18);
+  --shadow-hub-hero: 0 12px 32px rgba(28, 39, 51, 0.08);
+}
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 92px;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-sidebar button {
+  justify-content: flex-start;
+}
+
+[data-theme="dark"] .admin-sidebar button:not([aria-selected="true"]) {
+  background: var(--hub-surface);
+  color: var(--hub-ink);
+  border-color: var(--hub-border);
+}
+
+.admin-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-scroll {
+  max-height: 560px;
+  overflow: auto;
+}
+
+@media (max-width: 880px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: static;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+}

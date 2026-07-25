@@ -1,5 +1,20 @@
 {
   "name": "@hubnegocios/api-client",
   "private": true,
-  "version": "0.0.1"
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "node ./scripts/smoke.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }

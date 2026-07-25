@@ -1,0 +1,68 @@
+/* Hub Negocios UDP design tokens — generated from packages/ui/src/tokens.ts
+   values. Parity enforced by scripts/validation/check-design-tokens.mjs. */
+
+:root,
+[data-theme="light"] {
+  --hub-blue: #0b3d62;
+  --hub-deep-blue: #082a44;
+  --hub-blue-soft: #e4ecf5;
+  --hub-sky: #4a7fb5;
+  --hub-gold: #b08d33;
+  --hub-gold-deep: #7a5f1f;
+  --hub-honey: #e4ce8e;
+  --hub-honey-soft: #f5eeda;
+  --hub-coral: #c0392b;
+  --hub-coral-soft: #fbe7e4;
+  --hub-coral-text: #7a241b;
+  --hub-mint: #1f8a5f;
+  --hub-mint-soft: #e3f4ec;
+  --hub-mint-text: #175e42;
+  --hub-warm: #f7f5f0;
+  --hub-warm-surface: #f1ece1;
+  --hub-surface: #ffffff;
+  --hub-border: #d8d2c4;
+  --hub-muted: #5b6570;
+  --hub-muted-soft: #9aa2ab;
+  --hub-ink: #1c2733;
+  --hub-radius: 8px;
+  --hub-shadow: 0 18px 50px rgba(28, 39, 51, 0.12);
+  color-scheme: light;
+  color: var(--hub-ink);
+  background: var(--hub-warm);
+}
+
+[data-theme="dark"] {
+  --hub-blue: #4a7fb5;
+  --hub-deep-blue: #0e2a3d;
+  --hub-blue-soft: #132d42;
+  --hub-sky: #7fa9d2;
+  --hub-gold: #d4b45f;
+  --hub-gold-deep: #f0d48a;
+  --hub-honey: #4a3d1d;
+  --hub-honey-soft: #332a11;
+  --hub-coral: #e07264;
+  --hub-coral-soft: #3a1d18;
+  --hub-coral-text: #f2ada3;
+  --hub-mint: #4fbe8d;
+  --hub-mint-soft: #123227;
+  --hub-mint-text: #8fe0be;
+  --hub-warm: #12161b;
+  --hub-warm-surface: #1e242c;
+  --hub-surface: #1a1f26;
+  --hub-border: #333b45;
+  --hub-muted: #a0a8b1;
+  --hub-muted-soft: #5e666f;
+  --hub-ink: #edeff2;
+  --hub-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+  color: var(--hub-ink);
+  background: var(--hub-warm);
+}
+
+/* Per-clinic accent colors — seed values, editable via clinics.color_primary. */
+:root {
+  --hub-clinic-insolvencia: #0f766e;
+  --hub-clinic-innovacion-emprendimiento: #d97706;
+  --hub-clinic-laboral: #1d4ed8;
+  --hub-clinic-tributario: #6b1f3b;
+}

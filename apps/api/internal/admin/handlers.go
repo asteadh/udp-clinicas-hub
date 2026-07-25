@@ -26,6 +26,8 @@ func NewHandlers(auth AuthService, repo *Repository, bootstrapEmails []string, a
 }
 
 func (h *Handlers) Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/admin/me", h.requireAdmin(h.me))
+
 	mux.HandleFunc("GET /api/admin/admin-users", h.requireSuperadmin(h.adminUsers))
 	mux.HandleFunc("POST /api/admin/admin-users", h.requireSuperadmin(h.createAdminUser))
 	mux.HandleFunc("PATCH /api/admin/admin-users/{userId}", h.requireSuperadmin(h.updateAdminUser))

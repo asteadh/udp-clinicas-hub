@@ -1,5 +1,32 @@
 {
   "name": "@hubnegocios/admin",
   "private": true,
-  "version": "0.0.1"
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "set -a; [ -f ../../.env ] && . ../../.env; set +a; next dev -p ${ADMIN_PORT:-3101}",
+    "build": "next build",
+    "start": "set -a; [ -f ../../.env ] && . ../../.env; set +a; next start -p ${ADMIN_PORT:-3101}",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "node ./scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@hubnegocios/api-client": "workspace:*",
+    "@hubnegocios/ui": "workspace:*",
+    "lucide-react": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@hubnegocios/config": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.2",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "postcss": "^8.5.16",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^5.9.3"
+  }
 }
