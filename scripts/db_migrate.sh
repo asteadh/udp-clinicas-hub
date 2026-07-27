@@ -14,6 +14,6 @@ export DATABASE_URL="${DATABASE_URL:-postgres://hubnegocios:change-me@localhost:
 docker compose exec -T db psql -U "${POSTGRES_USER:-hubnegocios}" -d "${POSTGRES_DB:-hubnegocios}" \
   -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 
-go run ./cmd/seed -migrate-only
+(cd apps/api && go run ./cmd/seed -migrate-only)
 
-pnpm --filter @hubnegocios/db exec prisma migrate dev --schema prisma/schema.prisma
+pnpm --filter @hubnegocios/db exec prisma db pull --schema prisma/schema.prisma

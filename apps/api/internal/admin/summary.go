@@ -6,12 +6,12 @@ import (
 )
 
 type clinicCounts struct {
-	ClinicSlug        string `json:"clinicSlug"`
-	Faqs              int    `json:"faqs"`
-	Articles          int    `json:"articles"`
-	GalleryAlbums     int    `json:"galleryAlbums"`
-	TeamMembers       int    `json:"teamMembers"`
-	PendingInquiries  int    `json:"pendingInquiries"`
+	ClinicSlug       string `json:"clinicSlug"`
+	Faqs             int    `json:"faqs"`
+	Articles         int    `json:"articles"`
+	GalleryAlbums    int    `json:"galleryAlbums"`
+	TeamMembers      int    `json:"teamMembers"`
+	PendingInquiries int    `json:"pendingInquiries"`
 }
 
 func (r *Repository) SummaryForClinic(ctx context.Context, clinicSlug string) (clinicCounts, error) {

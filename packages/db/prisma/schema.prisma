@@ -7,28 +7,27 @@ datasource db {
 }
 
 model AppUser {
-  id            String    @id
-  uid           String    @unique
-  email         String?   @unique
-  emailVerified Boolean   @default(false) @map("email_verified")
-  passwordHash  String    @default("") @map("password_hash")
-  firstName     String?   @map("first_name")
-  lastName      String?   @map("last_name")
-  imageUrl      String?   @map("image_url")
-  status        String    @default("invited")
-  suspended     Boolean   @default(false)
-  inactive      Boolean   @default(false)
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @default(now()) @map("updated_at")
-  deletedAt     DateTime? @map("deleted_at")
-
-  oauthIdentities    OAuthIdentity[]
-  adminRole          AdminRole?
-  auditLogs          AdminAuditLog[]
-  handledInquiries   ContactInquiry[]
-  updatedSettings    AppSetting[]
+  id                  String               @id
+  uid                 String               @unique
+  email               String?              @unique
+  emailVerified       Boolean              @default(false) @map("email_verified")
+  passwordHash        String               @default("") @map("password_hash")
+  firstName           String?              @map("first_name")
+  lastName            String?              @map("last_name")
+  imageUrl            String?              @map("image_url")
+  status              String               @default("invited")
+  suspended           Boolean              @default(false)
+  inactive            Boolean              @default(false)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @default(now()) @map("updated_at") @db.Timestamptz(6)
+  deletedAt           DateTime?            @map("deleted_at") @db.Timestamptz(6)
+  auditLogs           AdminAuditLog[]
+  adminRole           AdminRole?
+  updatedSettings     AppSetting[]
+  handledInquiries    ContactInquiry[]
+  oauthIdentities     OAuthIdentity[]
   webauthnCredentials WebauthnCredential[]
-  webauthnSessions   WebauthnSession[]
+  webauthnSessions    WebauthnSession[]
 
   @@map("app_users")
 }
@@ -38,35 +37,35 @@ model OAuthIdentity {
   providerUserId String   @map("provider_user_id")
   userId         String   @map("user_id")
   email          String?
-  createdAt      DateTime @default(now()) @map("created_at")
-
-  user AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  user           AppUser  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([provider, providerUserId])
+  @@index([userId], map: "oauth_identities_user_idx")
   @@map("oauth_identities")
 }
 
 model Clinic {
-  slug              String   @id
-  name              String
-  shortDescription  String   @default("") @map("short_description")
-  descriptionHtml   String   @default("") @map("description_html")
-  icon              String   @default("")
-  colorPrimary      String   @default("#0B3D62") @map("color_primary")
-  imageUrl          String   @default("") @map("image_url")
-  contactEmail      String   @default("") @map("contact_email")
-  sortOrder         Int      @default(0) @map("sort_order")
-  isActive          Boolean  @default(true) @map("is_active")
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @default(now()) @map("updated_at")
+  slug             String           @id
+  name             String
+  shortDescription String           @default("") @map("short_description")
+  descriptionHtml  String           @default("") @map("description_html")
+  icon             String           @default("")
+  colorPrimary     String           @default("#0B3D62") @map("color_primary")
+  imageUrl         String           @default("") @map("image_url")
+  contactEmail     String           @default("") @map("contact_email")
+  sortOrder        Int              @default(0) @map("sort_order")
+  isActive         Boolean          @default(true) @map("is_active")
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime         @default(now()) @map("updated_at") @db.Timestamptz(6)
+  adminRoles       AdminRole[]
+  articles         Article[]
+  inquiries        ContactInquiry[]
+  faqs             Faq[]
+  galleryAlbums    GalleryAlbum[]
+  teamMembers      TeamMember[]
 
-  adminRoles   AdminRole[]
-  faqs         Faq[]
-  articles     Article[]
-  galleryAlbums GalleryAlbum[]
-  teamMembers  TeamMember[]
-  inquiries    ContactInquiry[]
-
+  @@index([sortOrder], map: "clinics_sort_idx")
   @@map("clinics")
 }
 
@@ -75,12 +74,12 @@ model AdminRole {
   role        String   @default("clinic_admin")
   clinicSlug  String?  @map("clinic_slug")
   permissions String[] @default([])
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  clinic      Clinic?  @relation(fields: [clinicSlug], references: [slug], onDelete: NoAction, onUpdate: NoAction)
+  user        AppUser  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  user   AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
-  clinic Clinic? @relation(fields: [clinicSlug], references: [slug])
-
+  @@index([clinicSlug], map: "admin_roles_clinic_idx")
   @@map("admin_roles")
 }
 
@@ -91,80 +90,82 @@ model AdminAuditLog {
   targetType String   @map("target_type")
   targetId   String?  @map("target_id")
   metadata   Json     @default("{}")
-  createdAt  DateTime @default(now()) @map("created_at")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  actor      AppUser? @relation(fields: [actorId], references: [id], onUpdate: NoAction)
 
-  actor AppUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
-
+  @@index([actorId, createdAt(sort: Desc)], map: "admin_audit_logs_actor_idx")
+  @@index([targetType, targetId, createdAt(sort: Desc)], map: "admin_audit_logs_target_idx")
   @@map("admin_audit_logs")
 }
 
 model Faq {
-  id          String   @id
+  id          String   @id @default(dbgenerated("('faq_'::text || encode(gen_random_bytes(12), 'hex'::text))"))
   clinicSlug  String   @map("clinic_slug")
   question    String
   answerHtml  String   @default("") @map("answer_html")
   sortOrder   Int      @default(0) @map("sort_order")
   isPublished Boolean  @default(true) @map("is_published")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  clinic      Clinic   @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
 
-  clinic Clinic @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
-
+  @@index([clinicSlug, sortOrder], map: "faqs_clinic_idx")
   @@map("faqs")
 }
 
 model Article {
-  id             String    @id
-  clinicSlug     String    @map("clinic_slug")
-  slug           String
-  title          String
-  excerpt        String    @default("")
-  bodyHtml       String    @default("") @map("body_html")
-  coverImageUrl  String    @default("") @map("cover_image_url")
-  authorName     String    @default("") @map("author_name")
-  isPublished    Boolean   @default(false) @map("is_published")
-  publishedAt    DateTime? @map("published_at")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @default(now()) @map("updated_at")
-
-  clinic Clinic @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
+  id            String    @id @default(dbgenerated("('art_'::text || encode(gen_random_bytes(12), 'hex'::text))"))
+  clinicSlug    String    @map("clinic_slug")
+  slug          String
+  title         String
+  excerpt       String    @default("")
+  bodyHtml      String    @default("") @map("body_html")
+  coverImageUrl String    @default("") @map("cover_image_url")
+  authorName    String    @default("") @map("author_name")
+  isPublished   Boolean   @default(false) @map("is_published")
+  publishedAt   DateTime? @map("published_at") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  clinic        Clinic    @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([clinicSlug, slug])
+  @@index([clinicSlug, publishedAt(sort: Desc)], map: "articles_clinic_idx")
+  @@index([isPublished, publishedAt(sort: Desc)], map: "articles_published_idx")
   @@map("articles")
 }
 
 model GalleryAlbum {
-  id             String   @id
-  clinicSlug     String   @map("clinic_slug")
-  title          String
-  description    String   @default("")
-  coverImageUrl  String   @default("") @map("cover_image_url")
-  sortOrder      Int      @default(0) @map("sort_order")
-  isPublished    Boolean  @default(true) @map("is_published")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @default(now()) @map("updated_at")
+  id            String         @id @default(dbgenerated("('alb_'::text || encode(gen_random_bytes(12), 'hex'::text))"))
+  clinicSlug    String         @map("clinic_slug")
+  title         String
+  description   String         @default("")
+  coverImageUrl String         @default("") @map("cover_image_url")
+  sortOrder     Int            @default(0) @map("sort_order")
+  isPublished   Boolean        @default(true) @map("is_published")
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime       @default(now()) @map("updated_at") @db.Timestamptz(6)
+  clinic        Clinic         @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
+  photos        GalleryPhoto[]
 
-  clinic Clinic         @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
-  photos GalleryPhoto[]
-
+  @@index([clinicSlug, sortOrder], map: "gallery_albums_clinic_idx")
   @@map("gallery_albums")
 }
 
 model GalleryPhoto {
-  id        String   @id
-  albumId   String   @map("album_id")
-  imageUrl  String   @map("image_url")
-  caption   String   @default("")
-  sortOrder Int      @default(0) @map("sort_order")
-  createdAt DateTime @default(now()) @map("created_at")
+  id        String       @id @default(dbgenerated("('pho_'::text || encode(gen_random_bytes(12), 'hex'::text))"))
+  albumId   String       @map("album_id")
+  imageUrl  String       @map("image_url")
+  caption   String       @default("")
+  sortOrder Int          @default(0) @map("sort_order")
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  album     GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  album GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
-
+  @@index([albumId, sortOrder], map: "gallery_photos_album_idx")
   @@map("gallery_photos")
 }
 
 model TeamMember {
-  id          String   @id
+  id          String   @id @default(dbgenerated("('team_'::text || encode(gen_random_bytes(12), 'hex'::text))"))
   clinicSlug  String   @map("clinic_slug")
   fullName    String   @map("full_name")
   roleTitle   String   @default("") @map("role_title")
@@ -173,16 +174,16 @@ model TeamMember {
   email       String   @default("")
   sortOrder   Int      @default(0) @map("sort_order")
   isPublished Boolean  @default(true) @map("is_published")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  clinic      Clinic   @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
 
-  clinic Clinic @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
-
+  @@index([clinicSlug, sortOrder], map: "team_members_clinic_idx")
   @@map("team_members")
 }
 
 model ContactInquiry {
-  id            String   @id
+  id            String   @id @default(dbgenerated("('inq_'::text || encode(gen_random_bytes(12), 'hex'::text))"))
   clinicSlug    String   @map("clinic_slug")
   fullName      String   @map("full_name")
   email         String
@@ -191,12 +192,13 @@ model ContactInquiry {
   status        String   @default("new")
   handledBy     String?  @map("handled_by")
   internalNotes String   @default("") @map("internal_notes")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @map("updated_at")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  clinic        Clinic   @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
+  handler       AppUser? @relation(fields: [handledBy], references: [id], onUpdate: NoAction)
 
-  clinic  Clinic   @relation(fields: [clinicSlug], references: [slug], onDelete: Cascade)
-  handler AppUser? @relation(fields: [handledBy], references: [id], onDelete: SetNull)
-
+  @@index([clinicSlug, createdAt(sort: Desc)], map: "contact_inquiries_clinic_idx")
+  @@index([status, createdAt(sort: Desc)], map: "contact_inquiries_status_idx")
   @@map("contact_inquiries")
 }
 
@@ -204,36 +206,40 @@ model AppSetting {
   key       String   @id
   value     Json     @default("{}")
   updatedBy String?  @map("updated_by")
-  updatedAt DateTime @default(now()) @map("updated_at")
-
-  updater AppUser? @relation(fields: [updatedBy], references: [id], onDelete: SetNull)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updater   AppUser? @relation(fields: [updatedBy], references: [id], onUpdate: NoAction)
 
   @@map("app_settings")
 }
 
 model WebauthnCredential {
-  id           String    @id
+  id           String    @id @default(dbgenerated("('cred_'::text || encode(gen_random_bytes(12), 'hex'::text))"))
   userId       String    @map("user_id")
   credentialId String    @unique @map("credential_id")
   data         Json
   label        String    @default("")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  lastUsedAt   DateTime? @map("last_used_at")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  lastUsedAt   DateTime? @map("last_used_at") @db.Timestamptz(6)
+  user         AppUser   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  user AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  @@index([userId], map: "webauthn_credentials_user_idx")
   @@map("webauthn_credentials")
 }
 
 model WebauthnSession {
-  id        String   @id
+  id        String   @id @default(dbgenerated("('wsess_'::text || encode(gen_random_bytes(12), 'hex'::text))"))
   userId    String?  @map("user_id")
   purpose   String
   data      Json
-  createdAt DateTime @default(now()) @map("created_at")
-  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt DateTime @default(dbgenerated("(now() + '00:05:00'::interval)")) @map("expires_at") @db.Timestamptz(6)
+  user      AppUser? @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  user AppUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  @@index([expiresAt], map: "webauthn_sessions_expires_idx")
   @@map("webauthn_sessions")
+}
+
+model schema_migrations {
+  version    String   @id
+  applied_at DateTime @default(now()) @db.Timestamptz(6)
 }

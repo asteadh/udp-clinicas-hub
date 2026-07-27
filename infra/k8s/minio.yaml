@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-hl
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: minio
+  ports:
+    - name: api
+      port: 9000
+      targetPort: api
+    - name: console
+      port: 9001
+      targetPort: console
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+spec:
+  selector:
+    app.kubernetes.io/name: minio
+  ports:
+    - name: api
+      port: 9000
+      targetPort: api
+    - name: console
+      port: 9001
+      targetPort: console
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minio
+spec:
+  serviceName: minio-hl
+  podManagementPolicy: Parallel
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: minio
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: minio
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          ports:
+            - name: api
+              containerPort: 9000
+            - name: console
+              containerPort: 9001
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: hubnegocios-secrets
+                  key: S3_ACCESS_KEY_ID
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hubnegocios-secrets
+                  key: S3_SECRET_ACCESS_KEY
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - /bin/sh
+            - -c
+            - |
+              exec minio server \
+                http://minio-0.minio-hl.${POD_NAMESPACE}.svc.cluster.local/data1 \
+                http://minio-0.minio-hl.${POD_NAMESPACE}.svc.cluster.local/data2 \
+                http://minio-1.minio-hl.${POD_NAMESPACE}.svc.cluster.local/data1 \
+                http://minio-1.minio-hl.${POD_NAMESPACE}.svc.cluster.local/data2 \
+                http://minio-2.minio-hl.${POD_NAMESPACE}.svc.cluster.local/data1 \
+                http://minio-2.minio-hl.${POD_NAMESPACE}.svc.cluster.local/data2 \
+                --console-address ":9001"
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: api
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: api
+          volumeMounts:
+            - name: data1
+              mountPath: /data1
+            - name: data2
+              mountPath: /data2
+  volumeClaimTemplates:
+    - metadata:
+        name: data1
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+    - metadata:
+        name: data2
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-bucket-init
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: minio-bucket-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mc
+          image: minio/mc:latest
+          env:
+            - name: S3_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: hubnegocios-secrets
+                  key: S3_ACCESS_KEY_ID
+            - name: S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hubnegocios-secrets
+                  key: S3_SECRET_ACCESS_KEY
+            - name: S3_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: hubnegocios-config
+                  key: S3_BUCKET_NAME
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until mc alias set local http://minio:9000 "${S3_ACCESS_KEY_ID}" "${S3_SECRET_ACCESS_KEY}"; do sleep 5; done
+              until mc ready local; do sleep 5; done
+              mc mb --ignore-existing "local/${S3_BUCKET_NAME}"

@@ -218,4 +218,3 @@ func (h *Handlers) requireSuperadmin(next http.HandlerFunc) http.HandlerFunc {
 		next(w, r)
 	})
 }
-

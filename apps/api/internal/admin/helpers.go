@@ -19,4 +19,3 @@ func stringValue(value any) string {
 func sanitizeHTML(raw string) string {
 	return sanitize.SanitizeHTML(raw)
 }
-

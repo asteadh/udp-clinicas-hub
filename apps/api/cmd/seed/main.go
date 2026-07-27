@@ -17,9 +17,13 @@ func main() {
 	ctx := context.Background()
 
 	demo := false
+	migrateOnly := false
 	for _, arg := range os.Args[1:] {
-		if arg == "--demo" {
+		switch arg {
+		case "--demo":
 			demo = true
+		case "-migrate-only", "--migrate-only":
+			migrateOnly = true
 		}
 	}
 
@@ -33,6 +37,15 @@ func main() {
 		log.Fatalf("database: %v", err)
 	}
 	defer pool.Close()
+
+	if err := database.Migrate(ctx, pool, "migrations"); err != nil {
+		log.Fatalf("migrate: %v", err)
+	}
+	fmt.Println("migrated: schema up to date")
+
+	if migrateOnly {
+		return
+	}
 
 	if err := database.RunSQLFile(ctx, pool, "seeds/clinics_seed.sql"); err != nil {
 		log.Fatalf("seed clinics: %v", err)

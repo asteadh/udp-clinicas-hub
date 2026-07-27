@@ -1,0 +1,59 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api
+spec:
+  minAvailable: 2   # tolerate losing 1 of 3 during node drain
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web
+spec:
+  minAvailable: 2   # tolerate losing 1 of 3 during node drain
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: admin
+spec:
+  minAvailable: 2   # tolerate losing 1 of 3 during node drain
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: admin
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cloudflared
+spec:
+  minAvailable: 2   # keep 2 tunnel connectors alive at all times
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloudflared
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: minio
+spec:
+  minAvailable: 2   # erasure-code quorum requires majority online
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: minio
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: redis
+spec:
+  minAvailable: 2   # keep Sentinel quorum (2 of 3) during node drain
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis

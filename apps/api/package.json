@@ -1,0 +1,14 @@
+{
+  "name": "@hubnegocios/api",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "set -a; [ -f ../../.env ] && . ../../.env; set +a; go run ./cmd/api",
+    "build": "go build -o ./tmp/hubnegocios-api ./cmd/api",
+    "lint": "go test ./... -run TestDoesNotExist",
+    "typecheck": "go test ./... -run TestDoesNotExist",
+    "test": "go test ./...",
+    "seed": "set -a; [ -f ../../.env ] && . ../../.env; set +a; go run ./cmd/seed",
+    "seed:demo": "set -a; [ -f ../../.env ] && . ../../.env; set +a; go run ./cmd/seed --demo"
+  }
+}

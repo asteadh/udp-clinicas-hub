@@ -125,12 +125,25 @@ FROM articles WHERE slug = $1 AND is_published = true`, slug)
 }
 
 func (r *Repository) ListGalleryAlbumsByClinic(ctx context.Context, clinicSlug string) ([]map[string]any, error) {
-	return r.listJSON(ctx, `
+	albums, err := r.listJSON(ctx, `
 SELECT jsonb_build_object(
   'id', id, 'clinicSlug', clinic_slug, 'title', title, 'description', description,
   'coverImageUrl', cover_image_url, 'sortOrder', sort_order
 )
 FROM gallery_albums WHERE clinic_slug = $1 AND is_published = true ORDER BY sort_order, created_at`, clinicSlug)
+	if err != nil {
+		return nil, err
+	}
+	for _, album := range albums {
+		photos, err := r.listJSON(ctx, `
+SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order)
+FROM gallery_photos WHERE album_id = $1 ORDER BY sort_order, created_at`, album["id"])
+		if err != nil {
+			return nil, err
+		}
+		album["photos"] = photos
+	}
+	return albums, nil
 }
 
 func (r *Repository) GetGalleryAlbum(ctx context.Context, albumID string) (map[string]any, error) {

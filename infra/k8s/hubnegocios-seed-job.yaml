@@ -1,0 +1,45 @@
+# Render-only template. The deploy workflow replaces __HUBNEGOCIOS_API_IMAGE__
+# with the just-built API image tag before applying this Job, and applies it
+# separately from `kubectl apply -k infra/k8s` — it is intentionally NOT
+# listed in kustomization.yaml.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hubnegocios-seed
+  labels:
+    app.kubernetes.io/name: hubnegocios-seed
+    app.kubernetes.io/part-of: hubnegocios
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hubnegocios-seed
+        app.kubernetes.io/part-of: hubnegocios
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: ghcr-pull
+      containers:
+        - name: hubnegocios-seed
+          image: __HUBNEGOCIOS_API_IMAGE__
+          imagePullPolicy: IfNotPresent
+          command:
+            - /hubnegocios-seed
+          envFrom:
+            - configMapRef:
+                name: hubnegocios-config
+            - secretRef:
+                name: hubnegocios-secrets
+          env:
+            - name: TZ
+              value: America/Santiago
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "500m"
+              memory: 512Mi

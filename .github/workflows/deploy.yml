@@ -1,0 +1,472 @@
+name: 🚢 Deploy to Kubernetes
+
+# Runs only AFTER the "✅ Prevalidate" workflow completes on main, and only
+# deploys when that run succeeded (jetti-v1 CI → workflow_run pattern).
+on:
+  workflow_run:
+    workflows: ["✅ Prevalidate"]
+    types:
+      - completed
+    branches:
+      - main
+
+concurrency:
+  group: kubernetes-deploy
+  cancel-in-progress: false
+
+env:
+  NAMESPACE: hubnegocios
+  REGISTRY: ghcr.io/asteadh
+
+# ─────────────────────────────────────────────────────────────────────────────
+# build-api, build-web, and build-admin run IN PARALLEL — each takes ~8-10 min.
+# deploy waits for all three, then applies K8s changes.
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+
+  # ── 1a. Build & push API image ─────────────────────────────────────────────
+  build-api:
+    name: 🐳 Build API
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 📦 Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: 🧰 Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔑 Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🛠️ Build & Push API
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/hubnegocios-api:latest
+            ${{ env.REGISTRY }}/hubnegocios-api:${{ github.event.workflow_run.head_sha }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+  # ── 1b. Build & push Web image ─────────────────────────────────────────────
+  build-web:
+    name: 🐳 Build Web
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 📦 Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: 🧰 Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔑 Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🛠️ Build & Push Web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            NEXT_PUBLIC_HUBNEGOCIOS_API_URL=https://api.hubnegocios.udp.cl
+          tags: |
+            ${{ env.REGISTRY }}/hubnegocios-web:latest
+            ${{ env.REGISTRY }}/hubnegocios-web:${{ github.event.workflow_run.head_sha }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+  # ── 1c. Build & push Admin image ────────────────────────────────────────────
+  build-admin:
+    name: 🐳 Build Admin
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 📦 Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: 🧰 Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔑 Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🛠️ Build & Push Admin
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/admin/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            NEXT_PUBLIC_HUBNEGOCIOS_API_URL=https://api.hubnegocios.udp.cl
+            NEXT_PUBLIC_HUBNEGOCIOS_WEB_URL=https://hubnegocios.udp.cl
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+          tags: |
+            ${{ env.REGISTRY }}/hubnegocios-admin:latest
+            ${{ env.REGISTRY }}/hubnegocios-admin:${{ github.event.workflow_run.head_sha }}
+          cache-from: type=gha,scope=admin
+          cache-to: type=gha,mode=max,scope=admin
+
+  # ── 2. Deploy to Kubernetes ─────────────────────────────────────────────────
+  deploy:
+    name: 🚀 Deploy (Prod)
+    runs-on: ubuntu-latest
+    needs: [build-api, build-web, build-admin]
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 📦 Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: 🔎 Pre-Flight Secret Check
+        run: |
+          echo "::group::Verifying secrets for production"
+          MISSING=0
+          must_exist() {
+            if [ -z "$2" ]; then echo "❌ REQUIRED MISSING: $1"; MISSING=1; else echo "✅ REQUIRED FOUND: $1"; fi
+          }
+          should_exist() {
+            if [ -z "$2" ]; then echo "⚠️  OPTIONAL MISSING: $1"; else echo "✅ OPTIONAL FOUND: $1"; fi
+          }
+
+          must_exist "POSTGRES_PASSWORD"       "${{ secrets.POSTGRES_PASSWORD }}"
+          must_exist "JWT_SECRET"              "${{ secrets.JWT_SECRET }}"
+          must_exist "CLOUDFLARE_TUNNEL_TOKEN" "${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}"
+          must_exist "S3_ACCESS_KEY_ID"        "${{ secrets.S3_ACCESS_KEY_ID }}"
+          must_exist "S3_SECRET_ACCESS_KEY"    "${{ secrets.S3_SECRET_ACCESS_KEY }}"
+          must_exist "STORAGE_SIGNING_SECRET"  "${{ secrets.STORAGE_SIGNING_SECRET }}"
+          must_exist "HUBNEGOCIOS_ADMIN_SEED_PASSWORD" "${{ secrets.HUBNEGOCIOS_ADMIN_SEED_PASSWORD }}"
+
+          should_exist "GOOGLE_CLIENT_ID"          "${{ secrets.GOOGLE_CLIENT_ID }}"
+          should_exist "GOOGLE_CLIENT_SECRET"      "${{ secrets.GOOGLE_CLIENT_SECRET }}"
+          should_exist "GOOGLE_ALLOWED_CLIENT_IDS" "${{ secrets.GOOGLE_ALLOWED_CLIENT_IDS }}"
+          should_exist "SMTP_USERNAME"             "${{ secrets.SMTP_USERNAME }}"
+          should_exist "SMTP_PASSWORD"             "${{ secrets.SMTP_PASSWORD }}"
+
+          if [ $MISSING -eq 1 ]; then exit 1; fi
+          echo "::endgroup::"
+
+      - name: 🔗 Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: 📥 Install kubectl
+        run: |
+          K8S_VER="$(curl -sSL https://dl.k8s.io/release/stable.txt)"
+          curl -sSLO "https://dl.k8s.io/release/${K8S_VER}/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+      - name: 🔐 Configure Kubeconfig
+        env:
+          KUBECONFIG_RAW: ${{ secrets.KUBECONFIG_RAW }}
+        run: |
+          mkdir -p ~/.kube
+          echo "$KUBECONFIG_RAW" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: 🛰️ Wait for Cluster API Reachability
+        run: |
+          set -uo pipefail
+          SERVER="$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')"
+          HOST="${SERVER#*://}"; HOST="${HOST%%:*}"
+
+          echo "::group::Tailscale status"
+          tailscale status || true
+          tailscale ping --c 1 "$HOST" || true
+          echo "::endgroup::"
+
+          for i in $(seq 1 18); do
+            if kubectl version --request-timeout=15s >/dev/null 2>&1; then
+              echo "✅ Cluster API reachable after attempt ${i}."; exit 0
+            fi
+            echo "Attempt ${i}/18: retrying in 10s..."; sleep 10
+          done
+          echo "::error::Cluster API ${SERVER} unreachable after ~3m."; exit 1
+
+      - name: 🛠️ Ensure Namespace Exists
+        run: kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: 📝 Inject ConfigMap
+        run: |
+          kubectl create configmap hubnegocios-config \
+            --namespace ${{ env.NAMESPACE }} \
+            --from-env-file=infra/k8s/envs/production.env \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: 🔐 Create GHCR Pull Secret
+        run: |
+          kubectl create secret docker-registry ghcr-pull \
+            --namespace ${{ env.NAMESPACE }} \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.GITHUB_TOKEN }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: 💉 Inject Secrets
+        run: |
+          kubectl delete secret hubnegocios-secrets --namespace ${{ env.NAMESPACE }} --ignore-not-found
+
+          ENCODED_PG_PASS="$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "${{ secrets.POSTGRES_PASSWORD }}")"
+          DATABASE_URL="postgres://hubnegocios:${ENCODED_PG_PASS}@postgres-rw.${{ env.NAMESPACE }}.svc.cluster.local:5432/hubnegocios?sslmode=disable"
+          echo "::add-mask::$DATABASE_URL"
+
+          kubectl create secret generic hubnegocios-secrets \
+            --namespace ${{ env.NAMESPACE }} \
+            --from-literal=username="hubnegocios" \
+            --from-literal=password="${{ secrets.POSTGRES_PASSWORD }}" \
+            --from-literal=POSTGRES_USER="hubnegocios" \
+            --from-literal=POSTGRES_DB="hubnegocios" \
+            --from-literal=POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
+            --from-literal=DATABASE_URL="${DATABASE_URL}" \
+            --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            --from-literal=STORAGE_SIGNING_SECRET="${{ secrets.STORAGE_SIGNING_SECRET }}" \
+            --from-literal=S3_ACCESS_KEY_ID="${{ secrets.S3_ACCESS_KEY_ID }}" \
+            --from-literal=S3_SECRET_ACCESS_KEY="${{ secrets.S3_SECRET_ACCESS_KEY }}" \
+            --from-literal=CLOUDFLARE_TUNNEL_TOKEN="${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}" \
+            --from-literal=GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+            --from-literal=GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+            --from-literal=GOOGLE_ALLOWED_CLIENT_IDS="${{ secrets.GOOGLE_ALLOWED_CLIENT_IDS }}" \
+            --from-literal=SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}" \
+            --from-literal=SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}" \
+            --from-literal=HUBNEGOCIOS_SUPERADMIN_EMAILS="${{ secrets.HUBNEGOCIOS_SUPERADMIN_EMAILS }}" \
+            --from-literal=HUBNEGOCIOS_ADMIN_SEED_PASSWORD="${{ secrets.HUBNEGOCIOS_ADMIN_SEED_PASSWORD }}"
+
+      - name: 🏗️ Apply Infrastructure Manifests
+        run: kubectl apply -k infra/k8s --namespace ${{ env.NAMESPACE }}
+
+      - name: ⏳ Wait for postgres-rw Service & Primary
+        run: |
+          set -euo pipefail
+          NS="${{ env.NAMESPACE }}"
+          echo "Waiting up to 5m for Service postgres-rw..."
+          for i in $(seq 1 60); do
+            kubectl -n "$NS" get svc postgres-rw >/dev/null 2>&1 && break
+            sleep 5
+          done
+          kubectl -n "$NS" get svc postgres-rw
+
+          echo "Waiting up to 5m for a primary postgres pod..."
+          for i in $(seq 1 60); do
+            POD="$(kubectl get pods -n "$NS" -l cnpg.io/cluster=postgres,cnpg.io/instanceRole=primary -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+            [ -z "$POD" ] && POD="$(kubectl get pods -n "$NS" -l cnpg.io/cluster=postgres,cnpg.io/role=primary -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+            if [ -n "$POD" ] && kubectl -n "$NS" get pod "$POD" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' | grep -q True; then
+              echo "Primary pod $POD is Ready."; break
+            fi
+            sleep 5
+          done
+          kubectl -n "$NS" get pods -l cnpg.io/cluster=postgres -o wide
+
+      - name: 🔐 Sync Postgres Password
+        run: |
+          set -euo pipefail
+          NS="${{ env.NAMESPACE }}"
+          PG_PASS="${{ secrets.POSTGRES_PASSWORD }}"
+          PG_PASS_SQL="${PG_PASS//\'/\'\'}"
+          ALTER_SQL="ALTER USER \"hubnegocios\" WITH PASSWORD '${PG_PASS_SQL}';"
+
+          find_primary() {
+            local pod
+            pod="$(kubectl get pods -n "$NS" -l cnpg.io/cluster=postgres,cnpg.io/instanceRole=primary -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+            [ -z "$pod" ] && pod="$(kubectl get pods -n "$NS" -l cnpg.io/cluster=postgres,cnpg.io/role=primary -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+            printf '%s' "$pod"
+          }
+
+          for i in $(seq 1 5); do
+            POD="$(find_primary)"
+            if [ -z "$POD" ]; then echo "Attempt $i/5: primary not found, retrying..."; sleep 6; continue; fi
+            echo "Attempt $i/5: exec into $POD"
+            if kubectl exec -n "$NS" -c postgres "$POD" -- \
+                psql -v ON_ERROR_STOP=1 -U postgres -d postgres -c "$ALTER_SQL"; then
+              echo "Password sync succeeded."; exit 0
+            fi
+            sleep 6
+          done
+          echo "::error::Failed to sync postgres password."; exit 1
+
+      - name: 🌱 Seed Clinics & Superadmin
+        run: |
+          set -euo pipefail
+          NS="${{ env.NAMESPACE }}"
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          IMAGE="${{ env.REGISTRY }}/hubnegocios-api:${SHA}"
+
+          kubectl delete job hubnegocios-seed -n "$NS" --ignore-not-found
+          sed "s|__HUBNEGOCIOS_API_IMAGE__|${IMAGE}|g" infra/k8s/hubnegocios-seed-job.yaml \
+            | kubectl apply -n "$NS" -f -
+
+          if ! kubectl wait --for=condition=complete job/hubnegocios-seed -n "$NS" --timeout=10m; then
+            echo "::error::Seed job failed or timed out."
+            kubectl logs -n "$NS" job/hubnegocios-seed --all-containers=true --tail=-1 || true
+            kubectl describe job hubnegocios-seed -n "$NS" || true
+            exit 1
+          fi
+
+          kubectl logs -n "$NS" job/hubnegocios-seed --all-containers=true --tail=100
+
+      - name: 🚀 Roll Out API & Web & Admin (parallel)
+        run: |
+          set -euo pipefail
+          NS="${{ env.NAMESPACE }}"
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          kubectl set image deployment/api api=${{ env.REGISTRY }}/hubnegocios-api:${SHA} -n "$NS"
+          kubectl set image deployment/web web=${{ env.REGISTRY }}/hubnegocios-web:${SHA} -n "$NS"
+          kubectl set image deployment/admin admin=${{ env.REGISTRY }}/hubnegocios-admin:${SHA} -n "$NS"
+
+      - name: ⏳ Wait for HA Rollouts (parallel)
+        run: |
+          set -euo pipefail
+          NS="${{ env.NAMESPACE }}"
+          kubectl rollout status deployment/api -n "$NS" --timeout=10m &
+          PID_API=$!
+          kubectl rollout status deployment/web -n "$NS" --timeout=10m &
+          PID_WEB=$!
+          kubectl rollout status deployment/admin -n "$NS" --timeout=10m &
+          PID_ADMIN=$!
+
+          FAIL=0
+          wait $PID_API || { echo "::error::API rollout failed"; FAIL=1; }
+          wait $PID_WEB || { echo "::error::Web rollout failed"; FAIL=1; }
+          wait $PID_ADMIN || { echo "::error::Admin rollout failed"; FAIL=1; }
+
+          kubectl get pods -n "$NS" \
+            -l 'app.kubernetes.io/part-of=hubnegocios' \
+            --field-selector 'status.phase!=Succeeded' \
+            -o wide
+
+          if [ $FAIL -eq 1 ]; then exit 1; fi
+          echo "🚀 Deployment successful — all replicas healthy!"
+
+      - name: 🔎 Verify Public Site
+        run: |
+          set -euo pipefail
+          API_JSON="$(mktemp)"
+          HOME_HTML="$(mktemp)"
+
+          curl -fsS https://api.hubnegocios.udp.cl/api/clinics -o "$API_JSON"
+          CLINIC_COUNT="$(node -e 'const fs = require("fs"); const data = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); console.log(Array.isArray(data.clinics) ? data.clinics.length : 0);' "$API_JSON")"
+          if [ "$CLINIC_COUNT" -lt 1 ]; then
+            echo "::error::Public API returned no clinics."
+            cat "$API_JSON"
+            exit 1
+          fi
+
+          curl -fsS https://hubnegocios.udp.cl -o "$HOME_HTML"
+          if ! grep -q "Nuestras cl" "$HOME_HTML"; then
+            echo "::error::Homepage did not render the expected clinics section."
+            exit 1
+          fi
+
+          echo "Public site verified with ${CLINIC_COUNT} clinic(s)."
+
+      - name: 🧹 Prune old GHCR images (keep latest 5 tagged, never deployed ones)
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          KEEP=5
+          OWNER="asteadh"
+          NS="${{ env.NAMESPACE }}"
+
+          # Tags the cluster is currently running — never delete these.
+          DEPLOYED_TAGS="$(kubectl get deploy -n "$NS" \
+            -o jsonpath='{range .items[*]}{.spec.template.spec.containers[0].image}{"\n"}{end}' \
+            | sed 's/.*://' | sort -u)"
+          echo "Deployed tags:"; echo "$DEPLOYED_TAGS"
+
+          prune_package() {
+            local pkg="$1"
+            echo "::group::Pruning ${pkg} — keeping ${KEEP} newest tagged images"
+            local versions_json cutoff
+            versions_json="$(gh api "/users/${OWNER}/packages/container/${pkg}/versions?per_page=100")"
+
+            # Multi-arch pushes create untagged child manifests alongside the
+            # tagged index. Deleting a child breaks pulls of the tagged image,
+            # so prune strictly by age: everything older than the KEEP'th
+            # newest *tagged* version goes, everything at-or-after stays.
+            cutoff="$(echo "$versions_json" | jq -r --argjson keep "$KEEP" \
+              '[.[] | select((.metadata.container.tags // []) | length > 0)]
+               | sort_by(.created_at) | reverse
+               | .[$keep - 1].created_at // empty')"
+
+            if [ -z "$cutoff" ]; then
+              echo "Fewer than ${KEEP} tagged versions; nothing to prune."
+              echo "::endgroup::"
+              return
+            fi
+
+            echo "$versions_json" | jq -r --arg cutoff "$cutoff" \
+              '.[] | select(.created_at < $cutoff)
+               | [(.id | tostring), ((.metadata.container.tags // []) | join(" "))] | @tsv' \
+            | while IFS=$'\t' read -r version_id tags; do
+                for tag in $tags; do
+                  if echo "$DEPLOYED_TAGS" | grep -qx "$tag"; then
+                    echo "Skipping ${version_id} (${tag} is deployed)"
+                    continue 2
+                  fi
+                done
+                echo "Deleting version ${version_id} of ${pkg} (tags: ${tags:-none})..."
+                gh api --method DELETE \
+                  "/users/${OWNER}/packages/container/${pkg}/versions/${version_id}" || \
+                  echo "::warning::Could not delete version ${version_id}"
+              done
+            echo "::endgroup::"
+          }
+
+          prune_package "hubnegocios-api"
+          prune_package "hubnegocios-web"
+          prune_package "hubnegocios-admin"

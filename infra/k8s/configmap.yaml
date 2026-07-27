@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hubnegocios-config
+data:
+  API_PORT: "4000"
+  API_BASE_URL: "https://api.hubnegocios.udp.cl"
+  API_PUBLIC_URL: "https://api.hubnegocios.udp.cl"
+  NEXT_PUBLIC_HUBNEGOCIOS_WEB_URL: "https://hubnegocios.udp.cl"
+  HUBNEGOCIOS_ADMIN_URL: "https://admin.hubnegocios.udp.cl"
+  ALLOWED_ORIGINS: "https://hubnegocios.udp.cl,https://admin.hubnegocios.udp.cl"
+  # WebAuthn/passkeys — see infra/k8s/envs/production.env (source of truth the
+  # deploy workflow injects); keep both files in sync.
+  WEBAUTHN_RP_ID: "hubnegocios.udp.cl"
+  WEBAUTHN_RP_NAME: "Hub Negocios UDP"
+  WEBAUTHN_RP_ORIGINS: "https://hubnegocios.udp.cl,https://admin.hubnegocios.udp.cl"
+  ADMIN_EMAIL_DOMAINS: "udp.cl,mail.udp.cl"
+  NEXT_PUBLIC_API_URL: "https://api.hubnegocios.udp.cl"
+  POSTGRES_USER: "hubnegocios"
+  POSTGRES_DB: "hubnegocios"
+  S3_ENDPOINT: "http://minio:9000"
+  S3_BUCKET_NAME: "hubnegocios-files"
+  S3_REGION: "us-east-1"
+  S3_FORCE_PATH_STYLE: "true"
+  # Redis is cache-only scaffolding for now — the Go API has no Redis client
+  # wired up yet (config.RedisURL is loaded but unused), so this points at the
+  # Sentinel-managed primary's bootstrap pod rather than a Sentinel-aware URL.
+  REDIS_URL: "redis://redis-0.redis-hl:6379/0"
+  # Mail is "log" (writes to stdout, no real sends) until an SMTP relay is
+  # provisioned — there is no self-hosted MTA equivalent to Gremia's Stalwart
+  # in this deployment.
+  MAIL_PROVIDER: "log"
+  MAIL_FROM: "no-reply@hubnegocios.udp.cl"
+  MAIL_REPLY_TO: "contacto@hubnegocios.udp.cl"
+  SMTP_HOST: ""
+  SMTP_PORT: "465"
+  SMTP_TLS_MODE: "tls"
+  SMTP_TLS_INSECURE: "false"

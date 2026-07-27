@@ -1,0 +1,65 @@
+name: ✅ Prevalidate
+
+# Single prevalidate, runs on every change to main. On success it triggers the
+# "🚢 Deploy to Kubernetes" workflow via workflow_run (jetti-v1 pattern).
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: prevalidate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prevalidate:
+    name: ✅ Prevalidate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🧰 Setup pnpm
+        # Version comes from the "packageManager" field in package.json.
+        uses: pnpm/action-setup@v4
+
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 🐹 Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
+
+      - name: 📥 Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔍 Generate Prisma Client
+        env:
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+        run: pnpm --filter @hubnegocios/db generate
+
+      - name: 🏗️ Build Workspace Packages
+        env:
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+        run: pnpm --filter "./packages/*" build
+
+      - name: 🚦 Typecheck & Lint
+        env:
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+        run: |
+          pnpm turbo lint
+          pnpm turbo typecheck
+
+      - name: 🧪 Run Tests
+        env:
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+        run: pnpm turbo test
+
+      - name: 🐹 Verify Go (gofmt + vet)
+        run: pnpm verify:go

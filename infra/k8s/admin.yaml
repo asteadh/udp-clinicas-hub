@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  labels:
+    app.kubernetes.io/part-of: hubnegocios
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # maxUnavailable 1 lets a rollout replace pods in place when the surge
+      # pod cannot schedule (e.g. a node is down); surge is still preferred.
+      maxUnavailable: 1
+      maxSurge: 1
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: admin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: admin
+        app.kubernetes.io/part-of: hubnegocios
+    spec:
+      terminationGracePeriodSeconds: 45
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          nodeTaintsPolicy: Honor
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: admin
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: admin
+      imagePullSecrets:
+        - name: ghcr-pull
+      containers:
+        - name: admin
+          image: ghcr.io/asteadh/hubnegocios-admin:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3101
+          envFrom:
+            - configMapRef:
+                name: hubnegocios-config
+            - secretRef:
+                name: hubnegocios-secrets
+          env:
+            # Next.js standalone server.js reads PORT (not ADMIN_PORT). The
+            # shared configmap sets API_PORT=4000 for the API, but if PORT
+            # were ever also set there it would leak in here — override it
+            # explicitly to 3101 so admin never listens on the wrong port.
+            - name: PORT
+              value: "3101"
+            - name: TZ
+              value: America/Santiago
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 4
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "500m"
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: admin
+  ports:
+    - name: http
+      port: 3101
+      targetPort: http

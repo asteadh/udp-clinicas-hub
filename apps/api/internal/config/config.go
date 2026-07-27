@@ -19,16 +19,16 @@ type Config struct {
 	GoogleAllowedClientIDs []string
 	AdminEmailDomains      []string
 
-	WebAuthnRPID     string
-	WebAuthnRPName   string
+	WebAuthnRPID      string
+	WebAuthnRPName    string
 	WebAuthnRPOrigins []string
 
-	S3Endpoint        string
-	S3AccessKeyID     string
-	S3SecretAccessKey string
-	S3BucketName      string
-	S3Region          string
-	S3ForcePathStyle  bool
+	S3Endpoint           string
+	S3AccessKeyID        string
+	S3SecretAccessKey    string
+	S3BucketName         string
+	S3Region             string
+	S3ForcePathStyle     bool
 	StorageSigningSecret string
 
 	RedisURL string

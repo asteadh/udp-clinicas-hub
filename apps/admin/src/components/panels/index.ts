@@ -1,0 +1,12 @@
+export { AdminUsersPanel } from "./admin-users-panel";
+export { ArticlesPanel } from "./articles-panel";
+export { ClinicSwitcher } from "./clinic-switcher";
+export { ClinicsPanel } from "./clinics-panel";
+export { FaqsPanel } from "./faqs-panel";
+export { GalleryPanel } from "./gallery-panel";
+export { LoginCard } from "./login-card";
+export { PanelScreen } from "./panel-screen";
+export { SettingsPanel } from "./settings-panel";
+export { SimpleTable } from "./simple-table";
+export { StatusPanel } from "./status-panel";
+export { TeamPanel } from "./team-panel";

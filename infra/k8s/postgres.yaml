@@ -1,0 +1,32 @@
+# Requires the CloudNativePG (CNPG) operator to already be installed on the
+# cluster — that is a cluster-level prerequisite outside this repo's scope.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  imageName: ghcr.io/cloudnative-pg/postgresql:18
+  postgresql:
+    parameters:
+      timezone: America/Santiago
+      log_timezone: America/Santiago
+      max_slot_wal_keep_size: 10GB
+  env:
+    - name: TZ
+      value: America/Santiago
+  bootstrap:
+    initdb:
+      database: hubnegocios
+      owner: hubnegocios
+      # hubnegocios-secrets must have username/password keys — set by the
+      # deploy workflow.
+      secret:
+        name: hubnegocios-secrets
+  storage:
+    size: 20Gi
+  monitoring:
+    enablePodMonitor: false
+  affinity:
+    enablePodAntiAffinity: true

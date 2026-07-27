@@ -1,0 +1,183 @@
+# Redis is reserved for future caching (config.RedisURL is loaded by the API
+# but no cache client is wired up yet) — deployed now with the same HA shape
+# as Postgres/MinIO so it's ready to adopt without an infra change later.
+#
+# HA: 1 primary + 2 replicas, each pod co-located with a Sentinel. Sentinel
+# elects a new primary on failure. Cache-only: no persistence, LRU eviction.
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-hl
+  labels:
+    app.kubernetes.io/name: redis
+spec:
+  clusterIP: None            # headless: stable per-pod DNS (redis-0.redis-hl, …)
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+    - name: sentinel
+      port: 26379
+      targetPort: sentinel
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  serviceName: redis-hl
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redis
+    spec:
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: redis
+      initContainers:
+        # Generate redis.conf + sentinel.conf for this pod. Discovers the current
+        # primary from any running Sentinel; on a cold cluster redis-0 bootstraps
+        # as the primary and the others replicate from it.
+        - name: init-config
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              SVC=redis-hl
+              NS="${POD_NAMESPACE}"
+              MASTER_NAME=mymaster
+              QUORUM=2
+              FQDN="${HOSTNAME}.${SVC}.${NS}.svc.cluster.local"
+
+              # Ask any Sentinel who the current primary is (empty on cold start).
+              MASTER_HOST="$(redis-cli -h "${SVC}.${NS}.svc.cluster.local" -p 26379 \
+                --timeout 2 sentinel get-master-addr-by-name "${MASTER_NAME}" \
+                2>/dev/null | head -1 || true)"
+
+              if [ -z "${MASTER_HOST}" ]; then
+                if [ "${HOSTNAME}" = "redis-0" ]; then
+                  MASTER_HOST="${FQDN}"        # bootstrap: redis-0 is the primary
+                else
+                  MASTER_HOST="redis-0.${SVC}.${NS}.svc.cluster.local"
+                fi
+              fi
+
+              {
+                echo "port 6379"
+                echo "maxmemory 256mb"
+                echo "maxmemory-policy allkeys-lru"
+                echo 'save ""'
+                echo "appendonly no"
+                echo "replica-announce-ip ${FQDN}"
+                echo "replica-announce-port 6379"
+                if [ "${MASTER_HOST}" != "${FQDN}" ]; then
+                  echo "replicaof ${MASTER_HOST} 6379"
+                fi
+              } > /etc/redis/redis.conf
+
+              {
+                echo "port 26379"
+                echo "sentinel resolve-hostnames yes"
+                echo "sentinel announce-hostnames yes"
+                echo "sentinel announce-ip ${FQDN}"
+                echo "sentinel monitor ${MASTER_NAME} ${MASTER_HOST} 6379 ${QUORUM}"
+                echo "sentinel down-after-milliseconds ${MASTER_NAME} 5000"
+                echo "sentinel failover-timeout ${MASTER_NAME} 15000"
+                echo "sentinel parallel-syncs ${MASTER_NAME} 1"
+              } > /etc/redis/sentinel.conf
+
+              echo "configured ${FQDN} (primary=${MASTER_HOST})"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          command: ["redis-server", "/etc/redis/redis.conf"]
+          ports:
+            - name: redis
+              containerPort: 6379
+          readinessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 300m
+              memory: 320Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis
+            - name: data
+              mountPath: /data
+        - name: sentinel
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          command: ["redis-server", "/etc/redis/sentinel.conf", "--sentinel"]
+          ports:
+            - name: sentinel
+              containerPort: 26379
+          readinessProbe:
+            tcpSocket:
+              port: sentinel
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: sentinel
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: data
+          emptyDir: {}

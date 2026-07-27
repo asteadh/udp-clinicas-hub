@@ -122,10 +122,10 @@ func (h *Handlers) createFaq(w http.ResponseWriter, r *http.Request) {
 }
 
 type updateFaqRequest struct {
-	Question     *string `json:"question"`
-	AnswerHTML   *string `json:"answerHtml"`
-	SortOrder    *int    `json:"sortOrder"`
-	IsPublished  *bool   `json:"isPublished"`
+	Question    *string `json:"question"`
+	AnswerHTML  *string `json:"answerHtml"`
+	SortOrder   *int    `json:"sortOrder"`
+	IsPublished *bool   `json:"isPublished"`
 }
 
 func (h *Handlers) updateFaq(w http.ResponseWriter, r *http.Request) {
