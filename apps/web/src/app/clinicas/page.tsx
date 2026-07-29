@@ -15,6 +15,7 @@ export default async function ClinicsPage() {
   return (
     <div className="grid gap-8">
       <HubSectionHeader title={copy.clinics.title}>{copy.clinics.subtitle}</HubSectionHeader>
+      <p style={{ color: "var(--hub-muted)", maxWidth: "760px", marginTop: "-1rem" }}>{copy.clinics.intro}</p>
       <div className="hub-grid">
         {clinics.map((clinic) => (
           <ClinicCard key={clinic.slug} clinic={clinic} copy={copy} />

@@ -18,15 +18,53 @@ export const webPageCopy = {
     subtitle:
       "Cuatro clínicas jurídicas que acompañan a personas y emprendedores con asesoría gratuita en insolvencia, innovación, derecho laboral y tributario.",
     cta: "Contáctanos",
+    heroSecondaryCta: "Conoce las clínicas",
+    stats: [
+      { label: "Clínicas jurídicas", value: "4" },
+      { label: "Costo para el consultante", value: "Gratuito" },
+      { label: "Equipo", value: "Supervisado por profesores" },
+      { label: "Alojado en", value: "Facultad de Derecho UDP" },
+    ],
+    howItWorks: {
+      title: "¿Cómo funciona?",
+      subtitle: "Tres pasos simples para recibir asesoría de una de nuestras clínicas.",
+      steps: [
+        {
+          title: "Completa el formulario",
+          description: "Cuéntanos tu caso a través del formulario de ingreso, indicando la clínica correspondiente.",
+        },
+        {
+          title: "Un equipo revisa tu caso",
+          description: "Un integrante de la clínica evalúa tu solicitud y confirma si puede ser atendida.",
+        },
+        {
+          title: "Te contactamos",
+          description: "Te contactaremos para coordinar los siguientes pasos de tu asesoría.",
+        },
+      ],
+    },
     clinicsTitle: "Nuestras clínicas",
     clinicsSubtitle: "Cada clínica atiende consultas y publica contenido propio.",
     articlesTitle: "Artículos recientes",
+    featuredLabel: "Destacado",
     viewAll: "Ver todos",
     viewClinic: "Ver clínica",
+    ctaBanner: {
+      title: "¿Tienes una consulta legal?",
+      subtitle: "Solicita ayuda gratuita de una de nuestras clínicas jurídicas.",
+      primaryCta: "Solicitar ingreso",
+      secondaryCta: "Contáctanos",
+    },
   },
   clinics: {
     title: "Clínicas",
     subtitle: "Elige una clínica para conocer su equipo, preguntas frecuentes y actividades.",
+    intro:
+      "Las clínicas jurídicas de Hub Negocios UDP son atendidas por estudiantes y egresados de la Facultad de Derecho, bajo la supervisión directa de profesores. La asesoría es gratuita y busca acercar herramientas legales a personas y emprendedores.",
+    badgeFreeService: "Atención gratuita",
+    ctaCardTitle: "Solicita ayuda de esta clínica",
+    ctaCardBody: "Completa el formulario de ingreso y un integrante del equipo revisará tu caso.",
+    ctaCardButton: "Solicitar ingreso",
     notFoundTitle: "Clínica no encontrada",
     notFoundBody: "Esta clínica no existe o no está disponible.",
     faqsTitle: "Preguntas frecuentes",
@@ -47,10 +85,17 @@ export const webPageCopy = {
     noArticles: "Aún no hay artículos publicados.",
     back: "Volver a artículos",
     readMore: "Leer más",
+    prev: "Anterior",
+    next: "Siguiente",
+    ctaTitle: "¿Tienes un caso similar?",
+    ctaBody: "Solicita asesoría gratuita de la clínica correspondiente.",
+    ctaButton: "Solicitar ingreso",
   },
   contact: {
     title: "Contacto",
     subtitle: "Cuéntanos tu consulta y la clínica correspondiente te responderá a la brevedad.",
+    sidebarTitle: "¿Qué pasa después?",
+    privacyNote: "Tu información solo será compartida con la clínica seleccionada y se usará únicamente para responder tu consulta.",
     clinic: "Clínica",
     selectClinic: "Selecciona una clínica",
     name: "Nombre",
@@ -66,6 +111,8 @@ export const webPageCopy = {
     title: "Formulario de ingreso",
     subtitle:
       "Solicita formalmente la asistencia de una de nuestras clínicas jurídicas. Un integrante del equipo revisará tu caso y te contactará para confirmar si puede ser atendido.",
+    sidebarTitle: "¿Qué pasa después?",
+    privacyNote: "Tu información solo será compartida con la clínica seleccionada y se usará únicamente para evaluar tu solicitud de ingreso.",
     clinic: "Clínica",
     selectClinic: "Selecciona una clínica",
     fullName: "Nombre completo",
@@ -83,6 +130,10 @@ export const webPageCopy = {
     error: "No se pudo enviar tu solicitud. Intenta nuevamente.",
   },
   footer: {
+    description:
+      "Clínicas jurídicas de la Facultad de Derecho UDP que ofrecen asesoría gratuita a personas y emprendedores.",
+    quickLinksTitle: "Enlaces rápidos",
+    clinicsTitle: "Clínicas",
     rights: "Hub Negocios UDP — Universidad Diego Portales",
   },
   common: {

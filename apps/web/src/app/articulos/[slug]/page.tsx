@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CtaBanner } from "@/components/cta-banner";
 import { api } from "@/lib/api";
 import { webPageCopy as copy } from "@/lib/copy";
 
@@ -27,9 +28,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {copy.articles.back}
       </Link>
       <h1>{article.title}</h1>
-      {article.authorName && (
+      {(article.authorName || article.publishedAt) && (
         <p style={{ color: "var(--hub-muted)" }}>
-          {copy.articles.by} {article.authorName}
+          {article.authorName && `${copy.articles.by} ${article.authorName}`}
+          {article.authorName && article.publishedAt && " · "}
+          {article.publishedAt && new Date(article.publishedAt).toLocaleDateString(copy.dateLocale, { dateStyle: "long" })}
         </p>
       )}
       {image && (
@@ -37,6 +40,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <img src={image} alt="" style={{ width: "100%", borderRadius: "0.75rem", objectFit: "cover" }} />
       )}
       {article.bodyHtml && <div dangerouslySetInnerHTML={{ __html: article.bodyHtml }} />}
+
+      <CtaBanner
+        title={copy.articles.ctaTitle}
+        subtitle={copy.articles.ctaBody}
+        primaryHref={`/ingreso?clinica=${article.clinicSlug}`}
+        primaryLabel={copy.articles.ctaButton}
+      />
     </article>
   );
 }

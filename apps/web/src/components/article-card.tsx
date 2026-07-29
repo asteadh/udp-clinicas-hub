@@ -18,9 +18,11 @@ export function ArticleCard({ article, copy }: { article: Article; copy: WebPage
       )}
       <h3>{article.title}</h3>
       {article.excerpt && <p style={{ color: "var(--hub-muted)" }}>{article.excerpt}</p>}
-      {article.authorName && (
+      {(article.authorName || article.publishedAt) && (
         <p style={{ color: "var(--hub-muted)", fontSize: "0.85rem" }}>
-          {copy.articles.by} {article.authorName}
+          {article.authorName && `${copy.articles.by} ${article.authorName}`}
+          {article.authorName && article.publishedAt && " · "}
+          {article.publishedAt && new Date(article.publishedAt).toLocaleDateString(copy.dateLocale, { dateStyle: "long" })}
         </p>
       )}
       <Link href={`/articulos/${article.slug}`} className="hub-button hub-button--link" style={{ marginTop: "0.5rem", display: "inline-flex" }}>

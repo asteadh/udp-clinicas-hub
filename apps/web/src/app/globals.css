@@ -76,3 +76,16 @@
   margin-top: 0.6rem;
   line-height: 1.6;
 }
+
+.form-with-sidebar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .form-with-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
