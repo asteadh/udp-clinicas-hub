@@ -4,10 +4,10 @@
  * parity with this file — enforced by scripts/validation/check-design-tokens.mjs.
  */
 export const hubColors = {
-  blue: "#0B3D62",
-  deepBlue: "#082A44",
-  blueSoft: "#E4ECF5",
-  sky: "#4A7FB5",
+  blue: "#E2383F",
+  deepBlue: "#27282F",
+  blueSoft: "#FBE4E5",
+  sky: "#B8323A",
   gold: "#B08D33",
   goldDeep: "#7A5F1F",
   honey: "#E4CE8E",
@@ -28,10 +28,10 @@ export const hubColors = {
 } as const;
 
 export const hubColorsDark = {
-  blue: "#4A7FB5",
-  deepBlue: "#0E2A3D",
-  blueSoft: "#132D42",
-  sky: "#7FA9D2",
+  blue: "#F0625F",
+  deepBlue: "#1A1B20",
+  blueSoft: "#3A1518",
+  sky: "#F2A8A3",
   gold: "#D4B45F",
   goldDeep: "#F0D48A",
   honey: "#4A3D1D",

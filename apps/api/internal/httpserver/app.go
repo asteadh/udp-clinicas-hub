@@ -10,6 +10,7 @@ import (
 	"hubnegocios/backend/internal/config"
 	"hubnegocios/backend/internal/contact"
 	"hubnegocios/backend/internal/content"
+	"hubnegocios/backend/internal/intake"
 	"hubnegocios/backend/internal/storage"
 )
 
@@ -28,6 +29,7 @@ type App struct {
 
 	contentHandlers *content.Handlers
 	contactHandlers *contact.Handlers
+	intakeHandlers  *intake.Handlers
 	storageHandlers *storage.Handlers
 }
 
@@ -59,6 +61,9 @@ func NewApp(cfg *config.Config, db *pgxpool.Pool) (*App, error) {
 	contactRepo := contact.NewRepository(db)
 	contactHandlers := contact.NewHandlers(contactRepo)
 
+	intakeRepo := intake.NewRepository(db)
+	intakeHandlers := intake.NewHandlers(intakeRepo)
+
 	storageService, err := storage.NewService(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("httpserver: storage service: %w", err)
@@ -75,6 +80,7 @@ func NewApp(cfg *config.Config, db *pgxpool.Pool) (*App, error) {
 		adminHandlers:   adminHandlers,
 		contentHandlers: contentHandlers,
 		contactHandlers: contactHandlers,
+		intakeHandlers:  intakeHandlers,
 		storageHandlers: storageHandlers,
 	}, nil
 }

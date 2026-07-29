@@ -16,6 +16,7 @@ func (a *App) Router() http.Handler {
 	a.adminHandlers.Register(mux)
 	a.contentHandlers.Register(mux)
 	a.contactHandlers.Register(mux)
+	a.intakeHandlers.Register(mux)
 	a.storageHandlers.Register(mux)
 
 	var handler http.Handler = mux

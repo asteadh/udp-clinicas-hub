@@ -171,6 +171,34 @@ export interface ContactRequestInput extends JsonRecord {
   metadata?: JsonRecord;
 }
 
+export interface IntakeRequest extends JsonRecord {
+  id: string;
+  clinicSlug: ClinicSlug;
+  fullName: string;
+  rut: string;
+  email: string;
+  phone?: string;
+  caseType?: string;
+  caseDescription: string;
+  hasDocumentation?: string;
+  status: "new" | "in_review" | "accepted" | "rejected" | "closed" | string;
+  handledBy?: string | null;
+  internalNotes?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IntakeRequestInput extends JsonRecord {
+  clinicSlug: string;
+  fullName: string;
+  rut: string;
+  email: string;
+  caseDescription: string;
+  phone?: string;
+  caseType?: string;
+  hasDocumentation?: string;
+}
+
 export interface AdminUser extends JsonRecord {
   userId: string;
   email: string;

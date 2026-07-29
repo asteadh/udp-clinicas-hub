@@ -4,6 +4,7 @@ export { ClinicSwitcher } from "./clinic-switcher";
 export { ClinicsPanel } from "./clinics-panel";
 export { FaqsPanel } from "./faqs-panel";
 export { GalleryPanel } from "./gallery-panel";
+export { IntakePanel } from "./intake-panel";
 export { LoginCard } from "./login-card";
 export { PanelScreen } from "./panel-screen";
 export { SettingsPanel } from "./settings-panel";

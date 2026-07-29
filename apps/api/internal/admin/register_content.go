@@ -43,6 +43,10 @@ func (h *Handlers) RegisterContent(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/contact-inquiries", h.requireAdmin(h.listInquiries))
 	mux.HandleFunc("PATCH /api/admin/contact-inquiries/{id}", h.requireClinicWrite(PermissionContactWrite, h.inquiryClinicFromID, h.updateInquiry))
 
+	// Intake requests.
+	mux.HandleFunc("GET /api/admin/intake-requests", h.requireAdmin(h.listIntakeRequests))
+	mux.HandleFunc("PATCH /api/admin/intake-requests/{id}", h.requireClinicWrite(PermissionIntakeWrite, h.intakeRequestClinicFromID, h.updateIntakeRequestHandler))
+
 	// Settings — superadmin-only, institutional (no clinic scope).
 	mux.HandleFunc("GET /api/admin/settings", h.requireAdminWrite(PermissionSettingsWrite, h.listSettings))
 	mux.HandleFunc("PATCH /api/admin/settings/{key}", h.requireAdminWrite(PermissionSettingsWrite, h.updateSetting))

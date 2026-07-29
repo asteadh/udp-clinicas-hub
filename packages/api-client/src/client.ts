@@ -11,6 +11,8 @@ import type {
   GalleryAlbum,
   HubSession,
   IdentitiesResponse,
+  IntakeRequest,
+  IntakeRequestInput,
   JsonRecord,
   PasskeyChallenge,
   Principal,
@@ -153,6 +155,10 @@ export class HubApiClient {
     return this.request<{ id: string }>("/api/contact", { method: "POST", body });
   }
 
+  async intake(body: IntakeRequestInput) {
+    return this.request<{ id: string }>("/api/intake", { method: "POST", body });
+  }
+
   // --- Storage -----------------------------------------------------------------
 
   async uploadFile(file: Blob, folder: string, token: string) {
@@ -235,6 +241,10 @@ export class HubApiClient {
       // Contact inquiries
       contactInquiries: (clinicSlug?: string, status?: string) => this.request<{ inquiries: ContactInquiry[] }>("/api/admin/contact-inquiries", { token, query: { clinic: clinicSlug, status } }),
       updateContactInquiry: (id: string, body: JsonRecord) => this.request<{ status: boolean }>(`/api/admin/contact-inquiries/${encodeURIComponent(id)}`, { method: "PATCH", body, token }),
+
+      // Intake requests
+      intakeRequests: (clinicSlug?: string, status?: string) => this.request<{ intakeRequests: IntakeRequest[] }>("/api/admin/intake-requests", { token, query: { clinic: clinicSlug, status } }),
+      updateIntakeRequest: (id: string, body: JsonRecord) => this.request<{ status: boolean }>(`/api/admin/intake-requests/${encodeURIComponent(id)}`, { method: "PATCH", body, token }),
 
       // Settings (superadmin only)
       settings: () => this.request<{ settings: AppSetting[] }>("/api/admin/settings", { token }),

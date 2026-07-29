@@ -10,6 +10,7 @@ import type {
   ContactInquiry,
   Faq,
   GalleryAlbum,
+  IntakeRequest,
   Principal,
   TeamMember,
 } from "@hubnegocios/api-client";
@@ -32,6 +33,7 @@ import {
   ClinicsPanel,
   FaqsPanel,
   GalleryPanel,
+  IntakePanel,
   LoginCard,
   PanelScreen,
   SettingsPanel,
@@ -72,6 +74,7 @@ export default function AdminConsole() {
   const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [contactInquiries, setContactInquiries] = useState<ContactInquiry[]>([]);
+  const [intakeRequests, setIntakeRequests] = useState<IntakeRequest[]>([]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [settings, setSettings] = useState<AppSetting[]>([]);
   const [audit, setAudit] = useState<AuditEntry[]>([]);
@@ -169,6 +172,7 @@ export default function AdminConsole() {
         }
       }
       if (nextTab === "contact") setContactInquiries((await admin.contactInquiries(isSuperadmin ? undefined : principal?.clinicSlug)).inquiries);
+      if (nextTab === "intake") setIntakeRequests((await admin.intakeRequests(isSuperadmin ? undefined : principal?.clinicSlug)).intakeRequests);
       if (nextTab === "clinics" && isSuperadmin) setClinics((await admin.clinics()).clinics);
       if (nextTab === "adminUsers" && isSuperadmin) {
         const loadedClinics = await clinicsPromise;
@@ -299,6 +303,14 @@ export default function AdminConsole() {
                 rows={contactInquiries}
                 update={(id, body) => admin!.updateContactInquiry(id, body)}
                 refresh={() => refresh("contact")}
+                copy={copy}
+              />
+            )}
+            {tab === "intake" && (
+              <IntakePanel
+                rows={intakeRequests}
+                update={(id, body) => admin!.updateIntakeRequest(id, body)}
+                refresh={() => refresh("intake")}
                 copy={copy}
               />
             )}

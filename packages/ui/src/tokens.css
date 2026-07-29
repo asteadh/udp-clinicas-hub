@@ -3,10 +3,10 @@
 
 :root,
 [data-theme="light"] {
-  --hub-blue: #0b3d62;
-  --hub-deep-blue: #082a44;
-  --hub-blue-soft: #e4ecf5;
-  --hub-sky: #4a7fb5;
+  --hub-blue: #e2383f;
+  --hub-deep-blue: #27282f;
+  --hub-blue-soft: #fbe4e5;
+  --hub-sky: #b8323a;
   --hub-gold: #b08d33;
   --hub-gold-deep: #7a5f1f;
   --hub-honey: #e4ce8e;
@@ -32,10 +32,10 @@
 }
 
 [data-theme="dark"] {
-  --hub-blue: #4a7fb5;
-  --hub-deep-blue: #0e2a3d;
-  --hub-blue-soft: #132d42;
-  --hub-sky: #7fa9d2;
+  --hub-blue: #f0625f;
+  --hub-deep-blue: #1a1b20;
+  --hub-blue-soft: #3a1518;
+  --hub-sky: #f2a8a3;
   --hub-gold: #d4b45f;
   --hub-gold-deep: #f0d48a;
   --hub-honey: #4a3d1d;

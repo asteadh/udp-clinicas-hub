@@ -9,6 +9,7 @@ import {
   ScrollText,
   Settings,
   ShieldCheck,
+  UserPlus,
   Users,
 } from "lucide-react";
 
@@ -19,6 +20,7 @@ export type AdminTab =
   | "gallery"
   | "team"
   | "contact"
+  | "intake"
   | "clinics"
   | "adminUsers"
   | "settings"
@@ -55,7 +57,10 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: "contact",
-    items: [{ id: "contact", icon: Mail }],
+    items: [
+      { id: "contact", icon: Mail },
+      { id: "intake", icon: UserPlus },
+    ],
   },
   {
     id: "system",

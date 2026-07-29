@@ -12,6 +12,7 @@ const (
 	PermissionGalleryWrite  = "gallery:write"
 	PermissionTeamWrite     = "team:write"
 	PermissionContactWrite  = "contact:write"
+	PermissionIntakeWrite   = "intake:write"
 	PermissionClinicsWrite  = "clinics:write"
 	PermissionUsersWrite    = "users:write"
 	PermissionSettingsWrite = "settings:write"

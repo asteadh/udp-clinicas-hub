@@ -14,6 +14,7 @@ export function SiteHeader({ copy }: { copy: WebPageCopy }) {
           <Link href="/clinicas">{copy.nav.clinics}</Link>
           <Link href="/articulos">{copy.nav.articles}</Link>
           <Link href="/contacto">{copy.nav.contact}</Link>
+          <Link href="/ingreso">{copy.nav.intake}</Link>
         </nav>
       </div>
     </header>

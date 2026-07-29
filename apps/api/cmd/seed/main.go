@@ -52,6 +52,11 @@ func main() {
 	}
 	fmt.Println("seeded: clinics")
 
+	if err := database.RunSQLFile(ctx, pool, "seeds/content_seed.sql"); err != nil {
+		log.Fatalf("seed content: %v", err)
+	}
+	fmt.Println("seeded: clinic content (articles + faqs)")
+
 	if demo {
 		if err := database.RunSQLFile(ctx, pool, "seeds/demo_seed.sql"); err != nil {
 			log.Fatalf("seed demo content: %v", err)
