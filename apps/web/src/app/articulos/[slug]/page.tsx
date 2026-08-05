@@ -39,7 +39,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         // eslint-disable-next-line @next/next/no-img-element
         <img src={image} alt="" style={{ width: "100%", borderRadius: "0.75rem", objectFit: "cover" }} />
       )}
-      {article.bodyHtml && <div dangerouslySetInnerHTML={{ __html: article.bodyHtml }} />}
+      {article.bodyHtml && (
+        <div className="hub-prose hub-prose--lead" dangerouslySetInnerHTML={{ __html: article.bodyHtml }} />
+      )}
 
       <CtaBanner
         title={copy.articles.ctaTitle}

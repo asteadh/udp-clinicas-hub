@@ -64,7 +64,9 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
           {clinic.shortDescription}
         </HubSectionHeader>
       </div>
-      {clinic.descriptionHtml && <div dangerouslySetInnerHTML={{ __html: clinic.descriptionHtml }} />}
+      {clinic.descriptionHtml && (
+        <div className="hub-prose" dangerouslySetInnerHTML={{ __html: clinic.descriptionHtml }} />
+      )}
 
       <HubCard style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <div>

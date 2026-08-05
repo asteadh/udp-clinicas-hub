@@ -1,16 +1,24 @@
 import "@hubnegocios/ui/styles.css";
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { EB_Garamond, Hanken_Grotesk } from "next/font/google";
 import { cookies } from "next/headers";
 import { hubColors, hubColorsDark, type HubThemePreference } from "@hubnegocios/ui";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { webPageCopy } from "@/lib/copy";
 
-const inter = Inter({
+/* Equivalentes libres de la tipografía institucional UDP (Garamond Premier Pro
+   y Museo Sans, que viven en kits de Adobe Fonts). Ver packages/ui/src/tokens.ts. */
+const hubSans = Hanken_Grotesk({
   subsets: ["latin", "latin-ext"],
-  variable: "--font-inter",
+  variable: "--font-hub-sans",
+  display: "swap",
+});
+
+const hubSerif = EB_Garamond({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-hub-serif",
   display: "swap",
 });
 
@@ -40,7 +48,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const initialDataTheme = initialTheme === "dark" ? "dark" : "light";
 
   return (
-    <html lang="es" data-theme={initialDataTheme} className={inter.variable} suppressHydrationWarning>
+    <html
+      lang="es"
+      data-theme={initialDataTheme}
+      className={`${hubSans.variable} ${hubSerif.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <SiteHeader copy={webPageCopy} />
         <main className="hub-page">{children}</main>
