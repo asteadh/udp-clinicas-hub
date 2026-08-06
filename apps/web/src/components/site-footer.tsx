@@ -1,48 +1,53 @@
 import Link from "next/link";
-import { HubLogo } from "@hubnegocios/ui";
 import { api } from "@/lib/api";
 import type { WebPageCopy } from "@/lib/copy";
+
+/* Pie del diseño: superficie oscura en ambos temas, marca tipográfica y dos
+   columnas de enlaces. Las clínicas salen de la base, no están escritas a mano. */
 
 export async function SiteFooter({ copy }: { copy: WebPageCopy }) {
   const clinics = await api.clinics().catch(() => []);
 
   return (
-    <footer className="site-footer">
-      <div className="hub-page" style={{ padding: 0 }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 1.4fr) repeat(2, minmax(140px, 1fr))",
-            gap: "1.5rem",
-            marginBottom: "1.5rem",
-          }}
-        >
+    <footer className="pie">
+      <div className="pie__interior">
+        <div className="pie__grid">
           <div>
-            <HubLogo />
-            <p style={{ marginTop: "0.6rem", maxWidth: "360px" }}>{copy.footer.description}</p>
+            <p className="pie__marca">{copy.siteName}</p>
+            <p className="pie__desc">{copy.footer.description}</p>
           </div>
           <div>
-            <strong>{copy.footer.quickLinksTitle}</strong>
-            <nav className="grid gap-2" style={{ marginTop: "0.6rem" }}>
-              <Link href="/">{copy.nav.home}</Link>
-              <Link href="/clinicas">{copy.nav.clinics}</Link>
-              <Link href="/articulos">{copy.nav.articles}</Link>
-              <Link href="/contacto">{copy.nav.contact}</Link>
-              <Link href="/ingreso">{copy.nav.intake}</Link>
-            </nav>
-          </div>
-          <div>
-            <strong>{copy.footer.clinicsTitle}</strong>
-            <nav className="grid gap-2" style={{ marginTop: "0.6rem" }}>
+            <h5>{copy.footer.clinicsTitle}</h5>
+            <ul>
               {clinics.map((clinic) => (
-                <Link key={clinic.slug} href={`/clinicas/${clinic.slug}`}>
-                  {clinic.name}
-                </Link>
+                <li key={clinic.slug}>
+                  <Link href={`/clinicas/${clinic.slug}`}>{clinic.name}</Link>
+                </li>
               ))}
-            </nav>
+            </ul>
+          </div>
+          <div>
+            <h5>{copy.footer.quickLinksTitle}</h5>
+            <ul>
+              <li>
+                <Link href="/clinicas">{copy.nav.clinics}</Link>
+              </li>
+              <li>
+                <Link href="/articulos">{copy.nav.articles}</Link>
+              </li>
+              <li>
+                <Link href="/ingreso">{copy.nav.intake}</Link>
+              </li>
+              <li>
+                <Link href="/contacto">{copy.nav.contact}</Link>
+              </li>
+            </ul>
           </div>
         </div>
-        <p>{copy.footer.rights}</p>
+        <div className="pie__legal">
+          <span>{copy.footer.rights}</span>
+          <span>Facultad de Derecho</span>
+        </div>
       </div>
     </footer>
   );

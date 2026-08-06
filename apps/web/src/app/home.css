@@ -40,10 +40,14 @@
   --udp-rojo: var(--hub-blue);
   --udp-rojo-texto: var(--hub-sky);
 
+  --blanco: var(--hub-surface);
+  --foco-halo: color-mix(in srgb, var(--hub-blue) 18%, transparent);
+
   --serif: var(--font-serif);
   --sans: var(--font-sans);
   --ancho: 1200px;
   --ancho-texto: 760px;
+  --medida: 68ch;
 
   /* Base tipográfica del diseño. El cuerpo va en SERIF a 19px con numeración
      antigua: es lo que le da el aire de publicación jurídica en vez de página
@@ -77,13 +81,8 @@
   outline-offset: 3px;
 }
 
-/* Filete institucional que abre la página. */
-.home::before {
-  content: "";
-  display: block;
-  height: 5px;
-  background: var(--udp-rojo);
-}
+/* El filete institucional superior lo dibuja la cabecera (.filete en
+   globals.css), que está en todas las páginas. Aquí no se repite. */
 
 .home .envoltura{width:min(var(--ancho),calc(100% - 3rem));margin-inline:auto}
 .home .etiqueta{font-family:var(--sans);font-size:.68rem;font-weight:600;
@@ -389,4 +388,122 @@
   border-top: 0;
   margin-top: 0;
   padding-top: 0;
+}
+
+/* ── El formulario de ingreso, en el lenguaje del diseño ─────────────────
+   IntakeForm es un componente compartido: trae la lógica de envío, validación
+   y estado, y no tiene sentido duplicarla. Pero se dibuja con los componentes
+   hub-*, que son redondeados (--hub-radius: 8px), y cuyo botón primario es
+   dorado con un halo de sombra. Dentro de la home ese lenguaje se sustituye por
+   el del diseño: rectangular, filete fino, sin sombras. El rojo aparece solo al
+   pasar por encima y en el foco — como trazo, nunca como relleno en reposo. */
+
+.home .ingreso form {
+  display: grid;
+  gap: 1.35rem;
+}
+
+.home .hub-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+}
+
+.home .hub-field > span {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--udp-gris);
+}
+
+.home .hub-field input,
+.home .hub-field select,
+.home .hub-field textarea,
+.home .ingreso .hub-input,
+.home .ingreso .hub-select,
+.home .ingreso .hub-textarea {
+  font-family: var(--sans);
+  font-size: 0.94rem;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 1px solid var(--borde);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0.72rem 0.8rem;
+  width: 100%;
+  transition: border-color 0.16s, box-shadow 0.16s;
+}
+
+.home .hub-field textarea,
+.home .ingreso .hub-textarea {
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  line-height: 1.55;
+  resize: vertical;
+  min-height: 7rem;
+}
+
+.home .hub-field input:focus,
+.home .hub-field input:focus-visible,
+.home .hub-field select:focus,
+.home .hub-field select:focus-visible,
+.home .hub-field textarea:focus,
+.home .hub-field textarea:focus-visible {
+  outline: none;
+  border-color: var(--udp-rojo);
+  box-shadow: 0 0 0 3px var(--foco-halo);
+}
+
+.home .hub-field input::placeholder,
+.home .hub-field textarea::placeholder {
+  color: var(--tinta-media);
+  opacity: 0.72;
+}
+
+/* Botón: rectangular, tinta sobre papel. Nada de dorado, radio ni halo. */
+.home .ingreso .hub-button,
+.home .ingreso .hub-button--primary {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.92rem 1.9rem;
+  min-height: 0;
+  border: 1.5px solid var(--tinta);
+  border-radius: 0;
+  background: var(--tinta);
+  color: var(--papel);
+  box-shadow: none;
+  width: fit-content;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.home .ingreso .hub-button:hover:not(:disabled),
+.home .ingreso .hub-button--primary:hover:not(:disabled) {
+  background: var(--udp-rojo);
+  border-color: var(--udp-rojo);
+  color: var(--boton-hover-texto);
+  box-shadow: none;
+}
+
+.home .ingreso .hub-button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+/* Acuse de recibo y error: filete rojo al costado, no una pastilla de color. */
+.home .ingreso .hub-alert {
+  border: 1px solid var(--udp-rojo);
+  border-left-width: 3px;
+  border-radius: 0;
+  background: var(--blanco);
+  box-shadow: none;
+  padding: 1.4rem 1.6rem;
+  font-family: var(--sans);
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: var(--tinta);
 }
