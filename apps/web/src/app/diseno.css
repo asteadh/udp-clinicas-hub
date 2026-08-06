@@ -760,3 +760,168 @@ html{scroll-behavior:smooth}
   margin: 0;
   padding: 0;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Los componentes hub-* en el lenguaje del diseño
+   ═══════════════════════════════════════════════════════════════════════
+
+   Las páginas que todavía no se han portado (/contacto, /ingreso, /clinicas,
+   /articulos) se dibujan con los componentes hub-*, que traen radio de 8px,
+   un botón primario dorado con halo de sombra y tarjetas flotantes. Nada de eso
+   pertenece a la marca UDP: el dorado es herencia del proyecto Gremia.
+
+   En vez de corregirlo página por página se neutraliza aquí, de una vez y para
+   todo el sitio público. Este archivo solo lo importa apps/web, así que el panel
+   de administración conserva su propio aspecto.
+
+   Cuando cada página se porte al diseño, estas reglas irán sobrando. */
+
+:root {
+  /* La palanca principal: casi todos los componentes leen esta variable. */
+  --hub-radius: 0;
+}
+
+.hub-card,
+.hub-badge,
+.hub-alert,
+.hub-stat,
+.hub-pill,
+.hub-table-wrap,
+.hub-toast,
+.hub-segmented button,
+.hub-dialog {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.hub-card {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+}
+
+/* Campos: rectangulares, filete de un píxel, foco rojo. Igual que .campo. */
+.hub-field input,
+.hub-field select,
+.hub-field textarea,
+.hub-input,
+.hub-select,
+.hub-textarea {
+  font-family: var(--sans);
+  font-size: .94rem;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 1px solid var(--borde);
+  border-radius: 0;
+  box-shadow: none;
+  padding: .72rem .8rem;
+}
+
+.hub-field > span,
+.hub-field label {
+  font-family: var(--sans);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--udp-gris);
+}
+
+.hub-field input:focus,
+.hub-field input:focus-visible,
+.hub-field select:focus,
+.hub-field select:focus-visible,
+.hub-field textarea:focus,
+.hub-field textarea:focus-visible {
+  outline: none;
+  border-color: var(--udp-rojo);
+  box-shadow: 0 0 0 3px var(--foco-halo);
+}
+
+.hub-field textarea,
+.hub-textarea {
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+/* Botones: el mismo lenguaje que .boton — tinta sobre papel, rojo al pasar.
+   El rojo es trazo, nunca relleno en reposo. */
+.hub-button,
+.hub-button--primary,
+.hub-button--outline,
+.hub-button--lg {
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  padding: .92rem 1.9rem;
+  min-height: 0;
+  border: 1.5px solid var(--tinta);
+  border-radius: 0;
+  background: var(--tinta);
+  color: var(--papel);
+  box-shadow: none;
+  width: fit-content;
+  transition: background .18s, color .18s, border-color .18s;
+}
+
+.hub-button:hover:not(:disabled),
+.hub-button--primary:hover:not(:disabled) {
+  background: var(--udp-rojo);
+  border-color: var(--udp-rojo);
+  color: var(--boton-hover-texto);
+  box-shadow: none;
+}
+
+.hub-button--outline {
+  background: transparent;
+  color: var(--tinta);
+}
+
+.hub-button--outline:hover:not(:disabled) {
+  background: var(--tinta);
+  color: var(--papel);
+}
+
+/* El enlace-botón no es un botón: es texto con filete. */
+.hub-button--link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--tinta);
+  box-shadow: none;
+  border-bottom: 2px solid var(--udp-rojo);
+  padding-bottom: .35rem;
+  width: fit-content;
+}
+
+.hub-button--link:hover:not(:disabled) {
+  background: none;
+  color: var(--udp-rojo-texto);
+}
+
+.hub-button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.hub-badge {
+  font-family: var(--sans);
+  font-size: .67rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--borde);
+  color: var(--udp-rojo-texto);
+  padding: .3rem .6rem;
+}
+
+.hub-alert {
+  border: 1px solid var(--udp-rojo);
+  border-left-width: 3px;
+  background: var(--blanco);
+  color: var(--tinta);
+  padding: 1.4rem 1.6rem;
+}
