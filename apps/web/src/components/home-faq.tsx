@@ -3,24 +3,21 @@
 import type { Clinic, Faq } from "@hubnegocios/api-client";
 import { useState } from "react";
 
-/* Las preguntas de la home se filtran por clínica en el cliente. Son pocas y ya
-   vienen todas cargadas, así que filtrar aquí evita un viaje al servidor por
-   cada chip. El FAQ completo de cada clínica vive en /clinicas/[slug]. */
+/* Preguntas frecuentes con el marcado de la pieza de diseño: chips de filtro y
+   acordeón con numeración. Se filtra en el cliente porque son pocas y ya vienen
+   todas cargadas. El FAQ completo de cada clínica vive en /clinicas/[slug]. */
 
 const TODAS = "todas";
 
 export function HomeFaq({
   clinics,
   faqs,
-  filterAllLabel,
 }: {
   clinics: Clinic[];
   faqs: (Faq & { clinicName: string })[];
-  filterAllLabel: string;
 }) {
   const [activo, setActivo] = useState(TODAS);
-
-  const visibles = activo === TODAS ? faqs : faqs.filter((faq) => faq.clinicSlug === activo);
+  const visibles = activo === TODAS ? faqs : faqs.filter((f) => f.clinicSlug === activo);
 
   return (
     <>
@@ -31,7 +28,7 @@ export function HomeFaq({
           aria-pressed={activo === TODAS}
           onClick={() => setActivo(TODAS)}
         >
-          {filterAllLabel}
+          Todas
         </button>
         {clinics.map((clinic) => (
           <button
@@ -46,16 +43,16 @@ export function HomeFaq({
         ))}
       </div>
 
-      <div className="faq">
-        {visibles.map((faq, index) => (
-          <details className="faq__item" key={faq.id}>
-            <summary data-n={String(index + 1).padStart(2, "0")}>
+      <div className="faq" id="listaFaq">
+        {visibles.map((faq, i) => (
+          <details className="faq__item" data-clinica={faq.clinicSlug} key={faq.id}>
+            <summary data-n={String(i + 1).padStart(2, "0")}>
               {faq.question}
               <span className="faq__signo" />
             </summary>
             <div className="faq__respuesta">
               <span className="faq__clinica">{faq.clinicName}</span>
-              <div className="hub-prose" dangerouslySetInnerHTML={{ __html: faq.answerHtml }} />
+              <div dangerouslySetInnerHTML={{ __html: faq.answerHtml }} />
             </div>
           </details>
         ))}

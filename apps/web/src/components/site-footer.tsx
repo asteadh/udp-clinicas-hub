@@ -2,22 +2,22 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import type { WebPageCopy } from "@/lib/copy";
 
-/* Pie del diseño: superficie oscura en ambos temas, marca tipográfica y dos
-   columnas de enlaces. Las clínicas salen de la base, no están escritas a mano. */
+/* Pie de la pieza de diseño, con su marcado y sus clases. Las clínicas salen de
+   la base en vez de estar escritas a mano. */
 
 export async function SiteFooter({ copy }: { copy: WebPageCopy }) {
   const clinics = await api.clinics().catch(() => []);
 
   return (
     <footer className="pie">
-      <div className="pie__interior">
+      <div className="envoltura">
         <div className="pie__grid">
           <div>
             <p className="pie__marca">{copy.siteName}</p>
             <p className="pie__desc">{copy.footer.description}</p>
           </div>
           <div>
-            <h5>{copy.footer.clinicsTitle}</h5>
+            <h5>Clínicas</h5>
             <ul>
               {clinics.map((clinic) => (
                 <li key={clinic.slug}>
@@ -27,19 +27,22 @@ export async function SiteFooter({ copy }: { copy: WebPageCopy }) {
             </ul>
           </div>
           <div>
-            <h5>{copy.footer.quickLinksTitle}</h5>
+            <h5>Secciones</h5>
             <ul>
               <li>
-                <Link href="/clinicas">{copy.nav.clinics}</Link>
+                <Link href="/#equipo">Quién te atiende</Link>
               </li>
               <li>
-                <Link href="/articulos">{copy.nav.articles}</Link>
+                <Link href="/articulos">Columnas de opinión</Link>
               </li>
               <li>
-                <Link href="/ingreso">{copy.nav.intake}</Link>
+                <Link href="/#actividades">Clases y actividades</Link>
               </li>
               <li>
-                <Link href="/contacto">{copy.nav.contact}</Link>
+                <Link href="/ingreso">Formulario de ingreso</Link>
+              </li>
+              <li>
+                <Link href="/#preguntas">Preguntas frecuentes</Link>
               </li>
             </ul>
           </div>

@@ -1,5 +1,8 @@
 import "@hubnegocios/ui/styles.css";
 import "./globals.css";
+/* Va al final a propósito: es la hoja del diseño aprobado y debe ganar sobre
+   los componentes hub-* en todo lo que se solape. */
+import "./diseno.css";
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Hanken_Grotesk } from "next/font/google";
 import { cookies } from "next/headers";
