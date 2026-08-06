@@ -5,22 +5,30 @@ import "./globals.css";
 import "./diseno.css";
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Hanken_Grotesk } from "next/font/google";
-import { cookies } from "next/headers";
-import { hubColors, hubColorsDark, type HubThemePreference } from "@hubnegocios/ui";
+import { hubColors, hubColorsDark } from "@hubnegocios/ui";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { webPageCopy } from "@/lib/copy";
 
 /* Equivalentes libres de la tipografía institucional UDP (Garamond Premier Pro
-   y Museo Sans, que viven en kits de Adobe Fonts). Ver packages/ui/src/tokens.ts. */
+   y Museo Sans, que viven en kits de Adobe Fonts). Ver packages/ui/src/tokens.ts.
+
+   Solo el subconjunto `latin`: cubre el castellano entero — acentos, ñ, ü, ¿ y ¡.
+   `latin-ext` es para lenguas de Europa central y oriental, y duplicaba el peso
+   de los archivos para nada.
+
+   La cursiva se carga solo en el serif, que es donde el diseño la usa (el énfasis
+   del titular y las cifras). La sans va únicamente en redonda. */
 const hubSans = Hanken_Grotesk({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
+  style: ["normal"],
   variable: "--font-hub-sans",
   display: "swap",
 });
 
 const hubSerif = EB_Garamond({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
+  style: ["normal", "italic"],
   variable: "--font-hub-serif",
   display: "swap",
 });
@@ -41,22 +49,19 @@ export const viewport: Viewport = {
   ],
 };
 
-function readTheme(raw: string | undefined): HubThemePreference {
-  return raw === "light" || raw === "dark" || raw === "system" ? raw : "system";
-}
+/* El tema se resolvía leyendo una cookie en el servidor, y eso volvía dinámicas
+   TODAS las rutas del sitio: basta con que el layout use cookies() para que
+   ninguna página pueda cachearse ni regenerarse. Ahora lo decide este script,
+   que corre antes del primer pintado y evita igual el parpadeo. Con el layout
+   libre de cookies, las páginas vuelven a poder cachearse. */
+const GUION_TEMA = `(function(){try{var t=localStorage.getItem("hub-tema");if(t==="oscuro")document.documentElement.setAttribute("data-theme","dark");else if(t==="claro")document.documentElement.setAttribute("data-theme","light")}catch(e){}})()`;
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const initialTheme = readTheme(cookieStore.get("hub-theme")?.value);
-  const initialDataTheme = initialTheme === "dark" ? "dark" : "light";
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="es"
-      data-theme={initialDataTheme}
-      className={`${hubSans.variable} ${hubSerif.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="es" className={`${hubSans.variable} ${hubSerif.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: GUION_TEMA }} />
+      </head>
       <body>
         <SiteHeader copy={webPageCopy} />
         <main className="hub-page">{children}</main>

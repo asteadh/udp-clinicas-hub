@@ -41,9 +41,6 @@ export function SiteHeader({ copy }: { copy: WebPageCopy }) {
     const raiz = document.documentElement;
     if (tema === "sistema") raiz.removeAttribute("data-theme");
     else raiz.setAttribute("data-theme", tema === "oscuro" ? "dark" : "light");
-    /* El servidor lee esta cookie para pintar el tema correcto ya en el HTML y
-       evitar el parpadeo de la primera carga. */
-    document.cookie = `hub-theme=${tema === "sistema" ? "system" : tema === "oscuro" ? "dark" : "light"};path=/;max-age=31536000;samesite=lax`;
   }, [tema]);
 
   useEffect(() => {

@@ -5,7 +5,10 @@ import { IntakeExpediente } from "@/components/intake-expediente";
 import { api } from "@/lib/api";
 import { webPageCopy as copy } from "@/lib/copy";
 
-export const dynamic = "force-dynamic";
+/* La home se regenera cada minuto en vez de renderizarse en cada visita. El
+   contenido lo publica un administrador de tanto en tanto, así que un minuto de
+   desfase no se nota, y evita repetir las catorce llamadas al API por visitante. */
+export const revalidate = 60;
 
 /* Reproduce la pieza de diseño aprobada (proyectos/hub-negocios-udp/index.html)
    sección por sección, con el mismo marcado y las mismas clases. Lo que allí es
