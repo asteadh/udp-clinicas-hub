@@ -119,6 +119,7 @@ export interface GalleryPhoto extends JsonRecord {
   imageUrl: string;
   caption?: string;
   sortOrder?: number;
+  createdAt?: string;
 }
 
 export interface GalleryAlbum extends JsonRecord {

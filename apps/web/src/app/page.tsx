@@ -2,7 +2,9 @@ import Link from "next/link";
 import type { Article, Clinic, Faq, GalleryAlbum, TeamMember } from "@hubnegocios/api-client";
 import { HomeFaq } from "@/components/home-faq";
 import { IntakeExpediente } from "@/components/intake-expediente";
+import { Muro } from "@/components/muro";
 import { api } from "@/lib/api";
+import { aplanarMuro } from "@/lib/muro";
 import { webPageCopy as copy } from "@/lib/copy";
 
 /* La home se regenera cada minuto en vez de renderizarse en cada visita. El
@@ -312,34 +314,16 @@ export default async function HomePage() {
               <h2>Clases y actividades</h2>
             </div>
             <p className="seccion__intro">
-              El registro fotográfico del trabajo de las clínicas: sesiones de clase, atenciones,
-              audiencias y actividades de extensión.
+              El registro fotográfico del trabajo de las clínicas, de lo más reciente a lo más
+              antiguo: sesiones de clase, atenciones, audiencias y actividades de extensión.
             </p>
           </div>
 
-          <div className="galeria">
-            {clinics.map((clinic, i) => {
-              const album = porOrden(galleries[i] ?? [])[0];
-              return (
-                <Link className="album" href={`/clinicas/${clinic.slug}`} key={clinic.slug}>
-                  <div className="marco">
-                    {album?.coverImageUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={api.storageUrl(album.coverImageUrl)} alt="" />
-                    )}
-                  </div>
-                  <p className="album__clinica">{clinic.name}</p>
-                  {album?.title && <h3 className="album__titulo">{album.title}</h3>}
-                </Link>
-              );
-            })}
-
-            <p className="galeria__nota">
-              Cada clínica publica sus propios álbumes desde el panel de administración: título,
-              descripción, portada y un pie de foto por imagen. Aquí se muestra el álbum más
-              reciente de cada una; el resto se ve al entrar a la clínica.
-            </p>
-          </div>
+          <Muro
+            clinics={clinics}
+            fotos={aplanarMuro(clinics, galleries)}
+            dateLocale={copy.dateLocale}
+          />
         </div>
       </section>
 

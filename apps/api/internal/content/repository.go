@@ -128,7 +128,7 @@ func (r *Repository) ListGalleryAlbumsByClinic(ctx context.Context, clinicSlug s
 	albums, err := r.listJSON(ctx, `
 SELECT jsonb_build_object(
   'id', id, 'clinicSlug', clinic_slug, 'title', title, 'description', description,
-  'coverImageUrl', cover_image_url, 'sortOrder', sort_order
+  'coverImageUrl', cover_image_url, 'sortOrder', sort_order, 'createdAt', created_at
 )
 FROM gallery_albums WHERE clinic_slug = $1 AND is_published = true ORDER BY sort_order, created_at`, clinicSlug)
 	if err != nil {
@@ -136,7 +136,7 @@ FROM gallery_albums WHERE clinic_slug = $1 AND is_published = true ORDER BY sort
 	}
 	for _, album := range albums {
 		photos, err := r.listJSON(ctx, `
-SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order)
+SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order, 'createdAt', created_at)
 FROM gallery_photos WHERE album_id = $1 ORDER BY sort_order, created_at`, album["id"])
 		if err != nil {
 			return nil, err
@@ -150,14 +150,14 @@ func (r *Repository) GetGalleryAlbum(ctx context.Context, albumID string) (map[s
 	album, err := r.oneJSON(ctx, `
 SELECT jsonb_build_object(
   'id', id, 'clinicSlug', clinic_slug, 'title', title, 'description', description,
-  'coverImageUrl', cover_image_url, 'sortOrder', sort_order
+  'coverImageUrl', cover_image_url, 'sortOrder', sort_order, 'createdAt', created_at
 )
 FROM gallery_albums WHERE id = $1 AND is_published = true`, albumID)
 	if err != nil {
 		return nil, err
 	}
 	photos, err := r.listJSON(ctx, `
-SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order)
+SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order, 'createdAt', created_at)
 FROM gallery_photos WHERE album_id = $1 ORDER BY sort_order, created_at`, albumID)
 	if err != nil {
 		return nil, err

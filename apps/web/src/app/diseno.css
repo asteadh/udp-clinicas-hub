@@ -925,3 +925,35 @@ html{scroll-behavior:smooth}
   color: var(--tinta);
   padding: 1.4rem 1.6rem;
 }
+
+/* ── Muro de actividades ─────────────────────────────────────────────────
+   Sustituye la rejilla de portadas de álbum por un flujo de fotografías por
+   fecha. Reutiliza .marco del diseño —proporción fija, recorte con object-fit y
+   la marca roja en la esquina— así que una foto vertical de teléfono se recorta
+   limpia en vez de deformarse.
+
+   Las columnas se llenan solas con auto-fill: da igual que haya tres fotos o
+   trescientas. Cada tercera pieza va en vertical para romper la cuadrícula, que
+   es lo que hace que una galería parezca plantilla. */
+.muro{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));
+  gap:1.6rem 1.25rem;align-items:start;
+}
+.muro__pieza{margin:0;display:flex;flex-direction:column;gap:.7rem}
+.muro__pie{display:flex;flex-direction:column;gap:.28rem}
+.muro__clinica{
+  font-family:var(--sans);font-size:.64rem;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--udp-rojo-texto);
+}
+.muro__texto{
+  font-size:.98rem;line-height:1.48;color:var(--tinta);margin:0;
+}
+.muro__meta{
+  font-family:var(--sans);font-size:.7rem;line-height:1.45;color:var(--tinta-media);
+}
+.galeria__nota--sola{grid-column:auto;border-top:0;margin-top:0;padding-top:0}
+
+@media (max-width:640px){
+  .muro{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:1.2rem .9rem}
+  .muro__texto{font-size:.92rem}
+}
