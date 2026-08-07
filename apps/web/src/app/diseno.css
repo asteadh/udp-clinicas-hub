@@ -1016,3 +1016,39 @@ html{scroll-behavior:smooth}
   .ingreso__qr{grid-template-columns:1fr;gap:1.6rem;justify-items:start}
   .ingreso__codigo{max-width:200px}
 }
+
+/* ── Logotipo institucional UDP ──────────────────────────────────────────
+   Dos versiones cargadas, una visible según el tema: el gris del logotipo a
+   color (#3F3E3E) se pierde sobre el papel oscuro. En el pie va siempre el
+   blanco, porque el pie es oscuro en ambos temas. */
+.logo-udp{display:inline-block;line-height:0}
+.logo-udp img{width:100%;height:auto;display:block}
+.logo-udp__oscuro{display:none}
+:root[data-theme="dark"] .logo-udp__claro{display:none}
+:root[data-theme="dark"] .logo-udp__oscuro{display:block}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .logo-udp__claro{display:none}
+  :root:not([data-theme="light"]) .logo-udp__oscuro{display:block}
+}
+
+/* Cabecera: el logotipo abre la marca y el nombre del sitio va al costado,
+   separado por el mismo filete que antes dividía nombre y unidad. */
+.marca__logo{width:104px;flex-shrink:0}
+.marca__texto{
+  display:flex;flex-direction:column;gap:.12rem;
+  border-left:1px solid var(--borde);padding-left:.8rem;
+}
+.marca{align-items:center;gap:.85rem}
+
+/* La unidad ya no repite el nombre de la universidad: lo dice el logotipo. */
+.marca__unidad{border-left:0;padding-left:0;max-width:none}
+
+.pie__logo{width:132px;margin-bottom:1.1rem}
+
+/* En las cifras, el logotipo ocupa el lugar del valor. */
+.cifra__logo{width:118px;margin-bottom:.15rem}
+
+@media (max-width:640px){
+  .marca__logo{width:84px}
+  .marca__nombre{font-size:1.12rem}
+}
