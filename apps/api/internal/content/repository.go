@@ -58,8 +58,8 @@ func (r *Repository) ListClinics(ctx context.Context) ([]map[string]any, error) 
 	return r.listJSON(ctx, `
 SELECT jsonb_build_object(
   'slug', slug, 'name', name, 'shortDescription', short_description,
-  'icon', icon, 'colorPrimary', color_primary, 'imageUrl', image_url,
-  'contactEmail', contact_email, 'sortOrder', sort_order
+  'descriptionHtml', description_html, 'icon', icon, 'colorPrimary', color_primary,
+  'imageUrl', image_url, 'contactEmail', contact_email, 'sortOrder', sort_order
 )
 FROM clinics WHERE is_active = true ORDER BY sort_order, name`)
 }
