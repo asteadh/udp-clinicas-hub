@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Clinic, Faq, TeamMember } from "@hubnegocios/api-client";
 import { HomeFaq } from "@/components/home-faq";
-import { IntakeExpediente } from "@/components/intake-expediente";
+import { IngresoFormulario } from "@/components/ingreso-formulario";
 import { api } from "@/lib/api";
 
 /* La home se regenera cada minuto en vez de renderizarse en cada visita. El
@@ -245,7 +245,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <IntakeExpediente clinics={clinics} />
+          <IngresoFormulario />
         </div>
       </section>
 

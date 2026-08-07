@@ -989,3 +989,30 @@ html{scroll-behavior:smooth}
   display:flex;justify-content:space-between;align-items:center;gap:1.5rem;
   margin-top:3rem;padding-top:1.6rem;border-top:1px solid var(--borde);
 }
+
+/* ── Ingreso por formulario externo ──────────────────────────────────────
+   El caso no se recoge en el sitio: lo hace un formulario de Google que
+   mantiene la Facultad. El bloque ofrece el código para escanear desde el
+   teléfono y el enlace para abrirlo desde un computador.
+
+   El QR va sobre blanco siempre, también en modo oscuro: un lector necesita
+   módulos oscuros sobre fondo claro, así que invertirlo lo dejaría sin leer. */
+.ingreso__qr{
+  display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr);
+  gap:2.2rem;align-items:center;
+}
+.ingreso__codigo{
+  display:block;background:#fff;border:1px solid var(--borde);padding:.75rem;
+}
+.ingreso__codigo img{width:100%;height:auto;display:block}
+.ingreso__acceso{display:flex;flex-direction:column;align-items:flex-start;gap:1.1rem}
+.ingreso__acceso p{margin:0;font-size:1.02rem;line-height:1.58;color:var(--tinta-media)}
+.ingreso__enlace{
+  font-family:var(--sans);font-size:.76rem;letter-spacing:.02em;
+  color:var(--tinta-media);word-break:break-all;
+}
+
+@media (max-width:640px){
+  .ingreso__qr{grid-template-columns:1fr;gap:1.6rem;justify-items:start}
+  .ingreso__codigo{max-width:200px}
+}
