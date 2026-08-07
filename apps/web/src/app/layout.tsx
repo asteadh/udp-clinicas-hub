@@ -51,10 +51,16 @@ export const viewport: Viewport = {
 
 /* El tema se resolvía leyendo una cookie en el servidor, y eso volvía dinámicas
    TODAS las rutas del sitio: basta con que el layout use cookies() para que
-   ninguna página pueda cachearse ni regenerarse. Ahora lo decide este script,
-   que corre antes del primer pintado y evita igual el parpadeo. Con el layout
-   libre de cookies, las páginas vuelven a poder cachearse. */
-const GUION_TEMA = `(function(){try{var t=localStorage.getItem("hub-tema");if(t==="oscuro")document.documentElement.setAttribute("data-theme","dark");else if(t==="claro")document.documentElement.setAttribute("data-theme","light")}catch(e){}})()`;
+   ninguna página pueda cachearse. Ahora lo decide este script, que corre antes
+   del primer pintado y evita igual el parpadeo.
+
+   El claro es el modo por defecto. Sin preferencia guardada se fija
+   data-theme="light" de forma explícita, que es lo que impide que la consulta
+   `prefers-color-scheme: dark` de la hoja se active sola en un equipo con el
+   sistema en oscuro. El oscuro es una elección del visitante, no un accidente
+   de su configuración; quien prefiera seguir al sistema puede elegirlo en el
+   ciclo del selector. */
+const GUION_TEMA = `(function(){try{var t=localStorage.getItem("hub-tema");if(t==="oscuro")document.documentElement.setAttribute("data-theme","dark");else if(t==="sistema")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

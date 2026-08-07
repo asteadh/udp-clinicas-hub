@@ -18,17 +18,19 @@ const ROTULO: Record<Tema, string> = {
   oscuro: "Tema: oscuro. Seguir el sistema.",
 };
 
+/* Claro por defecto: el oscuro es una opción que se elige, no el modo en que
+   se abre el sitio por venir de un sistema operativo en oscuro. */
 function leerTema(): Tema {
   try {
     const v = window.localStorage.getItem("hub-tema") as Tema | null;
-    return v && CICLO.includes(v) ? v : "sistema";
+    return v && CICLO.includes(v) ? v : "claro";
   } catch {
-    return "sistema";
+    return "claro";
   }
 }
 
 export function SiteHeader({ copy }: { copy: WebPageCopy }) {
-  const [tema, setTema] = useState<Tema>("sistema");
+  const [tema, setTema] = useState<Tema>("claro");
   const [menuAbierto, setMenuAbierto] = useState(false);
   const cabecera = useRef<HTMLElement>(null);
   const boton = useRef<HTMLButtonElement>(null);
@@ -41,6 +43,9 @@ export function SiteHeader({ copy }: { copy: WebPageCopy }) {
     const raiz = document.documentElement;
     if (tema === "sistema") raiz.removeAttribute("data-theme");
     else raiz.setAttribute("data-theme", tema === "oscuro" ? "dark" : "light");
+    try {
+      window.localStorage.setItem("hub-tema", tema);
+    } catch {}
   }, [tema]);
 
   useEffect(() => {
