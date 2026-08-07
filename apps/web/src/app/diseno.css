@@ -976,3 +976,16 @@ html{scroll-behavior:smooth}
   margin: .7rem 0 0;
   max-width: 56ch;
 }
+
+/* Foto de equipo completo de una clínica. Sale de clinics.image_url, que la
+   clínica sube desde su panel; hasta ahora el campo existía y no se mostraba
+   en ninguna parte. Reutiliza .marco, así que recorta en vez de deformar. */
+.nomina__foto{
+  aspect-ratio:16/10;margin-top:1.1rem;
+}
+
+/* Paginación de columnas: anterior a la izquierda, siguiente a la derecha. */
+.paginacion{
+  display:flex;justify-content:space-between;align-items:center;gap:1.5rem;
+  margin-top:3rem;padding-top:1.6rem;border-top:1px solid var(--borde);
+}

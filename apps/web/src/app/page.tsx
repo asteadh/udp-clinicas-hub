@@ -1,11 +1,8 @@
 import Link from "next/link";
-import type { Article, Clinic, Faq, GalleryAlbum, TeamMember } from "@hubnegocios/api-client";
+import type { Clinic, Faq, TeamMember } from "@hubnegocios/api-client";
 import { HomeFaq } from "@/components/home-faq";
 import { IntakeExpediente } from "@/components/intake-expediente";
-import { Muro } from "@/components/muro";
 import { api } from "@/lib/api";
-import { aplanarMuro } from "@/lib/muro";
-import { webPageCopy as copy } from "@/lib/copy";
 
 /* La home se regenera cada minuto en vez de renderizarse en cada visita. El
    contenido lo publica un administrador de tanto en tanto, así que un minuto de
@@ -20,8 +17,6 @@ export const revalidate = 60;
    Equipo y galería no tienen endpoint global —el API solo responde por clínica,
    porque el panel se organiza así— de modo que se piden las cuatro y se toma una
    de cada una. */
-
-const HOME_COLUMNAS = 6;
 
 const MATERIAS: Record<string, string> = {
   insolvencia: "Ley 20.720 · SUPERIR · renegociación y liquidación",
@@ -38,10 +33,10 @@ export default async function HomePage() {
   const clinics: Clinic[] = await api.clinics().catch(() => []);
   const slugs = clinics.map((c) => c.slug);
 
-  const [articles, teams, galleries, faqsPorClinica] = await Promise.all([
-    api.articles(1).catch((): Article[] => []),
+  /* Seis llamadas en vez de catorce: las columnas y la galería se fueron a
+     /actividad y con ellas sus peticiones. */
+  const [teams, faqsPorClinica] = await Promise.all([
     Promise.all(slugs.map((s) => api.clinicTeam(s).catch((): TeamMember[] => []))),
-    Promise.all(slugs.map((s) => api.clinicGallery(s).catch((): GalleryAlbum[] => []))),
     Promise.all(slugs.map((s) => api.clinicFaqs(s).catch((): Faq[] => []))),
   ]);
 
@@ -186,6 +181,12 @@ export default async function HomePage() {
                       <h3>
                         <Link href={`/clinicas/${clinic.slug}`}>{clinic.name}</Link>
                       </h3>
+                      {clinic.imageUrl && (
+                        <div className="marco nomina__foto">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={api.storageUrl(clinic.imageUrl)} alt={`Equipo de ${clinic.name}`} />
+                        </div>
+                      )}
                     </div>
                     <div className="personas">
                       {equipo.map((persona) => (
@@ -224,65 +225,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══ COLUMNAS DE OPINIÓN ═══════════════════════════════════════════ */}
-      <section className="seccion seccion--arena" id="columnas">
+      {/* Las columnas y el muro de fotografías viven en /actividad: es lo que
+          cambia, y la home queda para presentar las clínicas y recibir casos. */}
+      <section className="seccion" style={{ paddingTop: "3.5rem", paddingBottom: "3.5rem" }}>
         <div className="envoltura">
-          <div className="seccion__cabeza">
-            <div>
-              <p className="etiqueta etiqueta--rojo">Publicaciones</p>
-              <h2>Columnas de opinión</h2>
-            </div>
-          </div>
-
-          <div className="columnas">
-            {articles.slice(0, HOME_COLUMNAS).map((article) => {
-              const clinic = clinics.find((c) => c.slug === article.clinicSlug);
-              return (
-                <article className="columna" key={article.id}>
-                  <div className="columna__meta">
-                    <span className="columna__clinica">
-                      {clinic?.name.replace(/^Clínica (de )?/, "") ?? article.clinicSlug}
-                    </span>
-                    {article.publishedAt && (
-                      <span>
-                        {new Date(article.publishedAt).toLocaleDateString(copy.dateLocale, {
-                          year: "numeric",
-                          month: "long",
-                        })}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="columna__titulo">
-                    <Link href={`/articulos/${article.slug}`}>{article.title}</Link>
-                  </h3>
-                  {article.excerpt && <p className="columna__bajada">{article.excerpt}</p>}
-                  <p className="columna__firma">{article.authorName || clinic?.name}</p>
-                </article>
-              );
-            })}
-          </div>
-
-          <Link className="ver-todo" href="/articulos">
-            Ver todas las columnas
+          <Link className="ver-todo" href="/actividad">
+            Ver columnas y actividades
           </Link>
-        </div>
-      </section>
-
-      {/* ══ ACTIVIDADES / GALERÍA ═════════════════════════════════════════ */}
-      <section className="seccion" id="actividades">
-        <div className="envoltura">
-          <div className="seccion__cabeza">
-            <div>
-              <p className="etiqueta etiqueta--rojo">Galería</p>
-              <h2>Clases y actividades</h2>
-            </div>
-          </div>
-
-          <Muro
-            clinics={clinics}
-            fotos={aplanarMuro(clinics, galleries)}
-            dateLocale={copy.dateLocale}
-          />
         </div>
       </section>
 

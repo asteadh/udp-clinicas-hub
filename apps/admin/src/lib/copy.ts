@@ -157,7 +157,7 @@ export const adminPageCopy = {
     description: "Descripción",
     icon: "Icono",
     colorPrimary: "Color principal",
-    image: "Imagen",
+    image: "Foto del equipo completo",
     contactEmail: "Email de contacto",
     order: "Orden",
   },

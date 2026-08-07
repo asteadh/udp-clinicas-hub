@@ -96,8 +96,7 @@ export function SiteHeader({ copy }: { copy: WebPageCopy }) {
             <nav className="nav" id="menu" aria-label="Principal" onClick={() => setMenuAbierto(false)}>
               <Link href="/clinicas">Clínicas</Link>
               <Link href="/#equipo">Equipo</Link>
-              <Link href="/articulos">Columnas</Link>
-              <Link href="/#actividades">Actividades</Link>
+              <Link href="/actividad">Actividad</Link>
               <Link href="/ingreso" className="nav--destacado">
                 Formulario de ingreso
               </Link>

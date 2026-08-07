@@ -145,7 +145,7 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
                 </article>
               ))}
             </div>
-            <Link className="ver-todo" href="/articulos">
+            <Link className="ver-todo" href="/actividad">
               Ver todas las columnas
             </Link>
           </div>

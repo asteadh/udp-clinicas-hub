@@ -33,10 +33,7 @@ export async function SiteFooter({ copy }: { copy: WebPageCopy }) {
                 <Link href="/#equipo">Quién te atiende</Link>
               </li>
               <li>
-                <Link href="/articulos">Columnas de opinión</Link>
-              </li>
-              <li>
-                <Link href="/#actividades">Clases y actividades</Link>
+                <Link href="/actividad">Columnas y actividades</Link>
               </li>
               <li>
                 <Link href="/ingreso">Formulario de ingreso</Link>

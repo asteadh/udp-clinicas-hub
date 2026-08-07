@@ -26,7 +26,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   return (
     <article className="grid gap-6" style={{ maxWidth: "760px" }}>
-      <Link href="/articulos" className="hub-button hub-button--link" style={{ width: "fit-content" }}>
+      <Link href="/actividad" className="hub-button hub-button--link" style={{ width: "fit-content" }}>
         {copy.articles.back}
       </Link>
       <h1>{article.title}</h1>
