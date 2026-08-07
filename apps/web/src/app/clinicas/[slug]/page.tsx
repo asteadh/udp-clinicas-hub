@@ -53,8 +53,8 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
             <div>
               <p className="etiqueta etiqueta--rojo">Clínica</p>
               <h1>{clinic.name}</h1>
+              <p className="seccion__resumen">{clinic.shortDescription}</p>
             </div>
-            <p className="seccion__intro">{clinic.shortDescription}</p>
           </div>
 
           {clinic.descriptionHtml && (
@@ -120,9 +120,6 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
                 <p className="etiqueta etiqueta--rojo">Publicaciones</p>
                 <h2>{copy.clinics.articlesTitle}</h2>
               </div>
-              <p className="seccion__intro">
-                Análisis firmado por el equipo de esta clínica sobre las materias que atiende.
-              </p>
             </div>
             <div className="columnas">
               {articles.map((article) => (
@@ -162,10 +159,6 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
               <p className="etiqueta etiqueta--rojo">Galería</p>
               <h2>{copy.clinics.galleryTitle}</h2>
             </div>
-            <p className="seccion__intro">
-              El registro fotográfico del trabajo de esta clínica, de lo más reciente a lo más
-              antiguo.
-            </p>
           </div>
           <Muro clinics={[]} fotos={aplanarMuro([clinic], [gallery])} dateLocale={copy.dateLocale} />
         </div>
@@ -179,9 +172,6 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
                 <p className="etiqueta etiqueta--rojo">Consultas</p>
                 <h2>{copy.clinics.faqsTitle}</h2>
               </div>
-              <p className="seccion__intro">
-                Las dudas que más se repiten en esta clínica, respondidas por su equipo.
-              </p>
             </div>
             <div className="faq">
               {porOrden(faqs).map((faq, i) => (

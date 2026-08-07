@@ -131,10 +131,6 @@ export default async function HomePage() {
               <p className="etiqueta etiqueta--rojo">Materias</p>
               <h2>Las clínicas</h2>
             </div>
-            <p className="seccion__intro">
-              Cada clínica atiende su materia con equipo propio y publica contenido propio. Un
-              mismo formulario de ingreso conduce a las cuatro.
-            </p>
           </div>
 
           {clinics.map((clinic, i) => (
@@ -236,10 +232,6 @@ export default async function HomePage() {
               <p className="etiqueta etiqueta--rojo">Publicaciones</p>
               <h2>Columnas de opinión</h2>
             </div>
-            <p className="seccion__intro">
-              Análisis firmado por los equipos de cada clínica sobre las materias que atendemos. Se
-              publican desde el panel de administración de cada clínica.
-            </p>
           </div>
 
           <div className="columnas">
@@ -284,10 +276,6 @@ export default async function HomePage() {
               <p className="etiqueta etiqueta--rojo">Galería</p>
               <h2>Clases y actividades</h2>
             </div>
-            <p className="seccion__intro">
-              El registro fotográfico del trabajo de las clínicas, de lo más reciente a lo más
-              antiguo: sesiones de clase, atenciones, audiencias y actividades de extensión.
-            </p>
           </div>
 
           <Muro
@@ -306,11 +294,6 @@ export default async function HomePage() {
               <p className="etiqueta etiqueta--rojo">Ingreso</p>
               <h2>Formulario de ingreso</h2>
             </div>
-            <p className="seccion__intro">
-              Solicita formalmente la asistencia de una de nuestras clínicas jurídicas. Un
-              integrante del equipo revisará tu caso y te contactará para confirmar si puede ser
-              atendido.
-            </p>
           </div>
 
           <IntakeExpediente clinics={clinics} />
@@ -325,10 +308,6 @@ export default async function HomePage() {
               <p className="etiqueta etiqueta--rojo">Consultas</p>
               <h2>Preguntas frecuentes</h2>
             </div>
-            <p className="seccion__intro">
-              Las dudas que más se repiten en cada clínica, respondidas por sus equipos. Filtra por
-              materia para ver solo lo que te corresponde.
-            </p>
           </div>
 
           <HomeFaq clinics={clinics} faqs={faqs} />

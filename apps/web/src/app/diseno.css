@@ -956,3 +956,23 @@ html{scroll-behavior:smooth}
 }
 .persona__bio p{margin:0 0 .5rem}
 .persona__bio p:last-child{margin-bottom:0}
+
+/* ── Cabeceras de sección sin bajada ─────────────────────────────────────
+   El diseño dejaba el título en una columna y un párrafo de apoyo en otra más
+   ancha, ambos apoyados sobre el filete. Esas bajadas eran texto inventado y se
+   quitaron; sin ellas la retícula de dos columnas dejaba la mitad derecha
+   vacía. La cabecera pasa a una sola columna cuando no hay bajada. */
+.seccion__cabeza:not(:has(> .seccion__intro)) {
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+/* Resumen de la clínica, bajo su nombre: es texto del cliente, no un rótulo
+   nuestro, así que acompaña al título en vez de ocupar la columna suelta. */
+.seccion__resumen {
+  font-size: 1.06rem;
+  line-height: 1.55;
+  color: var(--udp-gris);
+  margin: .7rem 0 0;
+  max-width: 56ch;
+}

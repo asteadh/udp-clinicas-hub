@@ -30,7 +30,6 @@ export default async function ClinicsPage() {
             <p className="etiqueta etiqueta--rojo">Materias</p>
             <h1>{copy.clinics.title}</h1>
           </div>
-          <p className="seccion__intro">{copy.clinics.intro}</p>
         </div>
 
         {clinics.map((clinic, i) => (
