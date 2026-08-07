@@ -948,3 +948,11 @@ html{scroll-behavior:smooth}
   .muro{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:1.2rem .9rem}
   .muro__texto{font-size:.92rem}
 }
+
+/* Biografía de un integrante del equipo. La escribe cada clínica desde su panel
+   y puede no existir: el marcado solo la pinta cuando hay texto. */
+.persona__bio{
+  font-size:.9rem;line-height:1.52;color:var(--tinta-media);margin-top:.15rem;
+}
+.persona__bio p{margin:0 0 .5rem}
+.persona__bio p:last-child{margin-bottom:0}

@@ -170,6 +170,10 @@ export default async function HomePage() {
       </section>
 
       {/* ══ EQUIPO ════════════════════════════════════════════════════════ */}
+      {/* Sin roles descritos ni retratos de relleno: el equipo cambia cada
+          semestre, así que la sección se llena solo con lo que cada clínica
+          publica desde su panel — nombre, cargo, biografía y foto, y solo si la
+          hay. Los estudiantes rotan y no aparecen salvo que se les cargue. */}
       <section className="seccion" id="equipo">
         <div className="envoltura">
           <div className="seccion__cabeza">
@@ -177,83 +181,55 @@ export default async function HomePage() {
               <p className="etiqueta etiqueta--rojo">Equipo</p>
               <h2>Quién te atiende</h2>
             </div>
-            <p className="seccion__intro">
-              Tu caso lo trabaja un estudiante de los últimos años de Derecho UDP, con un ayudante
-              que acompaña el día a día y un profesor de la Facultad que responde por cada
-              decisión.
-            </p>
           </div>
 
-          <div className="roles">
-            <div className="rol">
-              <span className="rol__n">01</span>
-              <h3>Profesora o profesor a cargo</h3>
-              <p>
-                Dirige la clínica y supervisa cada causa. Define si el caso se toma, aprueba la
-                estrategia y responde académica y profesionalmente por el trabajo del equipo.
-              </p>
-            </div>
-            <div className="rol">
-              <span className="rol__n">02</span>
-              <h3>Ayudante</h3>
-              <p>
-                Egresado o egresada de la Facultad. Hace el puente entre el profesor y los
-                estudiantes, revisa escritos antes de que salgan y sostiene la continuidad del caso
-                entre semestres.
-              </p>
-            </div>
-            <div className="rol">
-              <span className="rol__n">03</span>
-              <h3>Estudiante</h3>
-              <p>
-                Alumna o alumno de los últimos años de la carrera. Es quien te entrevista, estudia
-                tu caso y prepara los escritos. Para eso existe la clínica: es su formación, y por
-                eso no se te cobra.
-              </p>
-            </div>
-          </div>
-
-          <div className="nomina">
-            {clinics.map((clinic, i) => {
-              const equipo = porOrden(teams[i] ?? []);
-              const fichas = equipo.length > 0 ? equipo : [null, null];
-              return (
-                <div className="nomina__grupo" key={clinic.slug}>
-                  <div className="nomina__clinica">
-                    <span className="num">{numeral(i)}</span>
-                    <h3>{clinic.name}</h3>
-                  </div>
-                  <div className="personas">
-                    {fichas.map((persona, j) => (
-                      <figure className="persona" key={persona?.id ?? j}>
-                        <div className="retrato">
-                          {persona?.photoUrl && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={api.storageUrl(persona.photoUrl)} alt="" />
+          {teams.some((t) => t.length > 0) ? (
+            <div className="nomina">
+              {clinics.map((clinic, i) => {
+                const equipo = porOrden(teams[i] ?? []);
+                if (equipo.length === 0) return null;
+                return (
+                  <div className="nomina__grupo" key={clinic.slug}>
+                    <div className="nomina__clinica">
+                      <span className="num">{numeral(i)}</span>
+                      <h3>
+                        <Link href={`/clinicas/${clinic.slug}`}>{clinic.name}</Link>
+                      </h3>
+                    </div>
+                    <div className="personas">
+                      {equipo.map((persona) => (
+                        <figure className="persona" key={persona.id}>
+                          {persona.photoUrl && (
+                            <div className="retrato">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={api.storageUrl(persona.photoUrl)} alt="" />
+                            </div>
                           )}
-                        </div>
-                        <figcaption>
-                          {persona?.fullName && (
+                          <figcaption>
                             <p className="persona__nombre">{persona.fullName}</p>
-                          )}
-                          <p className="persona__cargo">
-                            {persona?.roleTitle ??
-                              (j === 0 ? "Profesora o profesor a cargo" : "Ayudante")}
-                          </p>
-                        </figcaption>
-                      </figure>
-                    ))}
+                            {persona.roleTitle && (
+                              <p className="persona__cargo">{persona.roleTitle}</p>
+                            )}
+                            {persona.bioHtml && (
+                              <div
+                                className="persona__bio hub-prose"
+                                dangerouslySetInnerHTML={{ __html: persona.bioHtml }}
+                              />
+                            )}
+                          </figcaption>
+                        </figure>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-
-            <p className="nomina__nota">
-              Los nombres, retratos y biografías de cada integrante se cargan desde el panel de
-              administración de su clínica. Cada ficha admite nombre completo, cargo, biografía,
-              fotografía y correo de contacto.
+                );
+              })}
+            </div>
+          ) : (
+            <p className="galeria__nota galeria__nota--sola">
+              Cada clínica publica su equipo desde su panel de administración. En cuanto carguen
+              a sus integrantes aparecerán aquí, con el cargo y la biografía que cada una escriba.
             </p>
-          </div>
+          )}
         </div>
       </section>
 

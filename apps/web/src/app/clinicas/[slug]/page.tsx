@@ -85,23 +85,25 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
                 <p className="etiqueta etiqueta--rojo">Equipo</p>
                 <h2>{copy.clinics.teamTitle}</h2>
               </div>
-              <p className="seccion__intro">
-                Quienes atienden esta clínica: el profesor o profesora a cargo, los ayudantes y
-                los estudiantes de los últimos años que trabajan cada caso.
-              </p>
             </div>
             <div className="personas">
               {porOrden(team).map((persona) => (
                 <figure className="persona" key={persona.id}>
-                  <div className="retrato">
-                    {persona.photoUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
+                  {persona.photoUrl && (
+                    <div className="retrato">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={api.storageUrl(persona.photoUrl)} alt="" />
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <figcaption>
                     <p className="persona__nombre">{persona.fullName}</p>
                     {persona.roleTitle && <p className="persona__cargo">{persona.roleTitle}</p>}
+                    {persona.bioHtml && (
+                      <div
+                        className="persona__bio hub-prose"
+                        dangerouslySetInnerHTML={{ __html: persona.bioHtml }}
+                      />
+                    )}
                   </figcaption>
                 </figure>
               ))}
