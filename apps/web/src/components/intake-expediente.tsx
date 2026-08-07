@@ -233,12 +233,6 @@ export function IntakeExpediente({ clinics }: { clinics: Clinic[] }) {
             <p className="paso__d">Coordinamos contigo los siguientes pasos de tu asesoría.</p>
           </div>
         </div>
-
-        <div className="aviso">
-          <strong>Enviar el formulario no garantiza que el caso sea aceptado.</strong>
-          Cada clínica evalúa las solicitudes según su materia y la capacidad del equipo en el
-          semestre en curso. Si no podemos tomarlo, te lo diremos.
-        </div>
       </aside>
     </div>
   );

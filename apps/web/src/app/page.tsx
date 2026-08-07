@@ -67,11 +67,6 @@ export default async function HomePage() {
               Insolvencia, emprendimiento, trabajo e impuestos. Asesoría gratuita de la Facultad
               de Derecho de la Universidad Diego Portales.
             </p>
-            <p className="portada__nota">
-              Te atiende un estudiante de último año de Derecho UDP, con la supervisión directa de
-              un profesor de la Facultad. <strong>No cobramos porque esto es parte de su
-              formación</strong>, no una promoción ni un porcentaje del resultado.
-            </p>
             <a href="#ingreso" className="boton">
               Presentar mi caso
             </a>
