@@ -1,41 +1,39 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { HubBadge, HubCard, HubEmptyState, HubSectionHeader } from "@hubnegocios/ui";
-import { ArticleCard } from "@/components/article-card";
-import { ClinicIcon } from "@/components/clinic-icon";
-import { CtaBanner } from "@/components/cta-banner";
-import { FaqList } from "@/components/faq-list";
-import { GalleryGrid } from "@/components/gallery-grid";
-import { TeamGrid } from "@/components/team-grid";
+import { Muro } from "@/components/muro";
 import { api } from "@/lib/api";
 import { webPageCopy as copy } from "@/lib/copy";
+import { aplanarMuro } from "@/lib/muro";
 
 /* Páginas de contenido: se regeneran cada minuto en vez de renderizarse en cada
    visita. Lo publica un administrador de tanto en tanto. */
 export const revalidate = 60;
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+/* Compuesta con el vocabulario del diseño, no con tarjetas: encabezado de
+   sección, equipo en retratos, columnas en la retícula de la home, el muro de
+   fotografías filtrado a esta clínica, el acordeón de preguntas y la llamada de
+   cierre. La versión anterior era un icono en un círculo de color y cuatro
+   rejillas idénticas, cada una con su contador. */
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const clinic = await api.clinic(slug).catch(() => null);
   return { title: clinic ? `${clinic.name} — Hub Negocios UDP` : copy.clinics.notFoundTitle };
 }
 
-function SectionTitle({ title, count }: { title: string; count: number }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1.25rem" }}>
-      <h2 style={{ margin: 0 }}>{title}</h2>
-      <HubBadge>{count}</HubBadge>
-    </div>
-  );
+function numeral(i: number) {
+  return String(i + 1).padStart(2, "0");
 }
 
 export default async function ClinicPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const clinic = await api.clinic(slug).catch(() => null);
-  if (!clinic) {
-    notFound();
-  }
+  if (!clinic) notFound();
 
   const [faqs, team, gallery, articles] = await Promise.all([
     api.clinicFaqs(slug).catch(() => []),
@@ -44,78 +42,161 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
     api.clinicArticles(slug).catch(() => []),
   ]);
 
-  const color = clinic.colorPrimary || undefined;
+  const porOrden = <T extends { sortOrder?: number }>(l: T[]) =>
+    [...l].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
   return (
-    <div className="grid gap-12">
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
-        <div
-          style={{
-            width: "56px",
-            height: "56px",
-            flexShrink: 0,
-            borderRadius: "9999px",
-            display: "grid",
-            placeItems: "center",
-            background: color ? `color-mix(in srgb, ${color} 18%, transparent)` : "var(--hub-blue-soft)",
-          }}
-        >
-          <ClinicIcon icon={clinic.icon} size={28} color={color || "var(--hub-deep-blue)"} />
+    <>
+      <section className="seccion">
+        <div className="envoltura">
+          <div className="seccion__cabeza">
+            <div>
+              <p className="etiqueta etiqueta--rojo">Clínica</p>
+              <h1>{clinic.name}</h1>
+            </div>
+            <p className="seccion__intro">{clinic.shortDescription}</p>
+          </div>
+
+          {clinic.descriptionHtml && (
+            <div
+              className="hub-prose"
+              style={{ maxWidth: "var(--medida)" }}
+              dangerouslySetInnerHTML={{ __html: clinic.descriptionHtml }}
+            />
+          )}
+
+          <div className="llamada" style={{ marginTop: "3rem" }}>
+            <div>
+              <h3>{copy.clinics.ctaCardTitle}</h3>
+              <p>{copy.clinics.ctaCardBody}</p>
+            </div>
+            <Link href={`/ingreso?clinica=${clinic.slug}`} className="boton">
+              {copy.clinics.ctaCardButton}
+            </Link>
+          </div>
         </div>
-        <HubSectionHeader eyebrow={clinic.name} title={clinic.name}>
-          {clinic.shortDescription}
-        </HubSectionHeader>
-      </div>
-      {clinic.descriptionHtml && (
-        <div className="hub-prose" dangerouslySetInnerHTML={{ __html: clinic.descriptionHtml }} />
+      </section>
+
+      {team.length > 0 && (
+        <section className="seccion" id="equipo">
+          <div className="envoltura">
+            <div className="seccion__cabeza">
+              <div>
+                <p className="etiqueta etiqueta--rojo">Equipo</p>
+                <h2>{copy.clinics.teamTitle}</h2>
+              </div>
+              <p className="seccion__intro">
+                Quienes atienden esta clínica: el profesor o profesora a cargo, los ayudantes y
+                los estudiantes de los últimos años que trabajan cada caso.
+              </p>
+            </div>
+            <div className="personas">
+              {porOrden(team).map((persona) => (
+                <figure className="persona" key={persona.id}>
+                  <div className="retrato">
+                    {persona.photoUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={api.storageUrl(persona.photoUrl)} alt="" />
+                    )}
+                  </div>
+                  <figcaption>
+                    <p className="persona__nombre">{persona.fullName}</p>
+                    {persona.roleTitle && <p className="persona__cargo">{persona.roleTitle}</p>}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
-      <HubCard style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-        <div>
-          <h3 style={{ margin: 0 }}>{copy.clinics.ctaCardTitle}</h3>
-          <p style={{ color: "var(--hub-muted)", margin: "0.35rem 0 0" }}>{copy.clinics.ctaCardBody}</p>
-        </div>
-        <Link href={`/ingreso?clinica=${clinic.slug}`} className="hub-button hub-button--primary">
-          {copy.clinics.ctaCardButton}
-        </Link>
-      </HubCard>
-
-      <section>
-        <SectionTitle title={copy.clinics.faqsTitle} count={faqs.length} />
-        {faqs.length ? <FaqList faqs={faqs} /> : <HubEmptyState title={copy.clinics.faqsTitle} description={copy.clinics.noFaqs} />}
-      </section>
-
-      <section>
-        <SectionTitle title={copy.clinics.teamTitle} count={team.length} />
-        {team.length ? <TeamGrid team={team} /> : <HubEmptyState title={copy.clinics.teamTitle} description={copy.clinics.noTeam} />}
-      </section>
-
-      <section>
-        <SectionTitle title={copy.clinics.galleryTitle} count={gallery.length} />
-        {gallery.length ? <GalleryGrid albums={gallery} /> : <HubEmptyState title={copy.clinics.galleryTitle} description={copy.clinics.noGallery} />}
-      </section>
-
-      <section>
-        <SectionTitle title={copy.clinics.articlesTitle} count={articles.length} />
-        {articles.length ? (
-          <div className="hub-grid">
-            {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} copy={copy} />
-            ))}
+      {articles.length > 0 && (
+        <section className="seccion seccion--arena" id="columnas">
+          <div className="envoltura">
+            <div className="seccion__cabeza">
+              <div>
+                <p className="etiqueta etiqueta--rojo">Publicaciones</p>
+                <h2>{copy.clinics.articlesTitle}</h2>
+              </div>
+              <p className="seccion__intro">
+                Análisis firmado por el equipo de esta clínica sobre las materias que atiende.
+              </p>
+            </div>
+            <div className="columnas">
+              {articles.map((article) => (
+                <article className="columna" key={article.id}>
+                  <div className="columna__meta">
+                    <span className="columna__clinica">
+                      {clinic.name.replace(/^Clínica (de )?/, "")}
+                    </span>
+                    {article.publishedAt && (
+                      <span>
+                        {new Date(article.publishedAt).toLocaleDateString(copy.dateLocale, {
+                          year: "numeric",
+                          month: "long",
+                        })}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="columna__titulo">
+                    <Link href={`/articulos/${article.slug}`}>{article.title}</Link>
+                  </h3>
+                  {article.excerpt && <p className="columna__bajada">{article.excerpt}</p>}
+                  <p className="columna__firma">{article.authorName || clinic.name}</p>
+                </article>
+              ))}
+            </div>
+            <Link className="ver-todo" href="/articulos">
+              Ver todas las columnas
+            </Link>
           </div>
-        ) : (
-          <HubEmptyState title={copy.clinics.articlesTitle} description={copy.clinics.noArticles} />
-        )}
+        </section>
+      )}
+
+      <section className="seccion" id="actividades">
+        <div className="envoltura">
+          <div className="seccion__cabeza">
+            <div>
+              <p className="etiqueta etiqueta--rojo">Galería</p>
+              <h2>{copy.clinics.galleryTitle}</h2>
+            </div>
+            <p className="seccion__intro">
+              El registro fotográfico del trabajo de esta clínica, de lo más reciente a lo más
+              antiguo.
+            </p>
+          </div>
+          <Muro clinics={[]} fotos={aplanarMuro([clinic], [gallery])} dateLocale={copy.dateLocale} />
+        </div>
       </section>
 
-      <CtaBanner
-        title={copy.home.ctaBanner.title}
-        subtitle={copy.home.ctaBanner.subtitle}
-        primaryHref={`/ingreso?clinica=${clinic.slug}`}
-        primaryLabel={copy.home.ctaBanner.primaryCta}
-        secondaryHref="/contacto"
-        secondaryLabel={copy.home.ctaBanner.secondaryCta}
-      />
-    </div>
+      {faqs.length > 0 && (
+        <section className="seccion" id="preguntas" style={{ borderBottom: 0 }}>
+          <div className="envoltura">
+            <div className="seccion__cabeza">
+              <div>
+                <p className="etiqueta etiqueta--rojo">Consultas</p>
+                <h2>{copy.clinics.faqsTitle}</h2>
+              </div>
+              <p className="seccion__intro">
+                Las dudas que más se repiten en esta clínica, respondidas por su equipo.
+              </p>
+            </div>
+            <div className="faq">
+              {porOrden(faqs).map((faq, i) => (
+                <details className="faq__item" key={faq.id}>
+                  <summary data-n={numeral(i)}>
+                    {faq.question}
+                    <span className="faq__signo" />
+                  </summary>
+                  <div className="faq__respuesta">
+                    <div dangerouslySetInnerHTML={{ __html: faq.answerHtml }} />
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 }

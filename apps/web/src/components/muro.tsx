@@ -51,8 +51,12 @@ export function Muro({
         })
       : null;
 
+  /* Con una sola clínica el filtro no discrimina nada: se omite. */
+  const conFiltros = clinics.length > 1;
+
   return (
     <>
+      {conFiltros && (
       <div className="filtros" role="group" aria-label="Filtrar fotografías por clínica">
         <button
           className="filtro"
@@ -74,6 +78,7 @@ export function Muro({
           </button>
         ))}
       </div>
+      )}
 
       <div className="muro">
         {visibles.map((foto, i) => (
