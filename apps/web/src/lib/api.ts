@@ -14,7 +14,7 @@ import { HubApiClient } from "@hubnegocios/api-client";
    Las escrituras (el formulario de ingreso, el de contacto) van por el fetch
    normal, sin caché. */
 
-export const REVALIDAR_SEGUNDOS = 60;
+const REVALIDAR_SEGUNDOS = 60;
 
 const fetcherConCache: typeof fetch = (input, init) => {
   const metodo = (init?.method ?? "GET").toUpperCase();

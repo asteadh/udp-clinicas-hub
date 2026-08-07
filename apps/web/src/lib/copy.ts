@@ -5,96 +5,12 @@
 export const webPageCopy = {
   dateLocale: "es-CL",
   siteName: "Hub Negocios UDP",
-  nav: {
-    home: "Inicio",
-    clinics: "Clínicas",
-    articles: "Artículos",
-    contact: "Contacto",
-    intake: "Ingreso",
-  },
   home: {
-    /* Portada. La frase evita el "somos una institución dedicada a" y nombra la
-       situación real de quien llega: decisiones legales que no se improvisan. */
-    title: "Cuatro clínicas jurídicas para las decisiones que no admiten improvisación.",
-    titleEmphasis: "no admiten",
-    subtitle:
-      "Insolvencia, emprendimiento, trabajo e impuestos. Asesoría gratuita de la Facultad de Derecho de la Universidad Diego Portales.",
-    /* El diferenciador incopiable: no decimos "gratis", explicamos por qué no se
-       cobra. Un estudio de cuota litis no puede replicar esta frase. */
-    note: "Te atiende un estudiante de último año de Derecho UDP, con la supervisión directa de un profesor de la Facultad.",
-    noteStrong: "No cobramos porque esto es parte de su formación",
-    noteEnd: ", no una promoción ni un porcentaje del resultado.",
-    cta: "Presentar mi caso",
-    summaryTitle: "Las clínicas",
-    /* Materia de cada clínica para el sumario de portada: no está en la base,
-       es rótulo editorial. Si se agrega una quinta clínica, agregar su línea. */
-    summaryMatters: {
-      insolvencia: "Ley 20.720 · SUPERIR · renegociación y liquidación",
-      "innovacion-emprendimiento": "Sociedades · propiedad intelectual · contratos",
-      laboral: "Despidos · finiquitos · tutela laboral",
-      tributario: "Observaciones y liquidaciones del SII · TTA",
-    } as Record<string, string>,
-    stats: [
-      { value: "4", emphasis: false, label: "Clínicas jurídicas especializadas" },
-      { value: "Sin costo", emphasis: true, label: "Para quien consulta, en todas las etapas" },
-      { value: "Supervisada", emphasis: true, label: "Cada causa, por un profesor de la Facultad" },
-      { value: "UDP", emphasis: false, label: "Facultad de Derecho, Universidad Diego Portales" },
-    ],
-    clinicsEyebrow: "Materias",
-    clinicsTitle: "Las clínicas",
-    clinicsSubtitle:
-      "Cada clínica atiende su materia con equipo propio y publica contenido propio. Un mismo formulario de ingreso conduce a las cuatro.",
-    teamEyebrow: "Equipo",
-    teamTitle: "Quién te atiende",
-    teamSubtitle:
-      "Tu caso lo trabaja un estudiante de los últimos años de Derecho UDP, con un ayudante que acompaña el día a día y un profesor de la Facultad que responde por cada decisión.",
-    roles: [
-      {
-        title: "Profesora o profesor a cargo",
-        description:
-          "Dirige la clínica y supervisa cada causa. Define si el caso se toma, aprueba la estrategia y responde académica y profesionalmente por el trabajo del equipo.",
-      },
-      {
-        title: "Ayudante",
-        description:
-          "Egresado o egresada de la Facultad. Hace el puente entre el profesor y los estudiantes, revisa escritos antes de que salgan y sostiene la continuidad del caso entre semestres.",
-      },
-      {
-        title: "Estudiante",
-        description:
-          "Alumna o alumno de los últimos años de la carrera. Es quien te entrevista, estudia tu caso y prepara los escritos. Para eso existe la clínica: es su formación, y por eso no se te cobra.",
-      },
-    ],
-    teamLeadRole: "Profesora o profesor a cargo",
-    teamViewAll: "Ver equipo completo",
-    teamNote:
-      "Aquí aparece quien encabeza cada clínica. El equipo completo — ayudantes y estudiantes — se ve al entrar a la página de cada una. Los nombres, retratos y biografías se cargan desde el panel de administración de la clínica respectiva.",
-    articlesEyebrow: "Publicaciones",
-    articlesTitle: "Columnas de opinión",
-    articlesSubtitle:
-      "Análisis firmado por los equipos de cada clínica sobre las materias que atendemos. Se publican desde el panel de administración de cada clínica.",
-    articlesViewAll: "Ver todas las columnas",
-    galleryEyebrow: "Galería",
-    galleryTitle: "Clases y actividades",
-    gallerySubtitle:
-      "El registro fotográfico del trabajo de las clínicas: sesiones de clase, atenciones, audiencias y actividades de extensión.",
-    galleryNote:
-      "Cada clínica publica sus propios álbumes desde el panel de administración: título, descripción, portada y un pie de foto por imagen. Aquí se muestra el álbum más reciente de cada una; el resto se ve al entrar a la clínica.",
-    galleryEmpty:
-      "Todavía no hay álbumes publicados. Aparecerán aquí en cuanto cada clínica suba el primero desde su panel.",
-    intakeEyebrow: "Ingreso",
-    intakeTitle: "Formulario de ingreso",
-    intakeSubtitle:
-      "Solicita formalmente la asistencia de una de nuestras clínicas jurídicas. Un integrante del equipo revisará tu caso y te contactará para confirmar si puede ser atendido.",
-    faqEyebrow: "Consultas",
-    faqTitle: "Preguntas frecuentes",
-    faqSubtitle:
-      "Las dudas que más se repiten en cada clínica, respondidas por sus equipos. Filtra por materia para ver solo lo que te corresponde.",
-    faqFilterAll: "Todas",
+    /* La home reproduce la pieza de diseño con su texto en el marcado, para que
+       diseño e implementación se lean como una sola cosa. Lo que queda aquí es
+       lo que consumen OTRAS páginas: /ingreso y /contacto usan howItWorks,
+       /clinicas/[slug] usa ctaBanner y la tarjeta de clínica usa viewClinic. */
     viewClinic: "Ver clínica",
-    viewAll: "Ver todos",
-    /* La home ya no muestra los tres pasos ni el banner de cierre, pero siguen
-       vivos: howItWorks lo usan /ingreso y /contacto, y ctaBanner /clinicas/[slug]. */
     howItWorks: {
       title: "¿Cómo funciona?",
       subtitle: "Tres pasos simples para recibir asesoría de una de nuestras clínicas.",
@@ -161,7 +77,6 @@ export const webPageCopy = {
     sidebarTitle: "¿Qué pasa después?",
     privacyNote: "Tu información solo será compartida con la clínica seleccionada y se usará únicamente para responder tu consulta.",
     clinic: "Clínica",
-    selectClinic: "Selecciona una clínica",
     name: "Nombre",
     email: "Email",
     phone: "Teléfono (opcional)",
@@ -178,7 +93,6 @@ export const webPageCopy = {
     sidebarTitle: "¿Qué pasa después?",
     privacyNote: "Tu información solo será compartida con la clínica seleccionada y se usará únicamente para evaluar tu solicitud de ingreso.",
     clinic: "Clínica",
-    selectClinic: "Selecciona una clínica",
     fullName: "Nombre completo",
     rut: "RUT",
     email: "Email",
@@ -196,12 +110,7 @@ export const webPageCopy = {
   footer: {
     description:
       "Clínicas jurídicas de la Facultad de Derecho UDP que ofrecen asesoría gratuita a personas y emprendedores.",
-    quickLinksTitle: "Enlaces rápidos",
-    clinicsTitle: "Clínicas",
     rights: "Hub Negocios UDP — Universidad Diego Portales",
-  },
-  common: {
-    noData: "No hay datos para mostrar.",
   },
   errorPages: {
     errorTitle: "Algo salió mal",

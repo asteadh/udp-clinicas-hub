@@ -783,13 +783,7 @@ html{scroll-behavior:smooth}
 
 .hub-card,
 .hub-badge,
-.hub-alert,
-.hub-stat,
-.hub-pill,
-.hub-table-wrap,
-.hub-toast,
-.hub-segmented button,
-.hub-dialog {
+.hub-alert {
   border-radius: 0;
   box-shadow: none;
 }
@@ -803,9 +797,7 @@ html{scroll-behavior:smooth}
 .hub-field input,
 .hub-field select,
 .hub-field textarea,
-.hub-input,
-.hub-select,
-.hub-textarea {
+.hub-input {
   font-family: var(--sans);
   font-size: .94rem;
   color: var(--tinta);
@@ -837,8 +829,7 @@ html{scroll-behavior:smooth}
   box-shadow: 0 0 0 3px var(--foco-halo);
 }
 
-.hub-field textarea,
-.hub-textarea {
+.hub-field textarea {
   font-family: var(--serif);
   font-size: 1.02rem;
   line-height: 1.55;
