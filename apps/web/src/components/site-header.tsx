@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NombreSitio } from "@/components/logo-udp";
 import type { WebPageCopy } from "@/lib/copy";
@@ -30,7 +31,19 @@ function leerTema(): Tema {
   }
 }
 
+/* Navegación. `ruta` marca el enlace como sección actual; los que no la llevan
+   son anclas dentro de la home y no se marcan, porque si no habría dos activas
+   a la vez estando en el inicio. */
+const ENLACES: { href: string; texto: string; ruta?: string }[] = [
+  { href: "/clinicas", texto: "Clínicas", ruta: "/clinicas" },
+  { href: "/#equipo", texto: "Equipo" },
+  { href: "/actividad", texto: "Actividad", ruta: "/actividad" },
+  { href: "/ingreso", texto: "Formulario de ingreso", ruta: "/ingreso" },
+  { href: "/#preguntas", texto: "Preguntas" },
+];
+
 export function SiteHeader({ copy }: { copy: WebPageCopy }) {
+  const ruta = usePathname();
   const [tema, setTema] = useState<Tema>("claro");
   const [menuAbierto, setMenuAbierto] = useState(false);
   const cabecera = useRef<HTMLElement>(null);
@@ -84,7 +97,7 @@ export function SiteHeader({ copy }: { copy: WebPageCopy }) {
 
       <header className="cabecera" ref={cabecera} data-menu={menuAbierto ? "abierto" : undefined}>
         <div className="envoltura cabecera__interior">
-          <Link href="/" className="marca">
+          <Link href="/" className="marca" aria-current={ruta === "/" ? "page" : undefined}>
             <NombreSitio className="marca__nombre" />
             <span className="marca__unidad">
               Facultad de Derecho
@@ -95,13 +108,15 @@ export function SiteHeader({ copy }: { copy: WebPageCopy }) {
 
           <div className="controles">
             <nav className="nav" id="menu" aria-label="Principal" onClick={() => setMenuAbierto(false)}>
-              <Link href="/clinicas">Clínicas</Link>
-              <Link href="/#equipo">Equipo</Link>
-              <Link href="/actividad">Actividad</Link>
-              <Link href="/ingreso" className="nav--destacado">
-                Formulario de ingreso
-              </Link>
-              <Link href="/#preguntas">Preguntas</Link>
+              {ENLACES.map(({ href, texto, ruta: destino }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={destino && ruta.startsWith(destino) ? "page" : undefined}
+                >
+                  {texto}
+                </Link>
+              ))}
             </nav>
 
             <div className="iconos">

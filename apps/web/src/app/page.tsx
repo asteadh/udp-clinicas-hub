@@ -1,9 +1,12 @@
 import Link from "next/link";
-import type { Clinic, Faq, TeamMember } from "@hubnegocios/api-client";
+import type { Clinic, Faq, GalleryAlbum, TeamMember } from "@hubnegocios/api-client";
 import { HomeFaq } from "@/components/home-faq";
 import { IngresoFormulario } from "@/components/ingreso-formulario";
 import { MarcaUdp } from "@/components/logo-udp";
+import { Muro } from "@/components/muro";
 import { api } from "@/lib/api";
+import { webPageCopy as copy } from "@/lib/copy";
+import { aplanarMuro } from "@/lib/muro";
 
 /* La home se regenera cada minuto en vez de renderizarse en cada visita. El
    contenido lo publica un administrador de tanto en tanto, así que un minuto de
@@ -18,6 +21,8 @@ export const revalidate = 60;
    Equipo y galería no tienen endpoint global —el API solo responde por clínica,
    porque el panel se organiza así— de modo que se piden las cuatro y se toma una
    de cada una. */
+
+const PREVIA_FOTOS = 8;
 
 const MATERIAS: Record<string, string> = {
   insolvencia: "Ley 20.720 · SUPERIR · renegociación y liquidación",
@@ -34,12 +39,13 @@ export default async function HomePage() {
   const clinics: Clinic[] = await api.clinics().catch(() => []);
   const slugs = clinics.map((c) => c.slug);
 
-  /* Seis llamadas en vez de catorce: las columnas y la galería se fueron a
-     /actividad y con ellas sus peticiones. */
-  const [teams, faqsPorClinica] = await Promise.all([
+  const [teams, galleries, faqsPorClinica] = await Promise.all([
     Promise.all(slugs.map((s) => api.clinicTeam(s).catch((): TeamMember[] => []))),
+    Promise.all(slugs.map((s) => api.clinicGallery(s).catch((): GalleryAlbum[] => []))),
     Promise.all(slugs.map((s) => api.clinicFaqs(s).catch((): Faq[] => []))),
   ]);
+
+  const fotos = aplanarMuro(clinics, galleries);
 
   const faqs = faqsPorClinica.flatMap((lista, i) =>
     lista.map((faq) => ({ ...faq, clinicName: clinics[i]?.name ?? faq.clinicSlug })),
@@ -73,7 +79,7 @@ export default async function HomePage() {
             <ul className="sumario__lista">
               {clinics.map((clinic, i) => (
                 <li key={clinic.slug}>
-                  <a href={`#${clinic.slug}`}>
+                  <Link href={`/clinicas/${clinic.slug}`}>
                     <span className="num">{numeral(i)}</span>
                     <span>
                       <span className="sumario__nombre">{clinic.name}</span>
@@ -81,7 +87,7 @@ export default async function HomePage() {
                         {MATERIAS[clinic.slug] ?? clinic.shortDescription}
                       </span>
                     </span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -118,43 +124,6 @@ export default async function HomePage() {
               </span>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ══ LAS CUATRO CLÍNICAS ═══════════════════════════════════════════ */}
-      <section className="seccion" id="clinicas">
-        <div className="envoltura">
-          <div className="seccion__cabeza">
-            <div>
-              <p className="etiqueta etiqueta--rojo">Materias</p>
-              <h2>Las clínicas</h2>
-            </div>
-          </div>
-
-          {clinics.map((clinic, i) => (
-            <article className="materia" id={clinic.slug} key={clinic.slug}>
-              <div className="materia__num">{numeral(i)}</div>
-              <div>
-                <h3>
-                  <Link href={`/clinicas/${clinic.slug}`}>{clinic.name}</Link>
-                </h3>
-                <p className="materia__resumen">{clinic.shortDescription}</p>
-                {clinic.contactEmail && (
-                  <div className="materia__pie">
-                    <a href={`mailto:${clinic.contactEmail}`} className="materia__correo">
-                      {clinic.contactEmail}
-                    </a>
-                  </div>
-                )}
-              </div>
-              {clinic.descriptionHtml && (
-                <div
-                  className="materia__cuerpo"
-                  dangerouslySetInnerHTML={{ __html: clinic.descriptionHtml }}
-                />
-              )}
-            </article>
-          ))}
         </div>
       </section>
 
@@ -234,6 +203,29 @@ export default async function HomePage() {
         <div className="envoltura">
           <Link className="ver-todo" href="/actividad">
             Ver columnas y actividades
+          </Link>
+        </div>
+      </section>
+
+      {/* ══ ACTIVIDADES (vista previa) ═══════════════════════════════════ */}
+      {/* La home enseña lo último que han publicado las clínicas y remite a
+          /actividad para el resto: es lo que hace que la página valga una
+          segunda visita. */}
+      <section className="seccion seccion--arena" id="actividades">
+        <div className="envoltura">
+          <div className="seccion__cabeza">
+            <div>
+              <p className="etiqueta etiqueta--rojo">Galería</p>
+              <h2>Clases y actividades</h2>
+            </div>
+          </div>
+
+          <Muro clinics={[]} fotos={fotos.slice(0, PREVIA_FOTOS)} dateLocale={copy.dateLocale} />
+
+          {/* Siempre visible: aunque no haya fotografías todavía, en /actividad
+              están las columnas de opinión. */}
+          <Link className="ver-todo" href="/actividad">
+            Ver todas las actividades y columnas
           </Link>
         </div>
       </section>

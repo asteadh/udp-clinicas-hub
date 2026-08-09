@@ -1069,3 +1069,18 @@ html{scroll-behavior:smooth}
   .cifra:nth-child(-n+3){border-bottom:1px solid var(--borde-fino)}
   .cifra:last-child{border-bottom:0}
 }
+
+/* ── Sección actual en la navegación ─────────────────────────────────────
+   El enlace del formulario iba en rojo como llamada, pero el ojo lee un enlace
+   destacado como «estás aquí», y parecía que uno estuviera siempre en ingreso.
+   Ese gesto queda libre para lo que de verdad significa: la sección en la que
+   está el usuario, con el mismo filete rojo que aparece al pasar por encima. */
+.nav a[aria-current="page"]{
+  color:var(--tinta);
+  font-weight:600;
+  border-bottom-color:var(--udp-rojo);
+}
+
+/* En el inicio se marca la propia marca, que es el enlace a la home. */
+.marca[aria-current="page"] .marca__nombre{color:var(--tinta)}
+.marca[aria-current="page"]{cursor:default}
