@@ -44,11 +44,6 @@ revisar("cabecera", "../src/components/site-header.tsx", {
   "el selector de tema": "hub-tema",
 });
 
-revisar("formulario de contacto", "../src/components/contact-form.tsx", {
-  "el envío": "api.contact",
-  "que sea de cliente": "use client",
-});
-
 revisar("ingreso", "../src/components/ingreso-formulario.tsx", {
   "el formulario de la Facultad": "forms.gle",
   "el código para escanear": "qr-formulario-ingreso.svg",
@@ -64,6 +59,8 @@ revisar("página de columna", "../src/app/articulos/[slug]/page.tsx", {
   "el 404 cuando no existe": "notFound",
   "el cuerpo del artículo": "bodyHtml",
   "los estilos del contenido del panel": "hub-prose",
+  "las columnas contiguas": "contiguas",
+  "el resto de la misma clínica": "clinicArticles",
 });
 
 if (fallos.length) {

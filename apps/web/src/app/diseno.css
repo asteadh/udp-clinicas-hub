@@ -765,8 +765,8 @@ html{scroll-behavior:smooth}
    Los componentes hub-* en el lenguaje del diseño
    ═══════════════════════════════════════════════════════════════════════
 
-   Las páginas que todavía no se han portado (/contacto, /ingreso, /clinicas,
-   /articulos) se dibujan con los componentes hub-*, que traen radio de 8px,
+   Las páginas que todavía no se han portado se dibujan con los componentes
+   hub-*, que traen radio de 8px,
    un botón primario dorado con halo de sombra y tarjetas flotantes. Nada de eso
    pertenece a la marca UDP: el dorado es herencia del proyecto Gremia.
 

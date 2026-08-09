@@ -8,27 +8,8 @@ export const webPageCopy = {
   home: {
     /* La home reproduce la pieza de diseño con su texto en el marcado, para que
        diseño e implementación se lean como una sola cosa. Lo que queda aquí es
-       lo que consumen OTRAS páginas: /ingreso y /contacto usan howItWorks,
-       /clinicas/[slug] usa ctaBanner y la tarjeta de clínica usa viewClinic. */
+       lo que consumen OTRAS páginas: /clinicas/[slug] usa ctaBanner. */
     viewClinic: "Ver clínica",
-    howItWorks: {
-      title: "¿Cómo funciona?",
-      subtitle: "Tres pasos simples para recibir asesoría de una de nuestras clínicas.",
-      steps: [
-        {
-          title: "Completa el formulario",
-          description: "Cuéntanos tu caso a través del formulario de ingreso, indicando la clínica correspondiente.",
-        },
-        {
-          title: "Un equipo revisa tu caso",
-          description: "Un integrante de la clínica evalúa tu solicitud y confirma si puede ser atendida.",
-        },
-        {
-          title: "Te contactamos",
-          description: "Te contactaremos para coordinar los siguientes pasos de tu asesoría.",
-        },
-      ],
-    },
     ctaBanner: {
       title: "¿Tienes una consulta legal?",
       subtitle: "Solicita ayuda gratuita de una de nuestras clínicas jurídicas.",
@@ -70,21 +51,6 @@ export const webPageCopy = {
     ctaTitle: "¿Tienes un caso similar?",
     ctaBody: "Solicita asesoría gratuita de la clínica correspondiente.",
     ctaButton: "Solicitar ingreso",
-  },
-  contact: {
-    title: "Contacto",
-    subtitle: "Cuéntanos tu consulta y la clínica correspondiente te responderá a la brevedad.",
-    sidebarTitle: "¿Qué pasa después?",
-    privacyNote: "Tu información solo será compartida con la clínica seleccionada y se usará únicamente para responder tu consulta.",
-    clinic: "Clínica",
-    name: "Nombre",
-    email: "Email",
-    phone: "Teléfono (opcional)",
-    message: "Mensaje",
-    submit: "Enviar consulta",
-    sending: "Enviando…",
-    success: "¡Gracias! Recibimos tu consulta y te contactaremos pronto.",
-    error: "No se pudo enviar tu consulta. Intenta nuevamente.",
   },
   intake: {
     title: "Formulario de ingreso",

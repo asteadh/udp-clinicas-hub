@@ -11,8 +11,7 @@ import { HubApiClient } from "@hubnegocios/api-client";
    la caché de Next y se refrescan una vez por minuto. Con cien visitas en un
    minuto se pasa de mil cuatrocientas llamadas a catorce.
 
-   Las escrituras (el formulario de ingreso, el de contacto) van por el fetch
-   normal, sin caché. */
+   Las escrituras van por el fetch normal, sin caché. */
 
 const REVALIDAR_SEGUNDOS = 60;
 
