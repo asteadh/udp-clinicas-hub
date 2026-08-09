@@ -26,6 +26,9 @@ export async function generateMetadata({
   return { title: clinic ? `${clinic.name} — Hub Negocios UDP` : copy.clinics.notFoundTitle };
 }
 
+/* La clínica asoma unas pocas; el catálogo entero está en /preguntas. */
+const PREVIA_PREGUNTAS = 6;
+
 function numeral(i: number) {
   return String(i + 1).padStart(2, "0");
 }
@@ -174,7 +177,7 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
               </div>
             </div>
             <div className="faq">
-              {porOrden(faqs).map((faq, i) => (
+              {porOrden(faqs).slice(0, PREVIA_PREGUNTAS).map((faq, i) => (
                 <details className="faq__item" key={faq.id}>
                   <summary data-n={numeral(i)}>
                     {faq.question}
@@ -186,6 +189,12 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
                 </details>
               ))}
             </div>
+
+            {faqs.length > PREVIA_PREGUNTAS && (
+              <Link className="ver-todo" href="/preguntas">
+                {`Ver las ${faqs.length} preguntas de esta clínica`}
+              </Link>
+            )}
           </div>
         </section>
       )}

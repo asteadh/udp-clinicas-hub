@@ -1103,3 +1103,31 @@ html{scroll-behavior:smooth}
 .destacada-col__bajada{
   font-size:1.08rem;line-height:1.56;color:var(--tinta-media);margin:0;max-width:56ch;
 }
+
+/* ── Buscador de preguntas ───────────────────────────────────────────────
+   El catálogo es largo —el encargo habla de unas trescientas— y un acordeón sin
+   forma de buscar no se recorre. El campo va antes que los filtros porque
+   escribir una palabra es más directo que elegir clínica. */
+.buscador{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;
+  flex-wrap:wrap;margin-bottom:1.6rem;
+}
+.buscador__campo{display:flex;flex-direction:column;gap:.42rem;flex:1 1 22rem;max-width:34rem}
+.buscador__campo input{
+  font-family:var(--sans);font-size:1rem;color:var(--tinta);background:var(--papel);
+  border:1px solid var(--borde);border-bottom-width:2px;border-radius:0;
+  padding:.78rem .9rem;width:100%;transition:border-color .16s,box-shadow .16s;
+}
+.buscador__campo input:focus{
+  outline:none;border-color:var(--udp-rojo);box-shadow:0 0 0 3px var(--foco-halo);
+}
+.buscador__campo input::placeholder{color:var(--tinta-media);opacity:.7}
+.buscador__cuenta{
+  font-family:var(--sans);font-size:.76rem;letter-spacing:.05em;
+  color:var(--tinta-media);margin:0 0 .55rem;
+}
+
+@media (max-width:640px){
+  .buscador{gap:.8rem}
+  .buscador__campo{flex:1 1 100%}
+}

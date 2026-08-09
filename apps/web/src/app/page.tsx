@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { Clinic, Faq, GalleryAlbum, TeamMember } from "@hubnegocios/api-client";
-import { HomeFaq } from "@/components/home-faq";
 import { IngresoFormulario } from "@/components/ingreso-formulario";
 import { MarcaUdp } from "@/components/logo-udp";
 import { Muro } from "@/components/muro";
@@ -24,6 +23,11 @@ export const revalidate = 60;
 
 const PREVIA_FOTOS = 8;
 
+/* Cuántas preguntas asoma la home por clínica. El catálogo completo vive en
+   /preguntas; el profesor decide cuáles suben aquí con las flechas de orden del
+   panel, porque se toman las primeras de cada clínica. */
+const PREVIA_PREGUNTAS_POR_CLINICA = 2;
+
 const MATERIAS: Record<string, string> = {
   insolvencia: "Ley 20.720 · SUPERIR · renegociación y liquidación",
   "innovacion-emprendimiento": "Sociedades · propiedad intelectual · contratos",
@@ -46,14 +50,17 @@ export default async function HomePage() {
     Promise.all(slugs.map((s) => api.clinicFaqs(s).catch((): Faq[] => []))),
   ]);
 
-  const fotos = aplanarMuro(clinics, galleries);
-
-  const faqs = faqsPorClinica.flatMap((lista, i) =>
-    lista.map((faq) => ({ ...faq, clinicName: clinics[i]?.name ?? faq.clinicSlug })),
-  );
-
   const porOrden = <T extends { sortOrder?: number }>(lista: T[]) =>
     [...lista].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+  const fotos = aplanarMuro(clinics, galleries);
+
+  const totalPreguntas = faqsPorClinica.reduce((n, l) => n + l.length, 0);
+  const preguntas = faqsPorClinica.flatMap((lista, i) =>
+    porOrden(lista)
+      .slice(0, PREVIA_PREGUNTAS_POR_CLINICA)
+      .map((faq) => ({ ...faq, clinicName: clinics[i]?.name ?? faq.clinicSlug })),
+  );
 
   return (
     <>
@@ -265,19 +272,42 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══ PREGUNTAS FRECUENTES ══════════════════════════════════════════ */}
-      <section className="seccion" id="preguntas" style={{ borderBottom: 0 }}>
-        <div className="envoltura">
-          <div className="seccion__cabeza">
-            <div>
-              <p className="etiqueta etiqueta--rojo">Consultas</p>
-              <h2>Preguntas frecuentes</h2>
+      {/* ══ PREGUNTAS FRECUENTES ═════════════════════════════════════════ */}
+      {/* Solo una muestra. El catálogo entero está en /preguntas, con buscador:
+          son cientos, y una lista así de larga en la portada no la lee nadie. */}
+      {preguntas.length > 0 && (
+        <section className="seccion" id="preguntas" style={{ borderBottom: 0 }}>
+          <div className="envoltura">
+            <div className="seccion__cabeza">
+              <div>
+                <p className="etiqueta etiqueta--rojo">Consultas</p>
+                <h2>Preguntas frecuentes</h2>
+              </div>
             </div>
-          </div>
 
-          <HomeFaq clinics={clinics} faqs={faqs} />
-        </div>
-      </section>
+            <div className="faq">
+              {preguntas.map((faq, i) => (
+                <details className="faq__item" key={faq.id}>
+                  <summary data-n={numeral(i)}>
+                    {faq.question}
+                    <span className="faq__signo" />
+                  </summary>
+                  <div className="faq__respuesta">
+                    <span className="faq__clinica">{faq.clinicName}</span>
+                    <div dangerouslySetInnerHTML={{ __html: faq.answerHtml }} />
+                  </div>
+                </details>
+              ))}
+            </div>
+
+            <Link className="ver-todo" href="/preguntas">
+              {totalPreguntas > preguntas.length
+                ? `Ver las ${totalPreguntas} preguntas`
+                : "Ver todas las preguntas"}
+            </Link>
+          </div>
+        </section>
+      )}
     </>
   );
 }

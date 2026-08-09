@@ -39,7 +39,7 @@ const ENLACES: { href: string; texto: string; ruta?: string }[] = [
   { href: "/#equipo", texto: "Equipo" },
   { href: "/actividad", texto: "Actividad", ruta: "/actividad" },
   { href: "/ingreso", texto: "Formulario de ingreso", ruta: "/ingreso" },
-  { href: "/#preguntas", texto: "Preguntas" },
+  { href: "/preguntas", texto: "Preguntas", ruta: "/preguntas" },
 ];
 
 export function SiteHeader({ copy }: { copy: WebPageCopy }) {

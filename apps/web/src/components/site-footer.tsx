@@ -42,7 +42,7 @@ export async function SiteFooter({ copy }: { copy: WebPageCopy }) {
                 <Link href="/ingreso">Formulario de ingreso</Link>
               </li>
               <li>
-                <Link href="/#preguntas">Preguntas frecuentes</Link>
+                <Link href="/preguntas">Preguntas frecuentes</Link>
               </li>
             </ul>
           </div>
