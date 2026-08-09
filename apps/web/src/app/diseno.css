@@ -1043,3 +1043,29 @@ html{scroll-behavior:smooth}
 
 /* En las cifras la marca ocupa el lugar del valor, así que va a su tamaño. */
 .cifra__marca{height:1.5rem;width:2.52rem;vertical-align:0}
+
+/* ── Cifras: separación respecto a los filetes ───────────────────────────
+   Cada bloque traía relleno a la derecha pero cero a la izquierda, así que su
+   texto nacía pegado al filete del bloque anterior. Solo la primera cifra debe
+   ir al ras, para alinearse con el resto de la página; las demás necesitan aire
+   después de la línea.
+
+   La rejilla es auto-fit, de modo que al angostar se reordena sola. Se fija en
+   dos columnas y luego en una para poder decir en cada caso cuál cifra abre fila
+   —esa va al ras— y cuál cierra —esa no lleva filete a la derecha. */
+.cifra{padding-left:1.5rem}
+.cifra:first-child{padding-left:0}
+
+@media (max-width:860px){
+  .cifras{grid-template-columns:1fr 1fr}
+  .cifra:nth-child(odd){padding-left:0}
+  .cifra:nth-child(even){border-right:0}
+  .cifra:nth-child(-n+2){border-bottom:1px solid var(--borde-fino)}
+}
+
+@media (max-width:640px){
+  .cifras{grid-template-columns:1fr}
+  .cifra{padding-left:0;padding-right:0}
+  .cifra:nth-child(-n+3){border-bottom:1px solid var(--borde-fino)}
+  .cifra:last-child{border-bottom:0}
+}
