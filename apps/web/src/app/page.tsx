@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Clinic, Faq, TeamMember } from "@hubnegocios/api-client";
 import { HomeFaq } from "@/components/home-faq";
 import { IngresoFormulario } from "@/components/ingreso-formulario";
-import { LogoUdp } from "@/components/logo-udp";
+import { MarcaUdp } from "@/components/logo-udp";
 import { api } from "@/lib/api";
 
 /* La home se regenera cada minuto en vez de renderizarse en cada visita. El
@@ -111,7 +111,7 @@ export default async function HomePage() {
             </div>
             <div className="cifra">
               <span className="cifra__valor">
-                <LogoUdp className="cifra__logo" />
+                <MarcaUdp className="cifra__marca" />
               </span>
               <span className="cifra__etiqueta">
                 Facultad de Derecho, Universidad Diego Portales

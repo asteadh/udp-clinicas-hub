@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { LogoUdp } from "@/components/logo-udp";
+import { NombreSitio } from "@/components/logo-udp";
 import type { WebPageCopy } from "@/lib/copy";
 
 /* Cabecera de la pieza de diseño, reproducida tal cual: filete institucional,
@@ -85,10 +85,11 @@ export function SiteHeader({ copy }: { copy: WebPageCopy }) {
       <header className="cabecera" ref={cabecera} data-menu={menuAbierto ? "abierto" : undefined}>
         <div className="envoltura cabecera__interior">
           <Link href="/" className="marca">
-            <LogoUdp className="marca__logo" />
-            <span className="marca__texto">
-              <span className="marca__nombre">{copy.siteName}</span>
-              <span className="marca__unidad">Facultad de Derecho</span>
+            <NombreSitio className="marca__nombre" />
+            <span className="marca__unidad">
+              Facultad de Derecho
+              <br />
+              Universidad Diego Portales
             </span>
           </Link>
 

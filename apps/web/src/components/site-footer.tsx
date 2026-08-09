@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoUdp } from "@/components/logo-udp";
+import { NombreSitio } from "@/components/logo-udp";
 import { api } from "@/lib/api";
 import type { WebPageCopy } from "@/lib/copy";
 
@@ -14,8 +14,9 @@ export async function SiteFooter({ copy }: { copy: WebPageCopy }) {
       <div className="envoltura">
         <div className="pie__grid">
           <div>
-            <LogoUdp variante="blanco" className="pie__logo" />
-            <p className="pie__marca">{copy.siteName}</p>
+            <p className="pie__marca">
+              <NombreSitio />
+            </p>
             <p className="pie__desc">{copy.footer.description}</p>
           </div>
           <div>
@@ -47,7 +48,9 @@ export async function SiteFooter({ copy }: { copy: WebPageCopy }) {
           </div>
         </div>
         <div className="pie__legal">
-          <span>{copy.footer.rights}</span>
+          <span>
+            <NombreSitio /> — Universidad Diego Portales
+          </span>
           <span>Facultad de Derecho</span>
         </div>
       </div>

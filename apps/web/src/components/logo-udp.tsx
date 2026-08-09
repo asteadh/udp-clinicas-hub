@@ -1,35 +1,28 @@
-import Image from "next/image";
+/* Marca UDP en línea: sustituye la palabra «UDP» allí donde el sitio la escribe,
+   con las tres letras del logotipo institucional y nada más — sin el nombre
+   desplegado al lado, que era redundante junto a un texto que ya decía UDP.
 
-/* Logotipo institucional de la Universidad Diego Portales, descargado de su
-   propio sitio: UDP_LogoRGB_2lineas_Color_SinFondo.png y su variante Blanco.
-   Verificados por análisis de píxeles: el de color usa exactamente el rojo y el
-   gris institucionales, que son los mismos valores de los que sale la paleta del
-   sitio (ver hubColors en packages/ui/src/tokens.ts).
+   Recortada de UDP_LogoRGB_2lineas_Color_SinFondo.png y de su variante Blanco,
+   descargadas del sitio de la universidad. El recorte se calculó por la caja de
+   los píxeles rojos: 193x115 px, justo las letras.
 
-   Se cargan las dos versiones y se alternan por CSS: el gris del logotipo a
-   color desaparecería sobre el papel oscuro, y en el pie —que es oscuro en
-   ambos temas— siempre va el blanco. */
+   Se pinta como fondo de un <span>, no como <img>, y esa es la razón: con dos
+   imágenes superpuestas y una oculta por CSS, ambas llegaban a verse a la vez
+   mientras la hoja cargaba. Como fondo solo se descarga y se pinta la que
+   corresponde al tema. Se dimensiona en `em`, así que sigue el tamaño del texto
+   que la rodea. */
 
-export function LogoUdp({
-  className = "",
-  variante = "auto",
-}: {
-  className?: string;
-  /** "auto" alterna con el tema. "blanco" fuerza la versión invertida. */
-  variante?: "auto" | "blanco";
-}) {
-  const alt = "Universidad Diego Portales";
-
-  if (variante === "blanco") {
-    return (
-      <Image className={`logo-udp ${className}`.trim()} src="/udp-blanco.png" alt={alt} width={540} height={132} />
-    );
-  }
-
+export function MarcaUdp({ className = "" }: { className?: string }) {
   return (
-    <span className={`logo-udp ${className}`.trim()}>
-      <Image className="logo-udp__claro" src="/udp-color.png" alt={alt} width={534} height={130} />
-      <Image className="logo-udp__oscuro" src="/udp-blanco.png" alt="" aria-hidden width={540} height={132} />
+    <span className={`udp ${className}`.trim()} role="img" aria-label="UDP" />
+  );
+}
+
+/** El nombre del sitio con la marca en el lugar de las tres letras. */
+export function NombreSitio({ className = "" }: { className?: string }) {
+  return (
+    <span className={className}>
+      Hub Negocios <MarcaUdp />
     </span>
   );
 }

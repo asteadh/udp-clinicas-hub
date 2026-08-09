@@ -1017,38 +1017,29 @@ html{scroll-behavior:smooth}
   .ingreso__codigo{max-width:200px}
 }
 
-/* ── Logotipo institucional UDP ──────────────────────────────────────────
-   Dos versiones cargadas, una visible según el tema: el gris del logotipo a
-   color (#3F3E3E) se pierde sobre el papel oscuro. En el pie va siempre el
-   blanco, porque el pie es oscuro en ambos temas. */
-.logo-udp{display:inline-block;line-height:0}
-.logo-udp img{width:100%;height:auto;display:block}
-.logo-udp__oscuro{display:none}
-:root[data-theme="dark"] .logo-udp__claro{display:none}
-:root[data-theme="dark"] .logo-udp__oscuro{display:block}
+/* ── Marca UDP en línea ──────────────────────────────────────────────────
+   Sustituye la palabra «UDP» dentro del texto. Va como fondo y no como <img>:
+   con dos imágenes superpuestas y una oculta por CSS, ambas se llegaban a ver
+   mientras la hoja cargaba. Como fondo solo se pinta la del tema en curso.
+
+   Se dimensiona en `em`, así que acompaña al tamaño del texto que la rodea. La
+   relación del recorte es 193x115, de ahí el ancho. El desplazamiento vertical
+   compensa el descendente de la «p», que cuelga bajo la línea base. */
+.udp{
+  display:inline-block;
+  height:.78em;
+  width:1.31em;              /* .78em x 193/115 */
+  background:url("/udp-marca.png") no-repeat center/contain;
+  vertical-align:-.13em;
+  margin-inline:.04em;
+}
+:root[data-theme="dark"] .udp{background-image:url("/udp-marca-blanco.png")}
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .logo-udp__claro{display:none}
-  :root:not([data-theme="light"]) .logo-udp__oscuro{display:block}
+  :root:not([data-theme="light"]) .udp{background-image:url("/udp-marca-blanco.png")}
 }
 
-/* Cabecera: el logotipo abre la marca y el nombre del sitio va al costado,
-   separado por el mismo filete que antes dividía nombre y unidad. */
-.marca__logo{width:104px;flex-shrink:0}
-.marca__texto{
-  display:flex;flex-direction:column;gap:.12rem;
-  border-left:1px solid var(--borde);padding-left:.8rem;
-}
-.marca{align-items:center;gap:.85rem}
+/* En el pie la superficie es oscura en ambos temas: siempre la blanca. */
+.pie .udp{background-image:url("/udp-marca-blanco.png")}
 
-/* La unidad ya no repite el nombre de la universidad: lo dice el logotipo. */
-.marca__unidad{border-left:0;padding-left:0;max-width:none}
-
-.pie__logo{width:132px;margin-bottom:1.1rem}
-
-/* En las cifras, el logotipo ocupa el lugar del valor. */
-.cifra__logo{width:118px;margin-bottom:.15rem}
-
-@media (max-width:640px){
-  .marca__logo{width:84px}
-  .marca__nombre{font-size:1.12rem}
-}
+/* En las cifras la marca ocupa el lugar del valor, así que va a su tamaño. */
+.cifra__marca{height:1.5rem;width:2.52rem;vertical-align:0}
