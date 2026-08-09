@@ -39,7 +39,8 @@ export default async function HomePage() {
   const clinics: Clinic[] = await api.clinics().catch(() => []);
   const slugs = clinics.map((c) => c.slug);
 
-  const [teams, galleries, faqsPorClinica] = await Promise.all([
+  const [destacada, teams, galleries, faqsPorClinica] = await Promise.all([
+    api.featuredArticle().then((r) => r.article).catch(() => null),
     Promise.all(slugs.map((s) => api.clinicTeam(s).catch((): TeamMember[] => []))),
     Promise.all(slugs.map((s) => api.clinicGallery(s).catch((): GalleryAlbum[] => []))),
     Promise.all(slugs.map((s) => api.clinicFaqs(s).catch((): Faq[] => []))),
@@ -219,6 +220,26 @@ export default async function HomePage() {
               <h2>Clases y actividades</h2>
             </div>
           </div>
+
+          {destacada && (
+            <article className="destacada-col">
+              <div className="columna__meta">
+                <span className="columna__clinica">
+                  {clinics
+                    .find((c) => c.slug === destacada.clinicSlug)
+                    ?.name.replace(/^Clínica (de )?/, "") ?? destacada.clinicSlug}
+                </span>
+                <span>Columna destacada</span>
+              </div>
+              <h3 className="destacada-col__titulo">
+                <Link href={`/articulos/${destacada.slug}`}>{destacada.title}</Link>
+              </h3>
+              {destacada.excerpt && (
+                <p className="destacada-col__bajada">{destacada.excerpt}</p>
+              )}
+              <p className="columna__firma">{destacada.authorName}</p>
+            </article>
+          )}
 
           <Muro clinics={[]} fotos={fotos.slice(0, PREVIA_FOTOS)} dateLocale={copy.dateLocale} />
 

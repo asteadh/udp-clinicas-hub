@@ -104,6 +104,18 @@ FROM articles WHERE is_published = true
 ORDER BY published_at DESC LIMIT $1 OFFSET $2`, pageSize, offset)
 }
 
+// GetFeaturedArticle returns the single article marked as featured, which the
+// home shows as a preview. A partial unique index guarantees there is at most
+// one; nil comes back when nobody has chosen yet.
+func (r *Repository) GetFeaturedArticle(ctx context.Context) (map[string]any, error) {
+	return r.oneJSON(ctx, `
+SELECT jsonb_build_object(
+  'id', id, 'clinicSlug', clinic_slug, 'slug', slug, 'title', title, 'excerpt', excerpt,
+  'coverImageUrl', cover_image_url, 'authorName', author_name, 'publishedAt', published_at
+)
+FROM articles WHERE is_featured = true AND is_published = true`)
+}
+
 func (r *Repository) GetArticleBySlug(ctx context.Context, clinicSlug string, slug string) (map[string]any, error) {
 	return r.oneJSON(ctx, `
 SELECT jsonb_build_object(

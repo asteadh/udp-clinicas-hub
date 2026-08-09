@@ -267,6 +267,7 @@ export default function AdminConsole() {
                 updateArticle={(id, body) => admin!.updateArticle(id, body)}
                 deleteArticle={(id) => admin!.deleteArticle(id)}
                 publishArticle={(id) => admin!.publishArticle(id)}
+                featureArticle={(id) => admin!.featureArticle(id)}
                 refresh={() => refresh("articles")}
                 copy={copy}
               />

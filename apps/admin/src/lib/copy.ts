@@ -86,6 +86,8 @@ export const adminPageCopy = {
     reorderHint: "Arrastra las filas o usa los botones para reordenar.",
   },
   articlesPanel: {
+    feature: "Destacar en la portada",
+    featured: "Destacada",
     title: "Artículos",
     newArticle: "Nuevo artículo",
     editArticle: "Editar artículo",

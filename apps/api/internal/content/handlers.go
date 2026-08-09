@@ -22,6 +22,7 @@ func (h *Handlers) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/clinics/{slug}/faqs", h.faqs)
 	mux.HandleFunc("GET /api/clinics/{slug}/articles", h.clinicArticles)
 	mux.HandleFunc("GET /api/articles", h.articles)
+	mux.HandleFunc("GET /api/articles/featured", h.featuredArticle)
 	mux.HandleFunc("GET /api/articles/{slug}", h.article)
 	mux.HandleFunc("GET /api/clinics/{slug}/gallery", h.gallery)
 	mux.HandleFunc("GET /api/gallery/albums/{id}", h.galleryAlbum)
@@ -74,6 +75,17 @@ func (h *Handlers) articles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"articles": values})
+}
+
+// La ruta va declarada antes que /api/articles/{slug} para que "featured" no se
+// interprete como el slug de una columna.
+func (h *Handlers) featuredArticle(w http.ResponseWriter, r *http.Request) {
+	value, err := h.repo.GetFeaturedArticle(r.Context())
+	if err != nil {
+		writeNotFoundable(w, err)
+		return
+	}
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"article": value})
 }
 
 func (h *Handlers) article(w http.ResponseWriter, r *http.Request) {

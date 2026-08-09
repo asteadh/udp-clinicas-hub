@@ -1084,3 +1084,22 @@ html{scroll-behavior:smooth}
 /* En el inicio se marca la propia marca, que es el enlace a la home. */
 .marca[aria-current="page"] .marca__nombre{color:var(--tinta)}
 .marca[aria-current="page"]{cursor:default}
+
+/* ── Columna destacada en la portada ─────────────────────────────────────
+   La elige el profesor desde el panel y ocupa el hueco de honor de la home,
+   sobre las fotografías. Se distingue del resto de columnas por tamaño y por el
+   filete superior, no por un color de fondo: el rojo sigue siendo trazo. */
+.destacada-col{
+  border-top:2px solid var(--tinta);padding:1.6rem 0 2.4rem;margin-bottom:2.6rem;
+  display:flex;flex-direction:column;gap:.7rem;position:relative;
+}
+.destacada-col__titulo{
+  font-family:var(--serif);font-size:clamp(1.6rem,3.2vw,2.35rem);font-weight:600;
+  line-height:1.16;letter-spacing:-.018em;color:var(--tinta);margin:0;
+  max-width:24ch;text-wrap:balance;transition:color .18s;
+}
+.destacada-col__titulo a{text-decoration:none}
+.destacada-col:hover .destacada-col__titulo{color:var(--udp-rojo-texto)}
+.destacada-col__bajada{
+  font-size:1.08rem;line-height:1.56;color:var(--tinta-media);margin:0;max-width:56ch;
+}

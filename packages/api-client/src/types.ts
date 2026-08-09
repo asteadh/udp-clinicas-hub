@@ -109,6 +109,7 @@ export interface Article extends JsonRecord {
   coverImageUrl?: string;
   authorName?: string;
   isPublished?: boolean;
+  isFeatured?: boolean;
   publishedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
