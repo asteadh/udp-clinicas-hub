@@ -10,6 +10,12 @@ import { useEffect } from "react";
  * bio_html, description_html). Emits sanitized-on-the-server HTML via
  * onChange — the Go API re-sanitizes with bluemonday regardless, so this
  * only needs to produce reasonable markup, not guarantee safety client-side.
+ *
+ * The toolbar carries what a clinic writing a column actually reaches for: bold,
+ * italic, both lists, two heading levels, a blockquote for citing a statute, and
+ * links. H3 and the quote were reachable by keyboard shortcut but had no button,
+ * so in practice nobody used them. The public site already styles everything
+ * StarterKit can emit, whether it arrives from these buttons or from a paste.
  */
 export function HubRichTextEditor({
   value,
@@ -82,6 +88,20 @@ export function HubRichTextEditor({
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         >
           H2
+        </button>
+        <button
+          type="button"
+          aria-pressed={editor.isActive("heading", { level: 3 })}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        >
+          H3
+        </button>
+        <button
+          type="button"
+          aria-pressed={editor.isActive("blockquote")}
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        >
+          Cita
         </button>
         <button
           type="button"
