@@ -109,6 +109,7 @@ export interface Article extends JsonRecord {
   coverImageUrl?: string;
   authorName?: string;
   isPublished?: boolean;
+  isFeatured?: boolean;
   publishedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
@@ -119,6 +120,7 @@ export interface GalleryPhoto extends JsonRecord {
   imageUrl: string;
   caption?: string;
   sortOrder?: number;
+  createdAt?: string;
 }
 
 export interface GalleryAlbum extends JsonRecord {

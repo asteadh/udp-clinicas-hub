@@ -3,10 +3,10 @@
 
 :root,
 [data-theme="light"] {
-  --hub-blue: #e2383f;
-  --hub-deep-blue: #27282f;
-  --hub-blue-soft: #fbe4e5;
-  --hub-sky: #b8323a;
+  --hub-blue: #d2232a;
+  --hub-deep-blue: #3f3e3e;
+  --hub-blue-soft: #f7e3e4;
+  --hub-sky: #a81b21;
   --hub-gold: #b08d33;
   --hub-gold-deep: #7a5f1f;
   --hub-honey: #e4ce8e;
@@ -17,25 +17,25 @@
   --hub-mint: #1f8a5f;
   --hub-mint-soft: #e3f4ec;
   --hub-mint-text: #175e42;
-  --hub-warm: #f7f5f0;
-  --hub-warm-surface: #f1ece1;
+  --hub-warm: #f8f7f4;
+  --hub-warm-surface: #e7e4d9;
   --hub-surface: #ffffff;
-  --hub-border: #d8d2c4;
-  --hub-muted: #5b6570;
-  --hub-muted-soft: #9aa2ab;
-  --hub-ink: #1c2733;
+  --hub-border: #d8d3c6;
+  --hub-muted: #6d6d6d;
+  --hub-muted-soft: #9c978b;
+  --hub-ink: #1c1c1c;
   --hub-radius: 8px;
-  --hub-shadow: 0 18px 50px rgba(28, 39, 51, 0.12);
+  --hub-shadow: 0 18px 50px rgba(28, 28, 28, 0.12);
   color-scheme: light;
   color: var(--hub-ink);
   background: var(--hub-warm);
 }
 
 [data-theme="dark"] {
-  --hub-blue: #f0625f;
-  --hub-deep-blue: #1a1b20;
-  --hub-blue-soft: #3a1518;
-  --hub-sky: #f2a8a3;
+  --hub-blue: #f54842;
+  --hub-deep-blue: #111110;
+  --hub-blue-soft: #2e1a19;
+  --hub-sky: #f5776f;
   --hub-gold: #d4b45f;
   --hub-gold-deep: #f0d48a;
   --hub-honey: #4a3d1d;
@@ -46,13 +46,13 @@
   --hub-mint: #4fbe8d;
   --hub-mint-soft: #123227;
   --hub-mint-text: #8fe0be;
-  --hub-warm: #12161b;
-  --hub-warm-surface: #1e242c;
-  --hub-surface: #1a1f26;
-  --hub-border: #333b45;
-  --hub-muted: #a0a8b1;
-  --hub-muted-soft: #5e666f;
-  --hub-ink: #edeff2;
+  --hub-warm: #1a1917;
+  --hub-warm-surface: #26241f;
+  --hub-surface: #222120;
+  --hub-border: #35332f;
+  --hub-muted: #a09b92;
+  --hub-muted-soft: #75716a;
+  --hub-ink: #e4e1da;
   --hub-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
   color-scheme: dark;
   color: var(--hub-ink);

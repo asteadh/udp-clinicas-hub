@@ -17,6 +17,10 @@ export default function GlobalError({
     console.error("Global web error:", error);
   }, [error]);
 
+  /* Esta pantalla se renderiza fuera de globals.css, así que es de los pocos
+     sitios donde los colores van literales — por eso el validador de tokens la
+     exime. La contrapartida es que no se actualizan solas: si cambia la paleta
+     de packages/ui/src/tokens.ts, hay que replicarla aquí a mano. */
   return (
     <html>
       <head>
@@ -27,13 +31,13 @@ export default function GlobalError({
           margin: 0,
           padding: 0,
           minHeight: "100vh",
-          background: "linear-gradient(180deg, color-mix(in srgb, #F7F5F0 96%, transparent), color-mix(in srgb, #ffffff 90%, transparent)), #F7F5F0",
+          background: "linear-gradient(180deg, color-mix(in srgb, #F8F7F4 96%, transparent), color-mix(in srgb, #FFFFFF 90%, transparent)), #F8F7F4",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          fontFamily: "Inter, system-ui, -apple-system, sans-serif",
-          color: "#1C2733",
+          fontFamily: '"Hanken Grotesk", system-ui, -apple-system, sans-serif',
+          color: "#1C1C1C",
         }}
       >
         <div
@@ -77,14 +81,14 @@ export default function GlobalError({
                 fontSize: "1.5rem",
                 fontWeight: "bold",
                 marginBottom: "1rem",
-                color: "#1C2733",
+                color: "#1C1C1C",
               }}
             >
               {copy.globalTitle}
             </h2>
             <p
               style={{
-                color: "#5B6570",
+                color: "#6D6D6D",
                 fontSize: "1rem",
                 lineHeight: "1.7",
               }}
@@ -109,8 +113,10 @@ export default function GlobalError({
                 fontWeight: "500",
                 border: "none",
                 cursor: "pointer",
-                background: "#0B3D62",
-                color: "#ffffff",
+                /* Tinta, no rojo: el rojo institucional va como trazo, nunca
+                   como relleno de botón. */
+                background: "#1C1C1C",
+                color: "#F8F7F4",
                 transition: "all 0.2s",
               }}
               onMouseOver={(e) => {

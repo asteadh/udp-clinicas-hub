@@ -15,6 +15,7 @@ export function ArticlesPanel({
   updateArticle,
   deleteArticle,
   publishArticle,
+  featureArticle,
   refresh,
   copy,
 }: {
@@ -26,6 +27,7 @@ export function ArticlesPanel({
   updateArticle: (id: string, body: Record<string, unknown>) => Promise<unknown>;
   deleteArticle: (id: string) => Promise<unknown>;
   publishArticle: (id: string) => Promise<unknown>;
+  featureArticle: (id: string) => Promise<unknown>;
   refresh: () => void;
   copy: AdminPageCopy;
 }) {
@@ -50,6 +52,14 @@ export function ArticlesPanel({
 
   async function publish(id: string) {
     await publishArticle(id);
+    refresh();
+  }
+
+  /* Destacar es exclusivo: la home tiene un solo hueco, así que elegir una
+     libera a la anterior. Destacar también publica, porque un borrador no puede
+     encabezar la portada. */
+  async function feature(id: string) {
+    await featureArticle(id);
     refresh();
   }
 
@@ -79,15 +89,23 @@ export function ArticlesPanel({
                 <tr key={row.id}>
                   <td>{row.title}</td>
                   <td>{row.authorName}</td>
-                  <td>
+                  <td className="hub-actions">
                     <HubStatusPill tone={row.isPublished ? "success" : "neutral"}>
                       {row.isPublished ? copy.common.published : copy.common.draft}
                     </HubStatusPill>
+                    {row.isFeatured ? (
+                      <HubStatusPill tone="success">{copy.articlesPanel.featured}</HubStatusPill>
+                    ) : null}
                   </td>
                   <td className="hub-actions">
                     {!row.isPublished && (
                       <HubButton type="button" variant="ghost" onClick={() => publish(row.id)}>
                         {copy.common.publish}
+                      </HubButton>
+                    )}
+                    {!row.isFeatured && (
+                      <HubButton type="button" variant="ghost" onClick={() => feature(row.id)}>
+                        {copy.articlesPanel.feature}
                       </HubButton>
                     )}
                     <HubButton type="button" variant="ghost" disabled={loadingId === row.id} onClick={() => edit(row)}>

@@ -23,6 +23,7 @@ func (h *Handlers) RegisterContent(mux *http.ServeMux) {
 	mux.HandleFunc("PATCH /api/admin/articles/{id}", h.requireClinicWrite(PermissionArticlesWrite, h.articleClinicFromID, h.updateArticle))
 	mux.HandleFunc("DELETE /api/admin/articles/{id}", h.requireClinicWrite(PermissionArticlesWrite, h.articleClinicFromID, h.deleteArticle))
 	mux.HandleFunc("POST /api/admin/articles/{id}/publish", h.requireClinicWrite(PermissionArticlesWrite, h.articleClinicFromID, h.publishArticle))
+	mux.HandleFunc("POST /api/admin/articles/{id}/feature", h.requireClinicWrite(PermissionArticlesWrite, h.articleClinicFromID, h.featureArticle))
 
 	// Gallery.
 	mux.HandleFunc("GET /api/admin/gallery/albums", h.requireAdmin(h.listAlbums))

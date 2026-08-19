@@ -58,8 +58,8 @@ func (r *Repository) ListClinics(ctx context.Context) ([]map[string]any, error) 
 	return r.listJSON(ctx, `
 SELECT jsonb_build_object(
   'slug', slug, 'name', name, 'shortDescription', short_description,
-  'icon', icon, 'colorPrimary', color_primary, 'imageUrl', image_url,
-  'contactEmail', contact_email, 'sortOrder', sort_order
+  'descriptionHtml', description_html, 'icon', icon, 'colorPrimary', color_primary,
+  'imageUrl', image_url, 'contactEmail', contact_email, 'sortOrder', sort_order
 )
 FROM clinics WHERE is_active = true ORDER BY sort_order, name`)
 }
@@ -104,6 +104,18 @@ FROM articles WHERE is_published = true
 ORDER BY published_at DESC LIMIT $1 OFFSET $2`, pageSize, offset)
 }
 
+// GetFeaturedArticle returns the single article marked as featured, which the
+// home shows as a preview. A partial unique index guarantees there is at most
+// one; nil comes back when nobody has chosen yet.
+func (r *Repository) GetFeaturedArticle(ctx context.Context) (map[string]any, error) {
+	return r.oneJSON(ctx, `
+SELECT jsonb_build_object(
+  'id', id, 'clinicSlug', clinic_slug, 'slug', slug, 'title', title, 'excerpt', excerpt,
+  'coverImageUrl', cover_image_url, 'authorName', author_name, 'publishedAt', published_at
+)
+FROM articles WHERE is_featured = true AND is_published = true`)
+}
+
 func (r *Repository) GetArticleBySlug(ctx context.Context, clinicSlug string, slug string) (map[string]any, error) {
 	return r.oneJSON(ctx, `
 SELECT jsonb_build_object(
@@ -128,7 +140,7 @@ func (r *Repository) ListGalleryAlbumsByClinic(ctx context.Context, clinicSlug s
 	albums, err := r.listJSON(ctx, `
 SELECT jsonb_build_object(
   'id', id, 'clinicSlug', clinic_slug, 'title', title, 'description', description,
-  'coverImageUrl', cover_image_url, 'sortOrder', sort_order
+  'coverImageUrl', cover_image_url, 'sortOrder', sort_order, 'createdAt', created_at
 )
 FROM gallery_albums WHERE clinic_slug = $1 AND is_published = true ORDER BY sort_order, created_at`, clinicSlug)
 	if err != nil {
@@ -136,7 +148,7 @@ FROM gallery_albums WHERE clinic_slug = $1 AND is_published = true ORDER BY sort
 	}
 	for _, album := range albums {
 		photos, err := r.listJSON(ctx, `
-SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order)
+SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order, 'createdAt', created_at)
 FROM gallery_photos WHERE album_id = $1 ORDER BY sort_order, created_at`, album["id"])
 		if err != nil {
 			return nil, err
@@ -150,14 +162,14 @@ func (r *Repository) GetGalleryAlbum(ctx context.Context, albumID string) (map[s
 	album, err := r.oneJSON(ctx, `
 SELECT jsonb_build_object(
   'id', id, 'clinicSlug', clinic_slug, 'title', title, 'description', description,
-  'coverImageUrl', cover_image_url, 'sortOrder', sort_order
+  'coverImageUrl', cover_image_url, 'sortOrder', sort_order, 'createdAt', created_at
 )
 FROM gallery_albums WHERE id = $1 AND is_published = true`, albumID)
 	if err != nil {
 		return nil, err
 	}
 	photos, err := r.listJSON(ctx, `
-SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order)
+SELECT jsonb_build_object('id', id, 'imageUrl', image_url, 'caption', caption, 'sortOrder', sort_order, 'createdAt', created_at)
 FROM gallery_photos WHERE album_id = $1 ORDER BY sort_order, created_at`, albumID)
 	if err != nil {
 		return nil, err

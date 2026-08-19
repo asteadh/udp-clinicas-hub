@@ -1,98 +1,313 @@
 import Link from "next/link";
-import { HubBrandMark, HubSectionHeader, HubStatCard } from "@hubnegocios/ui";
-import { ArticleCard } from "@/components/article-card";
-import { ClinicCard } from "@/components/clinic-card";
-import { CtaBanner } from "@/components/cta-banner";
-import { HowItWorks } from "@/components/how-it-works";
+import type { Clinic, Faq, GalleryAlbum, TeamMember } from "@hubnegocios/api-client";
+import { IngresoFormulario } from "@/components/ingreso-formulario";
+import { MarcaUdp } from "@/components/logo-udp";
+import { Muro } from "@/components/muro";
 import { api } from "@/lib/api";
 import { webPageCopy as copy } from "@/lib/copy";
+import { aplanarMuro } from "@/lib/muro";
 
-export const dynamic = "force-dynamic";
+/* La home se regenera cada minuto en vez de renderizarse en cada visita. El
+   contenido lo publica un administrador de tanto en tanto, así que un minuto de
+   desfase no se nota, y evita repetir las catorce llamadas al API por visitante. */
+export const revalidate = 60;
 
-const statTones = ["gold", "blue", "mint", "coral"] as const;
+/* Reproduce la pieza de diseño aprobada (proyectos/hub-negocios-udp/index.html)
+   sección por sección, con el mismo marcado y las mismas clases. Lo que allí es
+   texto fijo, aquí sale de la base cuando existe el dato: clínicas, columnas,
+   equipo, álbumes y preguntas.
+
+   Equipo y galería no tienen endpoint global —el API solo responde por clínica,
+   porque el panel se organiza así— de modo que se piden las cuatro y se toma una
+   de cada una. */
+
+const PREVIA_FOTOS = 8;
+
+/* Cuántas preguntas asoma la home por clínica. El catálogo completo vive en
+   /preguntas; el profesor decide cuáles suben aquí con las flechas de orden del
+   panel, porque se toman las primeras de cada clínica. */
+const PREVIA_PREGUNTAS_POR_CLINICA = 2;
+
+const MATERIAS: Record<string, string> = {
+  insolvencia: "Ley 20.720 · SUPERIR · renegociación y liquidación",
+  "innovacion-emprendimiento": "Sociedades · propiedad intelectual · contratos",
+  laboral: "Despidos · finiquitos · tutela laboral",
+  tributario: "Observaciones y liquidaciones del SII · TTA",
+};
+
+function numeral(i: number) {
+  return String(i + 1).padStart(2, "0");
+}
 
 export default async function HomePage() {
-  const [clinics, articles] = await Promise.all([
-    api.clinics().catch(() => []),
-    api.articles(1).catch(() => []),
+  const clinics: Clinic[] = await api.clinics().catch(() => []);
+  const slugs = clinics.map((c) => c.slug);
+
+  const [destacada, teams, galleries, faqsPorClinica] = await Promise.all([
+    api.featuredArticle().then((r) => r.article).catch(() => null),
+    Promise.all(slugs.map((s) => api.clinicTeam(s).catch((): TeamMember[] => []))),
+    Promise.all(slugs.map((s) => api.clinicGallery(s).catch((): GalleryAlbum[] => []))),
+    Promise.all(slugs.map((s) => api.clinicFaqs(s).catch((): Faq[] => []))),
   ]);
 
-  const [featuredArticle, ...restArticles] = articles;
+  const porOrden = <T extends { sortOrder?: number }>(lista: T[]) =>
+    [...lista].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+  const fotos = aplanarMuro(clinics, galleries);
+
+  const totalPreguntas = faqsPorClinica.reduce((n, l) => n + l.length, 0);
+  const preguntas = faqsPorClinica.flatMap((lista, i) =>
+    porOrden(lista)
+      .slice(0, PREVIA_PREGUNTAS_POR_CLINICA)
+      .map((faq) => ({ ...faq, clinicName: clinics[i]?.name ?? faq.clinicSlug })),
+  );
 
   return (
-    <div className="grid gap-12">
-      <section className="hub-hero">
-        <div>
-          <HubSectionHeader eyebrow={copy.home.eyebrow} title={copy.home.title}>
-            {copy.home.subtitle}
-          </HubSectionHeader>
-          <div className="hub-actions">
-            <Link href="/ingreso" className="hub-button hub-button--primary hub-button--lg">
-              {copy.home.cta}
-            </Link>
-            <Link href="/clinicas" className="hub-button hub-button--outline hub-button--lg">
-              {copy.home.heroSecondaryCta}
-            </Link>
+    <>
+      {/* ══ PORTADA ═══════════════════════════════════════════════════════ */}
+      <section className="portada">
+        <div className="envoltura portada__grid">
+          <div>
+            <span className="portada__marca" />
+            <h1>
+              Cuatro clínicas jurídicas para las decisiones que <em>no admiten</em>{" "}
+              improvisación.
+            </h1>
+            <p className="portada__bajada">
+              Insolvencia, emprendimiento, trabajo e impuestos. Asesoría gratuita de la Facultad
+              de Derecho de la Universidad Diego Portales.
+            </p>
+            <a href="#ingreso" className="boton">
+              Presentar mi caso
+            </a>
+          </div>
+
+          <nav className="sumario" aria-label="Índice de clínicas">
+            <p className="etiqueta sumario__titulo">Las clínicas</p>
+            <ul className="sumario__lista">
+              {clinics.map((clinic, i) => (
+                <li key={clinic.slug}>
+                  <Link href={`/clinicas/${clinic.slug}`}>
+                    <span className="num">{numeral(i)}</span>
+                    <span>
+                      <span className="sumario__nombre">{clinic.name}</span>
+                      <span className="sumario__materia">
+                        {MATERIAS[clinic.slug] ?? clinic.shortDescription}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </section>
+
+      {/* ══ CIFRAS ════════════════════════════════════════════════════════ */}
+      <section className="seccion" style={{ paddingTop: "3rem", paddingBottom: "3rem" }}>
+        <div className="envoltura">
+          <div className="cifras">
+            <div className="cifra">
+              <span className="cifra__valor">4</span>
+              <span className="cifra__etiqueta">Clínicas jurídicas especializadas</span>
+            </div>
+            <div className="cifra">
+              <span className="cifra__valor">
+                <em>Sin costo</em>
+              </span>
+              <span className="cifra__etiqueta">Para quien consulta, en todas las etapas</span>
+            </div>
+            <div className="cifra">
+              <span className="cifra__valor">
+                <em>Supervisada</em>
+              </span>
+              <span className="cifra__etiqueta">Cada causa, por un profesor de la Facultad</span>
+            </div>
+            <div className="cifra">
+              <span className="cifra__valor">
+                <MarcaUdp className="cifra__marca" />
+              </span>
+              <span className="cifra__etiqueta">
+                Facultad de Derecho, Universidad Diego Portales
+              </span>
+            </div>
           </div>
         </div>
-        <div className="hub-hero__art">
-          <HubBrandMark width={320} height={320} />
-        </div>
       </section>
 
-      <section className="hub-grid">
-        {copy.home.stats.map((stat, index) => (
-          <HubStatCard key={stat.label} label={stat.label} value={stat.value} tone={statTones[index % statTones.length]} />
-        ))}
-      </section>
-
-      <HowItWorks title={copy.home.howItWorks.title} subtitle={copy.home.howItWorks.subtitle} steps={copy.home.howItWorks.steps} />
-
-      <section>
-        <HubSectionHeader title={copy.home.clinicsTitle}>{copy.home.clinicsSubtitle}</HubSectionHeader>
-        <div className="hub-grid">
-          {clinics.map((clinic) => (
-            <ClinicCard key={clinic.slug} clinic={clinic} copy={copy} />
-          ))}
-        </div>
-      </section>
-
-      {articles.length > 0 && (
-        <section>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-            <HubSectionHeader title={copy.home.articlesTitle} />
-            <Link href="/articulos" className="hub-button hub-button--link">
-              {copy.home.viewAll}
-            </Link>
+      {/* ══ EQUIPO ════════════════════════════════════════════════════════ */}
+      {/* Sin roles descritos ni retratos de relleno: el equipo cambia cada
+          semestre, así que la sección se llena solo con lo que cada clínica
+          publica desde su panel — nombre, cargo, biografía y foto, y solo si la
+          hay. Los estudiantes rotan y no aparecen salvo que se les cargue. */}
+      <section className="seccion" id="equipo">
+        <div className="envoltura">
+          <div className="seccion__cabeza">
+            <div>
+              <p className="etiqueta etiqueta--rojo">Equipo</p>
+              <h2>Quién te atiende</h2>
+            </div>
           </div>
-          <div className="grid gap-4">
-            {featuredArticle && (
-              <div style={{ position: "relative" }}>
-                <span className="hub-badge" style={{ position: "absolute", top: "0.75rem", left: "0.75rem", zIndex: 1 }}>
-                  {copy.home.featuredLabel}
+
+          {teams.some((t) => t.length > 0) ? (
+            <div className="nomina">
+              {clinics.map((clinic, i) => {
+                const equipo = porOrden(teams[i] ?? []);
+                if (equipo.length === 0) return null;
+                return (
+                  <div className="nomina__grupo" key={clinic.slug}>
+                    <div className="nomina__clinica">
+                      <span className="num">{numeral(i)}</span>
+                      <h3>
+                        <Link href={`/clinicas/${clinic.slug}`}>{clinic.name}</Link>
+                      </h3>
+                      {clinic.imageUrl && (
+                        <div className="marco nomina__foto">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={api.storageUrl(clinic.imageUrl)} alt={`Equipo de ${clinic.name}`} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="personas">
+                      {equipo.map((persona) => (
+                        <figure className="persona" key={persona.id}>
+                          {persona.photoUrl && (
+                            <div className="retrato">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={api.storageUrl(persona.photoUrl)} alt="" />
+                            </div>
+                          )}
+                          <figcaption>
+                            <p className="persona__nombre">{persona.fullName}</p>
+                            {persona.roleTitle && (
+                              <p className="persona__cargo">{persona.roleTitle}</p>
+                            )}
+                            {persona.bioHtml && (
+                              <div
+                                className="persona__bio hub-prose"
+                                dangerouslySetInnerHTML={{ __html: persona.bioHtml }}
+                              />
+                            )}
+                          </figcaption>
+                        </figure>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="galeria__nota galeria__nota--sola">
+              Cada clínica publica su equipo desde su panel de administración. En cuanto carguen
+              a sus integrantes aparecerán aquí, con el cargo y la biografía que cada una escriba.
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* Las columnas y el muro de fotografías viven en /actividad: es lo que
+          cambia, y la home queda para presentar las clínicas y recibir casos. */}
+      <section className="seccion" style={{ paddingTop: "3.5rem", paddingBottom: "3.5rem" }}>
+        <div className="envoltura">
+          <Link className="ver-todo" href="/actividad">
+            Ver columnas y actividades
+          </Link>
+        </div>
+      </section>
+
+      {/* ══ ACTIVIDADES (vista previa) ═══════════════════════════════════ */}
+      {/* La home enseña lo último que han publicado las clínicas y remite a
+          /actividad para el resto: es lo que hace que la página valga una
+          segunda visita. */}
+      <section className="seccion seccion--arena" id="actividades">
+        <div className="envoltura">
+          <div className="seccion__cabeza">
+            <div>
+              <p className="etiqueta etiqueta--rojo">Galería</p>
+              <h2>Clases y actividades</h2>
+            </div>
+          </div>
+
+          {destacada && (
+            <article className="destacada-col">
+              <div className="columna__meta">
+                <span className="columna__clinica">
+                  {clinics
+                    .find((c) => c.slug === destacada.clinicSlug)
+                    ?.name.replace(/^Clínica (de )?/, "") ?? destacada.clinicSlug}
                 </span>
-                <ArticleCard article={featuredArticle} copy={copy} />
+                <span>Columna destacada</span>
               </div>
-            )}
-            {restArticles.length > 0 && (
-              <div className="hub-grid">
-                {restArticles.slice(0, 2).map((article) => (
-                  <ArticleCard key={article.id} article={article} copy={copy} />
-                ))}
+              <h3 className="destacada-col__titulo">
+                <Link href={`/articulos/${destacada.slug}`}>{destacada.title}</Link>
+              </h3>
+              {destacada.excerpt && (
+                <p className="destacada-col__bajada">{destacada.excerpt}</p>
+              )}
+              <p className="columna__firma">{destacada.authorName}</p>
+            </article>
+          )}
+
+          <Muro clinics={[]} fotos={fotos.slice(0, PREVIA_FOTOS)} dateLocale={copy.dateLocale} />
+
+          {/* Siempre visible: aunque no haya fotografías todavía, en /actividad
+              están las columnas de opinión. */}
+          <Link className="ver-todo" href="/actividad">
+            Ver todas las actividades y columnas
+          </Link>
+        </div>
+      </section>
+
+      {/* ══ FORMULARIO DE INGRESO ═════════════════════════════════════════ */}
+      <section className="seccion seccion--arena" id="ingreso">
+        <div className="envoltura">
+          <div className="seccion__cabeza">
+            <div>
+              <p className="etiqueta etiqueta--rojo">Ingreso</p>
+              <h2>Formulario de ingreso</h2>
+            </div>
+          </div>
+
+          <IngresoFormulario />
+        </div>
+      </section>
+
+      {/* ══ PREGUNTAS FRECUENTES ═════════════════════════════════════════ */}
+      {/* Solo una muestra. El catálogo entero está en /preguntas, con buscador:
+          son cientos, y una lista así de larga en la portada no la lee nadie. */}
+      {preguntas.length > 0 && (
+        <section className="seccion" id="preguntas" style={{ borderBottom: 0 }}>
+          <div className="envoltura">
+            <div className="seccion__cabeza">
+              <div>
+                <p className="etiqueta etiqueta--rojo">Consultas</p>
+                <h2>Preguntas frecuentes</h2>
               </div>
-            )}
+            </div>
+
+            <div className="faq">
+              {preguntas.map((faq, i) => (
+                <details className="faq__item" key={faq.id}>
+                  <summary data-n={numeral(i)}>
+                    {faq.question}
+                    <span className="faq__signo" />
+                  </summary>
+                  <div className="faq__respuesta">
+                    <span className="faq__clinica">{faq.clinicName}</span>
+                    <div dangerouslySetInnerHTML={{ __html: faq.answerHtml }} />
+                  </div>
+                </details>
+              ))}
+            </div>
+
+            <Link className="ver-todo" href="/preguntas">
+              {totalPreguntas > preguntas.length
+                ? `Ver las ${totalPreguntas} preguntas`
+                : "Ver todas las preguntas"}
+            </Link>
           </div>
         </section>
       )}
-
-      <CtaBanner
-        title={copy.home.ctaBanner.title}
-        subtitle={copy.home.ctaBanner.subtitle}
-        primaryHref="/ingreso"
-        primaryLabel={copy.home.ctaBanner.primaryCta}
-        secondaryHref="/contacto"
-        secondaryLabel={copy.home.ctaBanner.secondaryCta}
-      />
-    </div>
+    </>
   );
 }

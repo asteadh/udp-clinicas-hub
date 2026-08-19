@@ -86,6 +86,8 @@ export const adminPageCopy = {
     reorderHint: "Arrastra las filas o usa los botones para reordenar.",
   },
   articlesPanel: {
+    feature: "Destacar en la portada",
+    featured: "Destacada",
     title: "Artículos",
     newArticle: "Nuevo artículo",
     editArticle: "Editar artículo",
@@ -157,7 +159,7 @@ export const adminPageCopy = {
     description: "Descripción",
     icon: "Icono",
     colorPrimary: "Color principal",
-    image: "Imagen",
+    image: "Foto del equipo completo",
     contactEmail: "Email de contacto",
     order: "Orden",
   },

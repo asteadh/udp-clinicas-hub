@@ -126,6 +126,10 @@ export class HubApiClient {
     return response.articles ?? [];
   }
 
+  async featuredArticle() {
+    return this.request<{ article: Article | null }>("/api/articles/featured");
+  }
+
   async article(slug: string) {
     const response = await this.request<{ article: Article }>(`/api/articles/${encodeURIComponent(slug)}`);
     return response.article;
@@ -221,6 +225,7 @@ export class HubApiClient {
       createArticle: (body: JsonRecord) => this.request<{ id: string }>("/api/admin/articles", { method: "POST", body, token }),
       updateArticle: (id: string, body: JsonRecord) => this.request<{ status: boolean }>(`/api/admin/articles/${encodeURIComponent(id)}`, { method: "PATCH", body, token }),
       deleteArticle: (id: string) => this.request<{ status: boolean }>(`/api/admin/articles/${encodeURIComponent(id)}`, { method: "DELETE", token }),
+      featureArticle: (id: string) => this.request<{ status: boolean }>(`/api/admin/articles/${encodeURIComponent(id)}/feature`, { method: "POST", token }),
       publishArticle: (id: string) => this.request<{ status: boolean }>(`/api/admin/articles/${encodeURIComponent(id)}/publish`, { method: "POST", token }),
 
       // Gallery

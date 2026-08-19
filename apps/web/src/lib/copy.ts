@@ -5,49 +5,10 @@
 export const webPageCopy = {
   dateLocale: "es-CL",
   siteName: "Hub Negocios UDP",
-  nav: {
-    home: "Inicio",
-    clinics: "Clínicas",
-    articles: "Artículos",
-    contact: "Contacto",
-    intake: "Ingreso",
-  },
   home: {
-    eyebrow: "Universidad Diego Portales",
-    title: "Hub Negocios UDP",
-    subtitle:
-      "Cuatro clínicas jurídicas que acompañan a personas y emprendedores con asesoría gratuita en insolvencia, innovación, derecho laboral y tributario.",
-    cta: "Contáctanos",
-    heroSecondaryCta: "Conoce las clínicas",
-    stats: [
-      { label: "Clínicas jurídicas", value: "4" },
-      { label: "Costo para el consultante", value: "Gratuito" },
-      { label: "Equipo", value: "Supervisado por profesores" },
-      { label: "Alojado en", value: "Facultad de Derecho UDP" },
-    ],
-    howItWorks: {
-      title: "¿Cómo funciona?",
-      subtitle: "Tres pasos simples para recibir asesoría de una de nuestras clínicas.",
-      steps: [
-        {
-          title: "Completa el formulario",
-          description: "Cuéntanos tu caso a través del formulario de ingreso, indicando la clínica correspondiente.",
-        },
-        {
-          title: "Un equipo revisa tu caso",
-          description: "Un integrante de la clínica evalúa tu solicitud y confirma si puede ser atendida.",
-        },
-        {
-          title: "Te contactamos",
-          description: "Te contactaremos para coordinar los siguientes pasos de tu asesoría.",
-        },
-      ],
-    },
-    clinicsTitle: "Nuestras clínicas",
-    clinicsSubtitle: "Cada clínica atiende consultas y publica contenido propio.",
-    articlesTitle: "Artículos recientes",
-    featuredLabel: "Destacado",
-    viewAll: "Ver todos",
+    /* La home reproduce la pieza de diseño con su texto en el marcado, para que
+       diseño e implementación se lean como una sola cosa. Lo que queda aquí es
+       lo que consumen OTRAS páginas: /clinicas/[slug] usa ctaBanner. */
     viewClinic: "Ver clínica",
     ctaBanner: {
       title: "¿Tienes una consulta legal?",
@@ -91,22 +52,6 @@ export const webPageCopy = {
     ctaBody: "Solicita asesoría gratuita de la clínica correspondiente.",
     ctaButton: "Solicitar ingreso",
   },
-  contact: {
-    title: "Contacto",
-    subtitle: "Cuéntanos tu consulta y la clínica correspondiente te responderá a la brevedad.",
-    sidebarTitle: "¿Qué pasa después?",
-    privacyNote: "Tu información solo será compartida con la clínica seleccionada y se usará únicamente para responder tu consulta.",
-    clinic: "Clínica",
-    selectClinic: "Selecciona una clínica",
-    name: "Nombre",
-    email: "Email",
-    phone: "Teléfono (opcional)",
-    message: "Mensaje",
-    submit: "Enviar consulta",
-    sending: "Enviando…",
-    success: "¡Gracias! Recibimos tu consulta y te contactaremos pronto.",
-    error: "No se pudo enviar tu consulta. Intenta nuevamente.",
-  },
   intake: {
     title: "Formulario de ingreso",
     subtitle:
@@ -114,7 +59,6 @@ export const webPageCopy = {
     sidebarTitle: "¿Qué pasa después?",
     privacyNote: "Tu información solo será compartida con la clínica seleccionada y se usará únicamente para evaluar tu solicitud de ingreso.",
     clinic: "Clínica",
-    selectClinic: "Selecciona una clínica",
     fullName: "Nombre completo",
     rut: "RUT",
     email: "Email",
@@ -132,12 +76,7 @@ export const webPageCopy = {
   footer: {
     description:
       "Clínicas jurídicas de la Facultad de Derecho UDP que ofrecen asesoría gratuita a personas y emprendedores.",
-    quickLinksTitle: "Enlaces rápidos",
-    clinicsTitle: "Clínicas",
     rights: "Hub Negocios UDP — Universidad Diego Portales",
-  },
-  common: {
-    noData: "No hay datos para mostrar.",
   },
   errorPages: {
     errorTitle: "Algo salió mal",

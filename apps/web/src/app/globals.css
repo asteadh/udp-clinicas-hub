@@ -30,62 +30,324 @@
 
 @theme {
   --font-sans:
-    var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    var(--font-hub-sans), "Hanken Grotesk", ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  --shadow-hub-card: 0 1px 3px rgba(28, 39, 51, 0.04), 0 4px 12px rgba(28, 39, 51, 0.04);
-  --shadow-hub-cta: 0 2px 6px rgba(11, 61, 98, 0.18);
-  --shadow-hub-hero: 0 12px 32px rgba(28, 39, 51, 0.08);
+  --font-serif:
+    var(--font-hub-serif), "EB Garamond", Georgia, "Times New Roman", serif;
+
+  --shadow-hub-card: 0 1px 3px rgba(28, 28, 28, 0.04), 0 4px 12px rgba(28, 28, 28, 0.04);
+  --shadow-hub-cta: 0 2px 6px rgba(210, 35, 42, 0.18);
+  --shadow-hub-hero: 0 12px 32px rgba(28, 28, 28, 0.08);
 }
 
-.site-header__inner {
-  width: min(1180px, calc(100% - 2rem));
-  margin: 0 auto;
-  padding: 1rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+/* El serif institucional vive en los títulos, sobre papel claro. */
+h1,
+h2,
+h3,
+.hub-heading {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.012em;
 }
 
-.site-footer {
-  border-top: 1px solid var(--hub-border);
-  margin-top: 3rem;
-  padding: 1.5rem 0;
+/* ── Contenido rico (.hub-prose) ─────────────────────────────────────────
+   Recibe el HTML que sale del editor del panel: article.bodyHtml,
+   faq.answerHtml y clinic.descriptionHtml.
+
+   El API sanitiza con bluemonday.UGCPolicy() (apps/api/internal/sanitize/html.go),
+   que admite bastante más de lo que expone la barra del editor: h1-h6, img,
+   figure, hr, table, pre/code y tachado. Todo eso llega al pegar desde Word o
+   Google Docs, así que se estila completo: si el admin lo puede escribir, la
+   página tiene que saber dibujarlo. */
+.hub-prose > *:first-child {
+  margin-top: 0;
 }
 
-.site-footer p {
-  color: var(--hub-muted);
-  font-size: 0.9rem;
+.hub-prose > *:last-child {
+  margin-bottom: 0;
 }
 
-.faq-item {
-  border-bottom: 1px solid var(--hub-border);
-  padding: 0.9rem 0;
+.hub-prose p {
+  margin: 0 0 1.5rem;
 }
 
-.faq-item summary {
-  cursor: pointer;
-  font-weight: 800;
+.hub-prose strong,
+.hub-prose b {
+  font-weight: 600;
   color: var(--hub-ink);
 }
 
-.faq-item > div {
+.hub-prose em,
+.hub-prose i {
+  font-style: italic;
+}
+
+.hub-prose s,
+.hub-prose del,
+.hub-prose strike {
+  text-decoration: line-through;
   color: var(--hub-muted);
-  margin-top: 0.6rem;
+}
+
+.hub-prose u,
+.hub-prose ins {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
+.hub-prose sub,
+.hub-prose sup {
+  font-size: 0.72em;
+  line-height: 0;
+}
+
+.hub-prose a {
+  color: var(--hub-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hub-blue);
+  padding-bottom: 1px;
+}
+
+.hub-prose a:hover {
+  color: var(--hub-sky);
+}
+
+/* h1 dentro del cuerpo se degrada a h2: el título de la página ya es el h1. */
+.hub-prose h1,
+.hub-prose h2 {
+  font-family: var(--font-serif);
+  font-size: 1.62rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  color: var(--hub-ink);
+  margin: 2.8rem 0 1rem;
+}
+
+.hub-prose h3 {
+  font-family: var(--font-serif);
+  font-size: 1.26rem;
+  font-weight: 600;
+  line-height: 1.26;
+  letter-spacing: -0.008em;
+  color: var(--hub-ink);
+  margin: 2.2rem 0 0.8rem;
+}
+
+.hub-prose h4,
+.hub-prose h5,
+.hub-prose h6 {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hub-muted);
+  margin: 2rem 0 0.7rem;
+}
+
+.hub-prose ul,
+.hub-prose ol {
+  margin: 0 0 1.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.hub-prose li {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.hub-prose ul > li {
+  padding-left: 1.7rem;
+}
+
+.hub-prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 9px;
+  height: 1.5px;
+  background: var(--hub-blue);
+}
+
+.hub-prose ol {
+  counter-reset: hub-prose-item;
+}
+
+.hub-prose ol > li {
+  padding-left: 2.2rem;
+  counter-increment: hub-prose-item;
+}
+
+.hub-prose ol > li::before {
+  content: counter(hub-prose-item, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.28em;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--hub-sky);
+}
+
+.hub-prose li > ul,
+.hub-prose li > ol {
+  margin: 0.85rem 0 0;
+}
+
+.hub-prose li > ul li,
+.hub-prose li > ol li {
+  margin-bottom: 0.6rem;
+}
+
+.hub-prose blockquote {
+  margin: 2.4rem 0;
+  padding-left: 1.5rem;
+  border-left: 3px solid var(--hub-blue);
+  font-size: 1.28rem;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--hub-ink);
+}
+
+.hub-prose blockquote p {
+  margin: 0 0 0.8rem;
+}
+
+.hub-prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.hub-prose blockquote cite {
+  display: block;
+  margin-top: 0.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: var(--hub-muted);
+}
+
+/* Imágenes subidas desde el panel: proporción libre, nunca deformadas ni
+   desbordando la medida de lectura. */
+.hub-prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 2.4rem 0;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-warm-surface);
+}
+
+.hub-prose figure {
+  margin: 2.4rem 0;
+}
+
+.hub-prose figure img {
+  margin: 0;
+}
+
+.hub-prose figcaption {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--hub-muted);
+  margin-top: 0.7rem;
+}
+
+/* Corte de sección: filete rojo corto. El rojo va como trazo, nunca como
+   superficie grande. */
+.hub-prose hr {
+  border: 0;
+  height: 3px;
+  width: 38px;
+  background: var(--hub-blue);
+  margin: 3rem 0;
+}
+
+.hub-prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86em;
+  background: var(--hub-warm-surface);
+  border: 1px solid var(--hub-border);
+  padding: 0.1em 0.35em;
+}
+
+.hub-prose pre {
+  background: var(--hub-warm-surface);
+  border: 1px solid var(--hub-border);
+  padding: 1.1rem 1.25rem;
+  margin: 2rem 0;
+  overflow-x: auto;
+  font-size: 0.9rem;
   line-height: 1.6;
 }
 
-.form-with-sidebar {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr);
-  gap: 2rem;
-  align-items: start;
+.hub-prose pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
 }
 
-@media (max-width: 760px) {
-  .form-with-sidebar {
-    grid-template-columns: 1fr;
-  }
+/* display:block para que una tabla ancha pegada desde Word haga scroll propio
+   en vez de romper el ancho de la página en móvil. */
+.hub-prose table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 2.2rem 0;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.hub-prose caption {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  color: var(--hub-muted);
+  text-align: left;
+  margin-bottom: 0.6rem;
+}
+
+.hub-prose th {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0.7rem 0.95rem;
+  border-bottom: 2px solid var(--hub-ink);
+  white-space: nowrap;
+}
+
+.hub-prose td {
+  padding: 0.7rem 0.95rem;
+  border-bottom: 1px solid var(--hub-border);
+  vertical-align: top;
+}
+
+/* Entradilla y capitular: solo donde se pide explícitamente y solo si el texto
+   abre con párrafo. Con :first-of-type la capitular reaparecía en cualquier
+   cuerpo que empezara con subtítulo. */
+.hub-prose--lead > p:first-child {
+  font-size: 1.28rem;
+  line-height: 1.62;
+  color: var(--hub-ink);
+}
+
+.hub-prose--lead > p:first-child::first-letter {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 3.9rem;
+  line-height: 0.82;
+  float: left;
+  margin: 0.3rem 0.7rem 0 0;
+  color: var(--hub-sky);
 }

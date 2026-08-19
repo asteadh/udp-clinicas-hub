@@ -1,0 +1,1133 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   HOJA DE ESTILO DEL DISEÑO — Hub Negocios UDP
+   ═══════════════════════════════════════════════════════════════════════
+
+   Copia literal del <style> de la pieza aprobada:
+   proyectos/hub-negocios-udp/index.html
+
+   Se trae ENTERA y sin podar a propósito. El intento anterior extrajo solo las
+   reglas que parecían usarse, y en cada revisión aparecía otra diferencia: la
+   base tipográfica, un breakpoint, los botones. Portar por trozos garantiza
+   deriva. Esta es la fuente de verdad del diseño y se copia tal cual.
+
+   Única desviación: las dos familias tipográficas se apoyan en las variables de
+   next/font (--font-hub-serif / --font-hub-sans), que sirven EB Garamond y
+   Hanken Grotesk autoalojadas en vez de pedirlas a un tercero.
+
+   Se carga DESPUÉS de globals.css en el layout, así que gana sobre los
+   componentes hub-* en lo que se solape.
+
+   Al modificar el diseño: edítalo en index.html y vuelve a copiarlo aquí.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HUB NEGOCIOS UDP — Sistema visual
+   Paleta institucional Universidad Diego Portales.
+   Rojo #D2232A extraído del logo oficial UDP (69,4% de los píxeles).
+   Gris #3F3E3E extraído del mismo logo (21,2%).
+   Papel #F8F7F4 y arena #E7E4D9: tokens de marca del sistema UDP vigente.
+   Regla de uso: el rojo es TRAZO (filete, subrayado, marca), nunca superficie
+   grande. El rojo como relleno de botón es el código del sector de cobranza.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  --serif:var(--font-hub-serif),"EB Garamond",Georgia,"Times New Roman",serif;
+  --sans:var(--font-hub-sans),"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  --medida:68ch;
+  --ancho:1200px;
+  --ancho-texto:760px;
+  --lectura:34rem;
+}
+
+/* Los mismos nombres semánticos se redefinen en oscuro, así los componentes
+   giran solos. --tinta es siempre el texto de mayor jerarquía y --papel
+   siempre el fondo de página, sea cual sea el tema. */
+:root,
+:root[data-theme="light"]{
+  color-scheme:light;
+  --udp-rojo:#D2232A;
+  --udp-rojo-texto:#D2232A;
+  --boton-hover-texto:#F8F7F4;
+  --udp-rojo-oscuro:#A81B21;
+  --udp-gris:#3F3E3E;
+  --papel:#F8F7F4;
+  --arena:#E7E4D9;
+  --arena-clara:#F1EEE6;
+  --tinta:#1C1C1C;
+  --tinta-media:#6D6D6D;
+  --borde:#D8D3C6;
+  --borde-fino:#E4E0D5;
+  --blanco:#FFFFFF;
+  --foco-halo:rgba(210,35,42,.11);
+  --pie-fondo:#1C1C1C;
+  --pie-texto:#C9C6BF;
+  --pie-titulo:#FFFFFF;
+  --pie-borde:#3A3A3A;
+  --pie-tenue:#8A867E;
+  --pie-desc:#A8A49C;
+  --sombra-menu:rgba(0,0,0,.09);
+}
+
+/* Rojo aclarado a #EF5B55 en oscuro: el #D2232A institucional sobre fondo
+   carbón da 3,4:1 y no alcanza para las etiquetas chicas. Este da 5,4:1. */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --udp-rojo:#D2232A;          /* gráfico: filetes, reglas, marcas — 3,36:1, umbral 3:1 */
+    --udp-rojo-texto:#F54842;    /* texto chico: el más cercano al institucional que pasa 4,5:1 */
+    --boton-hover-texto:#F8F7F4;
+    --udp-rojo-oscuro:#F5776F;
+    --udp-gris:#CFCBC3;
+    --papel:#1A1917;
+    --arena:#26241F;
+    --arena-clara:#201F1C;
+    --tinta:#E4E1DA;
+    --tinta-media:#A09B92;
+    --borde:#35332F;
+    --borde-fino:#2A2926;
+    --blanco:#222120;
+    --foco-halo:rgba(239,91,85,.18);
+    --pie-fondo:#111110;
+    --pie-texto:#A09B92;
+    --pie-titulo:#E4E1DA;
+    --pie-borde:#2A2926;
+    --pie-tenue:#75716A;
+    --pie-desc:#8E8981;
+    --sombra-menu:rgba(0,0,0,.5);
+  }
+}
+
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --udp-rojo:#D2232A;          /* gráfico: filetes, reglas, marcas — 3,36:1, umbral 3:1 */
+  --udp-rojo-texto:#F54842;    /* texto chico: el más cercano al institucional que pasa 4,5:1 */
+  --boton-hover-texto:#F8F7F4;
+  --udp-rojo-oscuro:#F5776F;
+  --udp-gris:#CFCBC3;
+  --papel:#1A1917;
+  --arena:#26241F;
+  --arena-clara:#201F1C;
+  --tinta:#E4E1DA;
+  --tinta-media:#A09B92;
+  --borde:#35332F;
+  --borde-fino:#2A2926;
+  --blanco:#222120;
+  --foco-halo:rgba(239,91,85,.18);
+  --pie-fondo:#111110;
+  --pie-texto:#A09B92;
+  --pie-titulo:#E4E1DA;
+  --pie-borde:#2A2926;
+  --pie-tenue:#75716A;
+  --pie-desc:#8E8981;
+  --sombra-menu:rgba(0,0,0,.5);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--papel);
+  color:var(--udp-gris);
+  font-family:var(--serif);
+  font-size:19px;
+  line-height:1.62;
+  font-feature-settings:"kern" 1,"liga" 1,"onum" 1;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:inherit}
+
+/* ── Filete institucional superior ───────────────────────────────────── */
+.filete{height:5px;background:var(--udp-rojo);position:sticky;top:0;z-index:60}
+
+/* ── Utilidades ──────────────────────────────────────────────────────── */
+.envoltura{width:min(var(--ancho),calc(100% - 3rem));margin-inline:auto}
+.etiqueta{
+  font-family:var(--sans);font-size:.68rem;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-media);
+}
+.etiqueta--rojo{color:var(--udp-rojo-texto)}
+.num{
+  font-family:var(--sans);font-size:.7rem;font-weight:700;
+  letter-spacing:.1em;color:var(--udp-rojo-texto);
+}
+
+/* ── Cabecera ────────────────────────────────────────────────────────── */
+.cabecera{
+  background:var(--papel);
+  border-bottom:1px solid var(--borde-fino);
+  position:sticky;top:5px;z-index:50;
+}
+.cabecera__interior{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1.5rem;padding:.95rem 0;flex-wrap:wrap;
+}
+.marca{display:flex;align-items:baseline;gap:.7rem;text-decoration:none}
+.marca__nombre{
+  font-family:var(--serif);font-size:1.32rem;font-weight:600;
+  color:var(--tinta);letter-spacing:-.01em;line-height:1;
+}
+.marca__unidad{
+  font-family:var(--sans);font-size:.62rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-media);
+  border-left:1px solid var(--borde);padding-left:.7rem;line-height:1.35;max-width:15ch;
+}
+.nav{display:flex;gap:1.6rem;align-items:center;flex-wrap:wrap}
+.nav a{
+  font-family:var(--sans);font-size:.78rem;font-weight:500;
+  letter-spacing:.03em;text-decoration:none;color:var(--udp-gris);
+  padding-bottom:3px;border-bottom:1.5px solid transparent;transition:border-color .18s,color .18s;
+}
+.nav a:hover,.nav a:focus-visible{color:var(--tinta);border-bottom-color:var(--udp-rojo)}
+.nav a.nav--destacado{color:var(--udp-rojo-texto);font-weight:600}
+
+.controles{display:flex;align-items:center;gap:1.4rem}
+.iconos{display:flex;align-items:center;gap:.35rem}
+.icono{
+  display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+  background:transparent;border:1px solid transparent;border-radius:0;cursor:pointer;
+  color:var(--udp-gris);transition:color .18s,border-color .18s;
+}
+.icono:hover{color:var(--udp-rojo-texto);border-color:var(--borde)}
+.icono svg{width:19px;height:19px;display:block}
+.icono__glifo{display:none}
+.icono__glifo--activo{display:block}
+.hamburguesa{display:none}
+.hamburguesa span{display:block;width:19px;height:1.5px;background:currentColor;position:relative;transition:transform .22s,background-color .1s}
+.hamburguesa span::before,.hamburguesa span::after{
+  content:"";position:absolute;left:0;width:19px;height:1.5px;background:currentColor;transition:transform .22s,top .22s;
+}
+.hamburguesa span::before{top:-6px}
+.hamburguesa span::after{top:6px}
+.cabecera[data-menu="abierto"] .hamburguesa span{background:transparent}
+.cabecera[data-menu="abierto"] .hamburguesa span::before{top:0;transform:rotate(45deg)}
+.cabecera[data-menu="abierto"] .hamburguesa span::after{top:0;transform:rotate(-45deg)}
+
+/* ── Portada ─────────────────────────────────────────────────────────── */
+.portada{padding:5.5rem 0 3.5rem;border-bottom:1px solid var(--borde-fino)}
+.portada__grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.85fr);gap:4.5rem;align-items:start}
+.portada__marca{
+  display:block;width:64px;height:3px;background:var(--udp-rojo);margin-bottom:1.6rem;
+}
+.portada h1{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(2.6rem,5.4vw,4.15rem);
+  line-height:1.03;letter-spacing:-.022em;color:var(--tinta);
+  margin:0 0 1.5rem;text-wrap:balance;
+}
+.portada h1 em{font-style:italic;font-weight:400}
+.portada__bajada{
+  font-size:1.22rem;line-height:1.58;max-width:44ch;color:var(--udp-gris);margin:0 0 2rem;
+}
+.portada__nota{
+  font-family:var(--sans);font-size:.82rem;line-height:1.62;color:var(--tinta-media);
+  max-width:48ch;border-left:2px solid var(--udp-rojo);padding-left:1rem;margin:0 0 2.25rem;
+}
+.portada__nota strong{color:var(--tinta);font-weight:600}
+
+/* Sumario: índice de publicación, no tarjetas */
+.sumario{border-top:2px solid var(--tinta);padding-top:.9rem}
+.sumario__titulo{margin:0 0 .35rem}
+.sumario__lista{list-style:none;margin:0;padding:0}
+.sumario__lista li{border-bottom:1px solid var(--borde-fino)}
+.sumario__lista a{
+  display:grid;grid-template-columns:2.4rem 1fr;gap:.5rem;align-items:baseline;
+  padding:.82rem 0;text-decoration:none;transition:padding-left .2s;
+}
+.sumario__lista a:hover,.sumario__lista a:focus-visible{padding-left:.45rem}
+.sumario__nombre{
+  font-family:var(--serif);font-size:1.06rem;font-weight:500;color:var(--tinta);line-height:1.32;
+}
+.sumario__lista a:hover .sumario__nombre{color:var(--udp-rojo-texto)}
+.sumario__materia{
+  display:block;font-family:var(--sans);font-size:.7rem;letter-spacing:.05em;
+  color:var(--tinta-media);margin-top:.2rem;
+}
+
+/* ── Secciones ───────────────────────────────────────────────────────── */
+.seccion{padding:5rem 0;border-bottom:1px solid var(--borde-fino)}
+.seccion--arena{background:var(--arena-clara);border-bottom:1px solid var(--borde)}
+.seccion__cabeza{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);
+  gap:3rem;align-items:end;margin-bottom:3rem;
+  border-bottom:2px solid var(--tinta);padding-bottom:1.1rem;
+}
+.seccion__cabeza h2{
+  font-family:var(--serif);font-weight:600;font-size:clamp(1.85rem,3.4vw,2.7rem);
+  line-height:1.08;letter-spacing:-.018em;color:var(--tinta);margin:.5rem 0 0;
+}
+.seccion__intro{font-size:1.02rem;line-height:1.6;color:var(--udp-gris);margin:0;max-width:56ch}
+
+/* ── Materias (las cuatro clínicas) ──────────────────────────────────── */
+
+/* ── Cifras honestas ─────────────────────────────────────────────────── */
+.cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0;border-top:2px solid var(--tinta)}
+.cifra{padding:1.6rem 1.5rem 1.6rem 0;border-right:1px solid var(--borde-fino)}
+.cifra:last-child{border-right:0}
+.cifra__valor{
+  font-family:var(--serif);font-size:2.5rem;font-weight:600;line-height:1;
+  color:var(--tinta);letter-spacing:-.02em;display:block;margin-bottom:.45rem;
+}
+.cifra__valor em{font-style:italic;font-weight:400;font-size:1.9rem}
+.cifra__etiqueta{font-family:var(--sans);font-size:.74rem;line-height:1.42;color:var(--tinta-media)}
+
+/* ── Equipo ──────────────────────────────────────────────────────────── */
+.roles{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:0 3rem;border-top:2px solid var(--tinta);margin-bottom:3.5rem;
+}
+.rol{padding:1.6rem 0 1.8rem;border-right:1px solid var(--borde-fino);padding-right:2rem}
+.rol:last-child{border-right:0}
+.rol__n{
+  font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  color:var(--udp-rojo-texto);display:block;margin-bottom:.9rem;
+}
+.rol h3{
+  font-family:var(--serif);font-size:1.24rem;font-weight:600;line-height:1.24;
+  color:var(--tinta);margin:0 0 .55rem;letter-spacing:-.01em;
+}
+.rol p{font-size:.98rem;line-height:1.58;color:var(--tinta-media);margin:0}
+
+.personas{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,168px),1fr));gap:1.6rem}
+.persona{display:flex;flex-direction:column;gap:.7rem}
+.retrato{
+  position:relative;aspect-ratio:4/5;background:var(--arena);
+  border:1px solid var(--borde);overflow:hidden;
+}
+.retrato::after{content:"";position:absolute;top:0;left:0;width:22px;height:3px;background:var(--udp-rojo)}
+.retrato img{width:100%;height:100%;object-fit:cover}
+.persona__nombre{
+  font-family:var(--serif);font-size:1.04rem;font-weight:600;line-height:1.28;
+  color:var(--tinta);margin:0;letter-spacing:-.005em;
+}
+.persona__cargo{
+  font-family:var(--sans);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--tinta-media);margin:-.35rem 0 0;line-height:1.4;
+}
+.nomina__nota{
+  border-top:1px solid var(--borde);padding-top:1.2rem;margin-top:1rem;
+  font-family:var(--sans);font-size:.84rem;line-height:1.6;color:var(--tinta-media);max-width:62ch;
+}
+/* La home muestra a quien encabeza cada clínica y entra a su página; el equipo
+   completo vive en /clinicas/[slug], que es como el API lo entrega
+   (clinicTeam(slug), sin endpoint global). */
+a.persona{text-decoration:none;color:inherit}
+a.persona:hover .persona__clinica{color:var(--udp-rojo-texto)}
+a.persona:hover .retrato{border-color:var(--udp-gris)}
+.persona__clinica{
+  font-family:var(--serif);font-size:1.02rem;font-weight:600;line-height:1.26;
+  color:var(--tinta);margin:0;letter-spacing:-.005em;transition:color .18s;
+}
+.persona__ver{
+  font-family:var(--sans);font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--udp-rojo-texto);margin-top:auto;padding-top:.5rem;
+}
+/* Enlace de sección hacia la subpágina correspondiente */
+.ver-todo{
+  display:inline-block;margin-top:2.2rem;font-family:var(--sans);font-size:.76rem;
+  font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta);
+  text-decoration:none;border-bottom:2px solid var(--udp-rojo);padding-bottom:.35rem;
+  transition:color .18s;
+}
+.ver-todo:hover{color:var(--udp-rojo-texto)}
+
+/* ── Columnas de opinión ─────────────────────────────────────────────── */
+.columnas{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:0 3rem}
+.columna{
+  padding:1.9rem 0;border-top:1px solid var(--borde-fino);
+  display:flex;flex-direction:column;gap:.55rem;
+}
+.columna:hover .columna__titulo{color:var(--udp-rojo-texto)}
+.columna__meta{
+  display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;
+  font-family:var(--sans);font-size:.67rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--tinta-media);
+}
+.columna__clinica{color:var(--udp-rojo-texto);font-weight:600}
+.columna__titulo{
+  font-family:var(--serif);font-size:1.3rem;font-weight:600;line-height:1.24;
+  letter-spacing:-.012em;color:var(--tinta);margin:0;transition:color .18s;
+}
+.columna__titulo a{text-decoration:none}
+.columna__titulo a::after{content:"";position:absolute;inset:0}
+.columna{position:relative}
+.columna__bajada{font-size:.98rem;line-height:1.56;color:var(--tinta-media);margin:0}
+.columna__firma{
+  font-family:var(--sans);font-size:.72rem;color:var(--tinta-media);margin-top:auto;padding-top:.6rem;
+}
+
+/* ── Galería ─────────────────────────────────────────────────────────── */
+.galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:1.25rem}
+.marco{
+  position:relative;aspect-ratio:4/3;background:var(--arena);
+  border:1px solid var(--borde);overflow:hidden;
+}
+.marco::after{
+  content:"";position:absolute;top:0;left:0;width:26px;height:3px;background:var(--udp-rojo);
+}
+.marco img{width:100%;height:100%;object-fit:cover}
+.marco--alto{aspect-ratio:3/4}
+.galeria__nota{
+  grid-column:1/-1;border-top:1px solid var(--borde);padding-top:1.2rem;margin-top:.5rem;
+  font-family:var(--sans);font-size:.84rem;line-height:1.6;color:var(--tinta-media);max-width:62ch;
+}
+/* En la base de datos la galería tiene dos niveles: un álbum (título, descripción,
+   portada) que contiene fotos con pie. La home muestra portadas de álbum, no fotos
+   sueltas, para no aplanar esa estructura ni perder los títulos. */
+.album{display:flex;flex-direction:column;gap:.75rem;text-decoration:none;color:inherit}
+.album:hover .album__titulo{color:var(--udp-rojo-texto)}
+.album:hover .marco{border-color:var(--udp-gris)}
+.album__clinica{
+  font-family:var(--sans);font-size:.67rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--udp-rojo-texto);font-weight:600;margin:0;
+}
+.album__titulo{
+  font-family:var(--serif);font-size:1.12rem;font-weight:600;line-height:1.26;
+  letter-spacing:-.008em;color:var(--tinta);margin:-.35rem 0 0;transition:color .18s;
+}
+
+/* ── Preguntas frecuentes ────────────────────────────────────────────── */
+.filtros{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2.25rem}
+.filtro{
+  font-family:var(--sans);font-size:.74rem;font-weight:600;letter-spacing:.04em;
+  padding:.46rem .9rem;background:transparent;color:var(--tinta-media);
+  border:1px solid var(--borde);border-radius:0;cursor:pointer;transition:all .18s;
+}
+.filtro:hover{color:var(--tinta);border-color:var(--udp-gris)}
+.filtro[aria-pressed="true"]{background:var(--tinta);border-color:var(--tinta);color:var(--papel)}
+.faq{max-width:var(--ancho-texto)}
+.faq__item{border-bottom:1px solid var(--borde-fino)}
+.faq__item[hidden]{display:none}
+.faq__item summary{
+  list-style:none;cursor:pointer;padding:1.25rem 2.5rem 1.25rem 3.2rem;position:relative;
+  font-family:var(--serif);font-size:1.14rem;font-weight:600;line-height:1.34;color:var(--tinta);
+  transition:color .18s;
+}
+.faq__item summary::-webkit-details-marker{display:none}
+.faq__item summary:hover{color:var(--udp-rojo-texto)}
+.faq__item summary::before{
+  content:attr(data-n);position:absolute;left:0;top:1.42rem;
+  font-family:var(--sans);font-size:.7rem;font-weight:700;color:var(--udp-rojo-texto);letter-spacing:.06em;
+}
+.faq__signo{
+  position:absolute;right:.4rem;top:1.45rem;width:13px;height:13px;flex-shrink:0;
+}
+.faq__signo::before,.faq__signo::after{
+  content:"";position:absolute;background:var(--udp-rojo);transition:transform .22s ease;
+}
+.faq__signo::before{top:6px;left:0;width:13px;height:1.5px}
+.faq__signo::after{left:6px;top:0;width:1.5px;height:13px}
+.faq__item[open] .faq__signo::after{transform:scaleY(0)}
+/* Recibe `answer_html`, que sale del mismo editor rich-text que las columnas:
+   no basta con estilar <p>. Ver el bloque .cuerpo de columna.html. */
+.faq__respuesta{padding:0 2.5rem 1.5rem 3.2rem;max-width:var(--medida)}
+.faq__respuesta p{margin:0 0 .85rem;line-height:1.68}
+.faq__respuesta>*:first-child{margin-top:0}
+.faq__respuesta>*:last-child{margin-bottom:0}
+.faq__respuesta strong,.faq__respuesta b{font-weight:600;color:var(--tinta)}
+.faq__respuesta em,.faq__respuesta i{font-style:italic}
+.faq__respuesta s,.faq__respuesta del{text-decoration:line-through;color:var(--tinta-media)}
+.faq__respuesta a{color:var(--tinta);text-decoration:none;border-bottom:1px solid var(--udp-rojo);padding-bottom:1px}
+.faq__respuesta a:hover{color:var(--udp-rojo-texto)}
+.faq__respuesta h2,.faq__respuesta h3,.faq__respuesta h4,
+.faq__respuesta h5,.faq__respuesta h6{font-family:var(--sans);font-size:.76rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-media);margin:1.4rem 0 .6rem}
+.faq__respuesta ul,.faq__respuesta ol{margin:0 0 .95rem;padding:0;list-style:none}
+.faq__respuesta li{position:relative;padding-left:1.5rem;margin-bottom:.55rem;line-height:1.62}
+.faq__respuesta ul li::before{content:"";position:absolute;left:0;top:.7em;width:8px;height:1.5px;background:var(--udp-rojo)}
+.faq__respuesta ol{counter-reset:item}
+.faq__respuesta ol li{counter-increment:item;padding-left:1.9rem}
+.faq__respuesta ol li::before{content:counter(item,decimal-leading-zero);position:absolute;left:0;top:.2em;
+  font-family:var(--sans);font-size:.68rem;font-weight:700;color:var(--udp-rojo-texto);letter-spacing:.06em}
+.faq__respuesta li>ul,.faq__respuesta li>ol{margin:.5rem 0 0}
+.faq__respuesta blockquote{margin:1.2rem 0;padding-left:1.1rem;border-left:2px solid var(--udp-rojo);
+  font-style:italic;color:var(--tinta)}
+.faq__respuesta blockquote p:last-child{margin-bottom:0}
+.faq__respuesta img{display:block;width:100%;height:auto;margin:1.3rem 0;border:1px solid var(--borde);background:var(--arena)}
+.faq__respuesta figure{margin:1.3rem 0}
+.faq__respuesta figure img{margin:0}
+.faq__respuesta figcaption{font-size:.76rem;line-height:1.5;color:var(--tinta-media);margin-top:.55rem}
+.faq__respuesta hr{border:0;height:2px;width:30px;background:var(--udp-rojo);margin:1.5rem 0}
+.faq__respuesta code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;
+  background:var(--arena);border:1px solid var(--borde-fino);padding:.1em .35em}
+.faq__respuesta pre{background:var(--arena);border:1px solid var(--borde);padding:.9rem 1rem;
+  margin:1.2rem 0;overflow-x:auto;font-size:.86rem;line-height:1.55}
+.faq__respuesta pre code{background:none;border:0;padding:0;font-size:inherit}
+.faq__respuesta table{display:block;overflow-x:auto;max-width:100%;border-collapse:collapse;
+  margin:1.3rem 0;font-size:.86rem;line-height:1.5}
+.faq__respuesta th{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  text-align:left;padding:.55rem .8rem;border-bottom:2px solid var(--tinta);white-space:nowrap}
+.faq__respuesta td{padding:.55rem .8rem;border-bottom:1px solid var(--borde-fino);vertical-align:top}
+.faq__nota{
+  margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--borde);
+  font-family:var(--sans);font-size:.82rem;color:var(--tinta-media);max-width:60ch;line-height:1.6;
+}
+
+/* ── Formulario de ingreso ───────────────────────────────────────────── */
+.ingreso{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:3.5rem;align-items:start}
+.expediente{
+  background:var(--blanco);border:1px solid var(--borde);padding:2.4rem;position:relative;
+}
+.expediente::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--udp-rojo)}
+.expediente__encabezado{
+  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  border-bottom:1px solid var(--borde-fino);padding-bottom:1rem;margin-bottom:1.9rem;flex-wrap:wrap;
+}
+.expediente__encabezado h2,.expediente__encabezado h3{
+  font-family:var(--serif);font-size:1.42rem;font-weight:600;color:var(--tinta);margin:0;letter-spacing:-.01em;
+}
+.campos{display:grid;gap:1.35rem}
+.campo{display:flex;flex-direction:column;gap:.42rem}
+.campo--par{display:grid;grid-template-columns:1fr 1fr;gap:1.35rem}
+.campo label,.campo>span{
+  font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--udp-gris);
+}
+.campo__opcional{font-weight:400;text-transform:none;letter-spacing:0;color:var(--tinta-media);font-size:.74rem}
+.campo input,.campo select,.campo textarea{
+  font-family:var(--sans);font-size:.94rem;color:var(--tinta);
+  background:var(--papel);border:1px solid var(--borde);border-radius:0;
+  padding:.72rem .8rem;width:100%;transition:border-color .16s,box-shadow .16s;
+}
+.campo textarea{font-family:var(--serif);font-size:1.02rem;line-height:1.55;resize:vertical;min-height:7rem}
+.campo input:focus,.campo select:focus,.campo textarea:focus{
+  outline:none;border-color:var(--udp-rojo);box-shadow:0 0 0 3px var(--foco-halo);
+}
+.campo input::placeholder,.campo textarea::placeholder{color:var(--tinta-media);opacity:.72}
+.campo select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--udp-gris) 50%),linear-gradient(135deg,var(--udp-gris) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:2.4rem}
+.campo__ayuda{font-family:var(--sans);font-size:.75rem;color:var(--tinta-media);line-height:1.5}
+
+.boton{
+  font-family:var(--sans);font-size:.8rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  padding:.92rem 1.9rem;border:1.5px solid var(--tinta);background:var(--tinta);color:var(--papel);
+  border-radius:0;cursor:pointer;transition:background .18s,color .18s,border-color .18s;
+}
+.boton:hover:not(:disabled){background:var(--udp-rojo);border-color:var(--udp-rojo);color:var(--boton-hover-texto)}
+.boton:disabled{opacity:.42;cursor:not-allowed}
+.envio{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-top:1.9rem;padding-top:1.5rem;border-top:1px solid var(--borde-fino)}
+.envio__nota{font-family:var(--sans);font-size:.75rem;color:var(--tinta-media);line-height:1.5;max-width:34ch}
+
+.acuse{
+  border:1px solid var(--udp-rojo);border-left-width:3px;background:var(--blanco);
+  padding:2rem;font-size:1.06rem;line-height:1.6;color:var(--tinta);
+}
+.acuse strong{display:block;font-family:var(--serif);font-size:1.3rem;margin-bottom:.5rem}
+
+/* Barra lateral del ingreso */
+.proceso{position:sticky;top:6.5rem}
+.proceso h3,.proceso h4{
+  font-family:var(--sans);font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tinta);margin:0 0 1.3rem;padding-bottom:.7rem;border-bottom:2px solid var(--tinta);
+}
+.paso{display:grid;grid-template-columns:1.9rem 1fr;gap:.9rem;padding:1.05rem 0;border-bottom:1px solid var(--borde-fino)}
+.paso__n{font-family:var(--sans);font-size:.72rem;font-weight:700;color:var(--udp-rojo-texto);padding-top:.22rem}
+.paso__t{font-family:var(--sans);font-size:.86rem;font-weight:600;color:var(--tinta);margin:0 0 .2rem}
+.paso__d{font-size:.94rem;line-height:1.52;color:var(--tinta-media);margin:0}
+.aviso{
+  margin-top:1.8rem;padding:1.2rem;background:var(--arena);border-left:2px solid var(--udp-gris);
+  font-family:var(--sans);font-size:.79rem;line-height:1.58;color:var(--udp-gris);
+}
+.aviso strong{color:var(--tinta)}
+
+/* ── Pie ─────────────────────────────────────────────────────────────── */
+.pie{background:var(--pie-fondo);color:var(--pie-texto);padding:3.5rem 0 2rem;font-family:var(--sans);font-size:.85rem}
+.pie a{color:var(--pie-texto);text-decoration:none;border-bottom:1px solid transparent;transition:.18s}
+.pie a:hover{color:var(--pie-titulo);border-bottom-color:var(--udp-rojo)}
+.pie__grid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(2,minmax(0,1fr));gap:3rem;padding-bottom:2.5rem;border-bottom:1px solid var(--pie-borde)}
+.pie__marca{font-family:var(--serif);font-size:1.45rem;font-weight:600;color:var(--pie-titulo);margin:0 0 .7rem}
+.pie__desc{line-height:1.62;max-width:40ch;margin:0;color:var(--pie-desc)}
+.pie h5{font-family:var(--sans);font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pie-titulo);margin:0 0 1rem}
+.pie ul{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.pie__legal{display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;padding-top:1.6rem;font-size:.76rem;color:var(--pie-tenue)}
+
+/* ── Accesibilidad y movimiento ──────────────────────────────────────── */
+:focus-visible{outline:2px solid var(--udp-rojo);outline-offset:3px}
+.salto{position:absolute;left:-9999px}
+.salto:focus{left:1rem;top:1rem;z-index:100;background:var(--tinta);color:var(--papel);padding:.7rem 1.1rem;font-family:var(--sans);font-size:.8rem}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+/* ── Adaptación ──────────────────────────────────────────────────────── */
+@media (max-width:1020px){
+  .portada__grid{grid-template-columns:1fr;gap:3rem}
+  .seccion__cabeza{grid-template-columns:1fr;gap:1rem;align-items:start}
+  .materia{grid-template-columns:2.6rem 1fr;gap:1.4rem}
+  .materia__cuerpo{grid-column:2}
+  .ingreso{grid-template-columns:1fr;gap:2.5rem}
+  .proceso{position:static}
+  .pie__grid{grid-template-columns:1fr 1fr;gap:2.2rem}
+  .rol{border-right:0;padding-right:0;border-bottom:1px solid var(--borde-fino)}
+  .rol:last-child{border-bottom:0}
+}
+/* ── Menú móvil ──────────────────────────────────────────────────────── */
+@media (max-width:900px){
+  .hamburguesa{display:inline-flex}
+  .cabecera__interior{position:relative}
+  .nav{
+    position:absolute;top:calc(100% + .95rem);left:0;right:0;
+    flex-direction:column;align-items:stretch;gap:0;
+    background:var(--papel);border-top:1px solid var(--borde-fino);
+    box-shadow:0 18px 40px rgba(0,0,0,.09);
+    max-height:0;overflow:hidden;visibility:hidden;
+    transition:max-height .26s ease,visibility 0s linear .26s;
+  }
+  .cabecera[data-menu="abierto"] .nav{
+    max-height:26rem;visibility:visible;transition:max-height .3s ease,visibility 0s;
+  }
+  .nav a{
+    font-family:var(--serif);font-size:1.34rem;font-weight:500;letter-spacing:-.01em;
+    padding:1rem 1.1rem;border-bottom:1px solid var(--borde-fino);
+    border-bottom-color:var(--borde-fino);
+  }
+  .nav a:hover,.nav a:focus-visible{color:var(--udp-rojo-texto);border-bottom-color:var(--borde-fino)}
+  .nav a:last-child{border-bottom:0}
+  .nav a.nav--destacado{font-weight:600}
+}
+
+@media (max-width:640px){
+  body{font-size:18px}
+  .envoltura{width:calc(100% - 2.2rem)}
+  .portada{padding:3.5rem 0 2.5rem}
+  .seccion{padding:3.5rem 0}
+  .expediente{padding:1.5rem}
+  .campo--par{grid-template-columns:1fr}
+  .cifra{border-right:0;border-bottom:1px solid var(--borde-fino);padding-right:0}
+  .cifra:last-child{border-bottom:0}
+  .pie__grid{grid-template-columns:1fr}
+  .faq__item summary{padding-left:2.4rem;font-size:1.06rem}
+  .faq__respuesta{padding-left:2.4rem;padding-right:0}
+  .marca__unidad{display:none}
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PÁGINA DE COLUMNA — reglas propias de la lectura larga
+   ══════════════════════════════════════════════════════════════════ */
+
+.avance{position:fixed;top:5px;left:0;height:2px;width:100%;transform:scaleX(0);transform-origin:0 50%;
+  background:var(--udp-rojo);z-index:59;}
+/* ── Regreso ─────────────────────────────────────────────────────────── */
+.regreso{padding:2rem 0 0}
+.regreso a{font-family:var(--sans);font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--tinta-media);text-decoration:none;display:inline-flex;align-items:center;gap:.55rem;transition:color .18s;}
+.regreso a:hover{color:var(--udp-rojo-texto)}
+.regreso svg{width:15px;height:9px;flex-shrink:0}
+/* ── Encabezado del artículo ─────────────────────────────────────────── */
+.articulo{padding:2.5rem 0 0}
+.articulo__cabeza{max-width:44rem;margin:0 auto 3rem}
+.articulo__origen{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.articulo__origen a{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--udp-rojo-texto);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .18s;}
+.articulo__origen a:hover{border-bottom-color:var(--udp-rojo)}
+.articulo__origen span{font-family:var(--sans);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-media)}
+.articulo h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,4.6vw,3.5rem);
+  line-height:1.06;letter-spacing:-.021em;color:var(--tinta);margin:0 0 1.35rem;text-wrap:balance;}
+.articulo__bajada{font-size:1.32rem;line-height:1.5;color:var(--tinta-media);font-style:italic;margin:0 0 2.2rem;max-width:38ch;}
+.firma{display:flex;align-items:baseline;gap:1.4rem;flex-wrap:wrap;border-top:2px solid var(--tinta);padding-top:1rem}
+.firma__autor{font-family:var(--sans);font-size:.86rem;font-weight:600;color:var(--tinta);margin:0}
+.firma__fecha{font-family:var(--sans);font-size:.78rem;color:var(--tinta-media);margin:0}
+/* ── Portada del artículo ────────────────────────────────────────────── */
+.portada-art{max-width:56rem;margin:0 auto 3.5rem;position:relative}
+.portada-art__marco{aspect-ratio:16/9;background:var(--arena);border:1px solid var(--borde);position:relative;overflow:hidden}
+.portada-art__marco::after{content:"";position:absolute;top:0;left:0;width:30px;height:3px;background:var(--udp-rojo)}
+.portada-art__marco img{width:100%;height:100%;object-fit:cover}
+.portada-art figcaption{font-family:var(--sans);font-size:.76rem;color:var(--tinta-media);margin-top:.7rem;line-height:1.5;}
+/* ── Cuerpo ──────────────────────────────────────────────────────────── */
+.cuerpo{max-width:var(--lectura);margin:0 auto;font-size:1.16rem;line-height:1.74}
+.cuerpo>p{margin:0 0 1.5rem}
+.cuerpo>p:first-of-type{font-size:1.28rem;line-height:1.62;color:var(--tinta)}
+/* Capitular: precedente del propio tema de derecho.udp.cl (.initials) */
+.cuerpo>p:first-of-type::first-letter{font-family:var(--serif);font-weight:600;font-size:3.9rem;line-height:.82;
+  float:left;margin:.3rem .7rem 0 0;color:var(--udp-rojo-texto);}
+.cuerpo strong{font-weight:600;color:var(--tinta)}
+.cuerpo em{font-style:italic}
+.cuerpo a{color:var(--tinta);text-decoration:none;border-bottom:1px solid var(--udp-rojo);padding-bottom:1px}
+.cuerpo a:hover{color:var(--udp-rojo-texto)}
+.cuerpo h2{font-family:var(--serif);font-size:1.62rem;font-weight:600;line-height:1.2;letter-spacing:-.012em;
+  color:var(--tinta);margin:2.8rem 0 1rem;}
+.cuerpo ul,.cuerpo ol{margin:0 0 1.6rem;padding:0;list-style:none}
+.cuerpo ul li{position:relative;padding-left:1.7rem;margin-bottom:1rem}
+.cuerpo ul li::before{content:"";position:absolute;left:0;top:.72em;width:9px;height:1.5px;background:var(--udp-rojo);}
+.cuerpo ol{counter-reset:item}
+.cuerpo ol li{position:relative;padding-left:2.2rem;margin-bottom:1rem;counter-increment:item}
+.cuerpo ol li::before{content:counter(item,decimal-leading-zero);position:absolute;left:0;top:.28em;
+  font-family:var(--sans);font-size:.72rem;font-weight:700;color:var(--udp-rojo-texto);letter-spacing:.06em;}
+.cuerpo blockquote{margin:2.4rem 0;padding-left:1.5rem;border-left:3px solid var(--udp-rojo);
+  font-size:1.28rem;line-height:1.5;font-style:italic;color:var(--tinta);}
+.cuerpo blockquote p{margin:0}
+/* Cita destacada — repite una frase del propio texto */
+.destacada{max-width:var(--lectura);margin:3rem auto;padding:1.9rem 0;
+  border-top:1px solid var(--borde);border-bottom:1px solid var(--borde);}
+.destacada p{font-family:var(--serif);font-size:1.72rem;line-height:1.28;font-weight:500;
+  letter-spacing:-.014em;color:var(--tinta);margin:0;text-wrap:balance;}
+.destacada p::before{content:"";display:block;width:38px;height:3px;background:var(--udp-rojo);margin-bottom:1.1rem}
+/* ── Pie del artículo ────────────────────────────────────────────────── */
+.cierre{max-width:var(--lectura);margin:3.5rem auto 0}
+.procedencia{border-top:2px solid var(--tinta);padding-top:1.3rem;
+  font-family:var(--sans);font-size:.86rem;line-height:1.6;color:var(--tinta-media);}
+.procedencia strong{display:block;font-family:var(--serif);font-size:1.16rem;font-weight:600;color:var(--tinta);margin-bottom:.4rem}
+.llamada{margin-top:2.5rem;background:var(--blanco);border:1px solid var(--borde);padding:2rem;position:relative;
+  display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+.llamada::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--udp-rojo)}
+.llamada h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;color:var(--tinta);margin:0 0 .35rem;letter-spacing:-.01em}
+.llamada p{font-family:var(--sans);font-size:.86rem;color:var(--tinta-media);margin:0;max-width:32ch;line-height:1.55}
+.boton:hover{background:var(--udp-rojo);border-color:var(--udp-rojo);color:var(--boton-hover-texto)}
+/* ── Anterior / Siguiente ────────────────────────────────────────────── */
+.contiguas{max-width:var(--lectura);margin:3.5rem auto 0;display:grid;grid-template-columns:1fr 1fr;
+  gap:0;border-top:1px solid var(--borde);}
+.contigua{padding:1.6rem 1.5rem 1.6rem 0;text-decoration:none;display:block;border-right:1px solid var(--borde-fino)}
+.contigua--sig{padding:1.6rem 0 1.6rem 1.5rem;border-right:0;text-align:right}
+.contigua__dir{font-family:var(--sans);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--udp-rojo-texto);display:block;margin-bottom:.6rem}
+.contigua__tit{font-family:var(--serif);font-size:1.1rem;font-weight:600;line-height:1.26;color:var(--tinta);margin:0;transition:color .18s}
+.contigua:hover .contigua__tit{color:var(--udp-rojo-texto)}
+/* ── Más de la clínica ───────────────────────────────────────────────── */
+.mas{background:var(--arena-clara);border-top:1px solid var(--borde);margin-top:5rem;padding:4rem 0}
+.mas__cabeza{border-bottom:2px solid var(--tinta);padding-bottom:1.1rem;margin-bottom:2rem}
+.mas__cabeza h2{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.1rem);font-weight:600;color:var(--tinta);margin:.4rem 0 0;letter-spacing:-.016em}
+
+@media (max-width:640px){
+  .cuerpo{font-size:1.1rem}
+  .articulo__bajada{font-size:1.16rem}
+  .destacada p{font-size:1.4rem}
+  .contiguas{grid-template-columns:1fr}
+  .contigua{border-right:0;border-bottom:1px solid var(--borde-fino);padding-right:0}
+  .contigua--sig{padding-left:0;text-align:left;border-bottom:0}
+  .llamada{padding:1.5rem}
+  .mas{padding:3rem 0;margin-top:3.5rem}
+}
+
+@media (max-width:900px){
+  .ficha{border-right:0;border-top:1px solid var(--borde-fino);padding-right:0}
+  .ficha:first-child{border-top:2px solid var(--tinta)}
+  .ficha:hover{background:transparent}
+}
+
+/* Las figuras del sistema no llevan el margen por defecto del navegador. */
+.persona,.marco,.portada-art{margin:0}
+
+@media (max-width:1020px){
+  .clinica__grid{grid-template-columns:1fr;gap:2.5rem}
+  .clinica__lateral{position:static}
+}
+
+.filtro[aria-pressed="true"] .filtro__n{color:var(--papel);opacity:.7}
+.columna[hidden]{display:none}
+
+/* ══════════════════════════════════════════════════════════════════
+   MATERIAS Y NÓMINA — página única
+   ══════════════════════════════════════════════════════════════════ */
+.materia{
+  display:grid;grid-template-columns:3.5rem minmax(0,1fr) minmax(0,1.15fr);
+  gap:2.5rem;padding:2.6rem 0;border-bottom:1px solid var(--borde-fino);align-items:start;
+}
+.materia:last-of-type{border-bottom:0}
+.materia__num{
+  font-family:var(--sans);font-size:.78rem;font-weight:700;letter-spacing:.08em;
+  color:var(--udp-rojo-texto);padding-top:.55rem;
+}
+.materia__num::after{content:"";display:block;width:22px;height:2px;background:var(--udp-rojo);margin-top:.6rem}
+.materia h3{
+  font-family:var(--serif);font-weight:600;font-size:1.62rem;line-height:1.18;
+  letter-spacing:-.012em;color:var(--tinta);margin:0 0 .5rem;
+}
+.materia__resumen{font-size:1rem;color:var(--tinta-media);margin:0 0 1rem;line-height:1.5}
+.materia__cuerpo{font-size:1.02rem;line-height:1.66;margin:0 0 1.25rem}
+.materia__cuerpo p{margin:0 0 .9rem}
+.materia__pie{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;align-items:center}
+.materia__correo{
+  font-family:var(--sans);font-size:.76rem;letter-spacing:.02em;color:var(--tinta-media);
+  text-decoration:none;border-bottom:1px solid var(--borde);padding-bottom:1px;
+}
+.materia__correo:hover{color:var(--udp-rojo-texto);border-bottom-color:var(--udp-rojo)}
+
+.nomina{display:grid;gap:3rem}
+.faq__clinica{
+  display:block;font-family:var(--sans);font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--tinta-media);margin-bottom:1.1rem;
+}
+
+@media (max-width:1020px){
+  .materia{grid-template-columns:2.6rem 1fr;gap:1.4rem}
+  .materia__cuerpo{grid-column:2}
+}
+
+/* ── Ajuste de integración ───────────────────────────────────────────────
+   El layout envuelve el contenido en .hub-page, que limita a 1180px con
+   relleno. Las secciones del diseño van a sangre completa, así que la portada
+   suelta ese contenedor. Solo aplica a la home, que es la que abre con .portada. */
+.hub-page:has(> .portada) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Los componentes hub-* en el lenguaje del diseño
+   ═══════════════════════════════════════════════════════════════════════
+
+   Las páginas que todavía no se han portado se dibujan con los componentes
+   hub-*, que traen radio de 8px,
+   un botón primario dorado con halo de sombra y tarjetas flotantes. Nada de eso
+   pertenece a la marca UDP: el dorado es herencia del proyecto Gremia.
+
+   En vez de corregirlo página por página se neutraliza aquí, de una vez y para
+   todo el sitio público. Este archivo solo lo importa apps/web, así que el panel
+   de administración conserva su propio aspecto.
+
+   Cuando cada página se porte al diseño, estas reglas irán sobrando. */
+
+:root {
+  /* La palanca principal: casi todos los componentes leen esta variable. */
+  --hub-radius: 0;
+}
+
+.hub-card,
+.hub-badge,
+.hub-alert {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.hub-card {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+}
+
+/* Campos: rectangulares, filete de un píxel, foco rojo. Igual que .campo. */
+.hub-field input,
+.hub-field select,
+.hub-field textarea,
+.hub-input {
+  font-family: var(--sans);
+  font-size: .94rem;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 1px solid var(--borde);
+  border-radius: 0;
+  box-shadow: none;
+  padding: .72rem .8rem;
+}
+
+.hub-field > span,
+.hub-field label {
+  font-family: var(--sans);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--udp-gris);
+}
+
+.hub-field input:focus,
+.hub-field input:focus-visible,
+.hub-field select:focus,
+.hub-field select:focus-visible,
+.hub-field textarea:focus,
+.hub-field textarea:focus-visible {
+  outline: none;
+  border-color: var(--udp-rojo);
+  box-shadow: 0 0 0 3px var(--foco-halo);
+}
+
+.hub-field textarea {
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+/* Botones: el mismo lenguaje que .boton — tinta sobre papel, rojo al pasar.
+   El rojo es trazo, nunca relleno en reposo. */
+.hub-button,
+.hub-button--primary,
+.hub-button--outline,
+.hub-button--lg {
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  padding: .92rem 1.9rem;
+  min-height: 0;
+  border: 1.5px solid var(--tinta);
+  border-radius: 0;
+  background: var(--tinta);
+  color: var(--papel);
+  box-shadow: none;
+  width: fit-content;
+  transition: background .18s, color .18s, border-color .18s;
+}
+
+.hub-button:hover:not(:disabled),
+.hub-button--primary:hover:not(:disabled) {
+  background: var(--udp-rojo);
+  border-color: var(--udp-rojo);
+  color: var(--boton-hover-texto);
+  box-shadow: none;
+}
+
+.hub-button--outline {
+  background: transparent;
+  color: var(--tinta);
+}
+
+.hub-button--outline:hover:not(:disabled) {
+  background: var(--tinta);
+  color: var(--papel);
+}
+
+/* El enlace-botón no es un botón: es texto con filete. */
+.hub-button--link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--tinta);
+  box-shadow: none;
+  border-bottom: 2px solid var(--udp-rojo);
+  padding-bottom: .35rem;
+  width: fit-content;
+}
+
+.hub-button--link:hover:not(:disabled) {
+  background: none;
+  color: var(--udp-rojo-texto);
+}
+
+.hub-button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.hub-badge {
+  font-family: var(--sans);
+  font-size: .67rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--borde);
+  color: var(--udp-rojo-texto);
+  padding: .3rem .6rem;
+}
+
+.hub-alert {
+  border: 1px solid var(--udp-rojo);
+  border-left-width: 3px;
+  background: var(--blanco);
+  color: var(--tinta);
+  padding: 1.4rem 1.6rem;
+}
+
+/* ── Muro de actividades ─────────────────────────────────────────────────
+   Sustituye la rejilla de portadas de álbum por un flujo de fotografías por
+   fecha. Reutiliza .marco del diseño —proporción fija, recorte con object-fit y
+   la marca roja en la esquina— así que una foto vertical de teléfono se recorta
+   limpia en vez de deformarse.
+
+   Las columnas se llenan solas con auto-fill: da igual que haya tres fotos o
+   trescientas. Cada tercera pieza va en vertical para romper la cuadrícula, que
+   es lo que hace que una galería parezca plantilla. */
+.muro{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));
+  gap:1.6rem 1.25rem;align-items:start;
+}
+.muro__pieza{margin:0;display:flex;flex-direction:column;gap:.7rem}
+.muro__pie{display:flex;flex-direction:column;gap:.28rem}
+.muro__clinica{
+  font-family:var(--sans);font-size:.64rem;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--udp-rojo-texto);
+}
+.muro__texto{
+  font-size:.98rem;line-height:1.48;color:var(--tinta);margin:0;
+}
+.muro__meta{
+  font-family:var(--sans);font-size:.7rem;line-height:1.45;color:var(--tinta-media);
+}
+.galeria__nota--sola{grid-column:auto;border-top:0;margin-top:0;padding-top:0}
+
+@media (max-width:640px){
+  .muro{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:1.2rem .9rem}
+  .muro__texto{font-size:.92rem}
+}
+
+/* Biografía de un integrante del equipo. La escribe cada clínica desde su panel
+   y puede no existir: el marcado solo la pinta cuando hay texto. */
+.persona__bio{
+  font-size:.9rem;line-height:1.52;color:var(--tinta-media);margin-top:.15rem;
+}
+.persona__bio p{margin:0 0 .5rem}
+.persona__bio p:last-child{margin-bottom:0}
+
+/* ── Cabeceras de sección sin bajada ─────────────────────────────────────
+   El diseño dejaba el título en una columna y un párrafo de apoyo en otra más
+   ancha, ambos apoyados sobre el filete. Esas bajadas eran texto inventado y se
+   quitaron; sin ellas la retícula de dos columnas dejaba la mitad derecha
+   vacía. La cabecera pasa a una sola columna cuando no hay bajada. */
+.seccion__cabeza:not(:has(> .seccion__intro)) {
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+/* Resumen de la clínica, bajo su nombre: es texto del cliente, no un rótulo
+   nuestro, así que acompaña al título en vez de ocupar la columna suelta. */
+.seccion__resumen {
+  font-size: 1.06rem;
+  line-height: 1.55;
+  color: var(--udp-gris);
+  margin: .7rem 0 0;
+  max-width: 56ch;
+}
+
+/* Foto de equipo completo de una clínica. Sale de clinics.image_url, que la
+   clínica sube desde su panel; hasta ahora el campo existía y no se mostraba
+   en ninguna parte. Reutiliza .marco, así que recorta en vez de deformar. */
+.nomina__foto{
+  aspect-ratio:16/10;margin-top:1.1rem;
+}
+
+/* Paginación de columnas: anterior a la izquierda, siguiente a la derecha. */
+.paginacion{
+  display:flex;justify-content:space-between;align-items:center;gap:1.5rem;
+  margin-top:3rem;padding-top:1.6rem;border-top:1px solid var(--borde);
+}
+
+/* ── Ingreso por formulario externo ──────────────────────────────────────
+   El caso no se recoge en el sitio: lo hace un formulario de Google que
+   mantiene la Facultad. El bloque ofrece el código para escanear desde el
+   teléfono y el enlace para abrirlo desde un computador.
+
+   El QR va sobre blanco siempre, también en modo oscuro: un lector necesita
+   módulos oscuros sobre fondo claro, así que invertirlo lo dejaría sin leer. */
+.ingreso__qr{
+  display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr);
+  gap:2.2rem;align-items:center;
+}
+.ingreso__codigo{
+  display:block;background:#fff;border:1px solid var(--borde);padding:.75rem;
+}
+.ingreso__codigo img{width:100%;height:auto;display:block}
+.ingreso__acceso{display:flex;flex-direction:column;align-items:flex-start;gap:1.1rem}
+.ingreso__acceso p{margin:0;font-size:1.02rem;line-height:1.58;color:var(--tinta-media)}
+.ingreso__enlace{
+  font-family:var(--sans);font-size:.76rem;letter-spacing:.02em;
+  color:var(--tinta-media);word-break:break-all;
+}
+
+@media (max-width:640px){
+  .ingreso__qr{grid-template-columns:1fr;gap:1.6rem;justify-items:start}
+  .ingreso__codigo{max-width:200px}
+}
+
+/* ── Marca UDP en línea ──────────────────────────────────────────────────
+   Sustituye la palabra «UDP» dentro del texto. Va como fondo y no como <img>:
+   con dos imágenes superpuestas y una oculta por CSS, ambas se llegaban a ver
+   mientras la hoja cargaba. Como fondo solo se pinta la del tema en curso.
+
+   Se dimensiona en `em`, así que acompaña al tamaño del texto que la rodea. La
+   relación del recorte es 193x115, de ahí el ancho. El desplazamiento vertical
+   compensa el descendente de la «p», que cuelga bajo la línea base. */
+.udp{
+  display:inline-block;
+  height:.78em;
+  width:1.31em;              /* .78em x 193/115 */
+  background:url("/udp-marca.png") no-repeat center/contain;
+  vertical-align:-.13em;
+  margin-inline:.04em;
+}
+:root[data-theme="dark"] .udp{background-image:url("/udp-marca-blanco.png")}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .udp{background-image:url("/udp-marca-blanco.png")}
+}
+
+/* En el pie la superficie es oscura en ambos temas: siempre la blanca. */
+.pie .udp{background-image:url("/udp-marca-blanco.png")}
+
+/* En las cifras la marca ocupa el lugar del valor, así que va a su tamaño. */
+.cifra__marca{height:1.5rem;width:2.52rem;vertical-align:0}
+
+/* ── Cifras: separación respecto a los filetes ───────────────────────────
+   Cada bloque traía relleno a la derecha pero cero a la izquierda, así que su
+   texto nacía pegado al filete del bloque anterior. Solo la primera cifra debe
+   ir al ras, para alinearse con el resto de la página; las demás necesitan aire
+   después de la línea.
+
+   La rejilla es auto-fit, de modo que al angostar se reordena sola. Se fija en
+   dos columnas y luego en una para poder decir en cada caso cuál cifra abre fila
+   —esa va al ras— y cuál cierra —esa no lleva filete a la derecha. */
+.cifra{padding-left:1.5rem}
+.cifra:first-child{padding-left:0}
+
+@media (max-width:860px){
+  .cifras{grid-template-columns:1fr 1fr}
+  .cifra:nth-child(odd){padding-left:0}
+  .cifra:nth-child(even){border-right:0}
+  .cifra:nth-child(-n+2){border-bottom:1px solid var(--borde-fino)}
+}
+
+@media (max-width:640px){
+  .cifras{grid-template-columns:1fr}
+  .cifra{padding-left:0;padding-right:0}
+  .cifra:nth-child(-n+3){border-bottom:1px solid var(--borde-fino)}
+  .cifra:last-child{border-bottom:0}
+}
+
+/* ── Sección actual en la navegación ─────────────────────────────────────
+   El enlace del formulario iba en rojo como llamada, pero el ojo lee un enlace
+   destacado como «estás aquí», y parecía que uno estuviera siempre en ingreso.
+   Ese gesto queda libre para lo que de verdad significa: la sección en la que
+   está el usuario, con el mismo filete rojo que aparece al pasar por encima. */
+.nav a[aria-current="page"]{
+  color:var(--tinta);
+  font-weight:600;
+  border-bottom-color:var(--udp-rojo);
+}
+
+/* En el inicio se marca la propia marca, que es el enlace a la home. */
+.marca[aria-current="page"] .marca__nombre{color:var(--tinta)}
+.marca[aria-current="page"]{cursor:default}
+
+/* ── Columna destacada en la portada ─────────────────────────────────────
+   La elige el profesor desde el panel y ocupa el hueco de honor de la home,
+   sobre las fotografías. Se distingue del resto de columnas por tamaño y por el
+   filete superior, no por un color de fondo: el rojo sigue siendo trazo. */
+.destacada-col{
+  border-top:2px solid var(--tinta);padding:1.6rem 0 2.4rem;margin-bottom:2.6rem;
+  display:flex;flex-direction:column;gap:.7rem;position:relative;
+}
+.destacada-col__titulo{
+  font-family:var(--serif);font-size:clamp(1.6rem,3.2vw,2.35rem);font-weight:600;
+  line-height:1.16;letter-spacing:-.018em;color:var(--tinta);margin:0;
+  max-width:24ch;text-wrap:balance;transition:color .18s;
+}
+.destacada-col__titulo a{text-decoration:none}
+.destacada-col:hover .destacada-col__titulo{color:var(--udp-rojo-texto)}
+.destacada-col__bajada{
+  font-size:1.08rem;line-height:1.56;color:var(--tinta-media);margin:0;max-width:56ch;
+}
+
+/* ── Buscador de preguntas ───────────────────────────────────────────────
+   El catálogo es largo —el encargo habla de unas trescientas— y un acordeón sin
+   forma de buscar no se recorre. El campo va antes que los filtros porque
+   escribir una palabra es más directo que elegir clínica. */
+.buscador{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;
+  flex-wrap:wrap;margin-bottom:1.6rem;
+}
+.buscador__campo{display:flex;flex-direction:column;gap:.42rem;flex:1 1 22rem;max-width:34rem}
+.buscador__campo input{
+  font-family:var(--sans);font-size:1rem;color:var(--tinta);background:var(--papel);
+  border:1px solid var(--borde);border-bottom-width:2px;border-radius:0;
+  padding:.78rem .9rem;width:100%;transition:border-color .16s,box-shadow .16s;
+}
+.buscador__campo input:focus{
+  outline:none;border-color:var(--udp-rojo);box-shadow:0 0 0 3px var(--foco-halo);
+}
+.buscador__campo input::placeholder{color:var(--tinta-media);opacity:.7}
+.buscador__cuenta{
+  font-family:var(--sans);font-size:.76rem;letter-spacing:.05em;
+  color:var(--tinta-media);margin:0 0 .55rem;
+}
+
+@media (max-width:640px){
+  .buscador{gap:.8rem}
+  .buscador__campo{flex:1 1 100%}
+}

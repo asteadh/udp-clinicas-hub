@@ -18,6 +18,7 @@ func (r *Repository) ListArticlesAdmin(ctx context.Context, clinicSlug string, s
 SELECT jsonb_build_object(
   'id', id, 'clinicSlug', clinic_slug, 'slug', slug, 'title', title, 'excerpt', excerpt,
   'coverImageUrl', cover_image_url, 'authorName', author_name, 'isPublished', is_published,
+  'isFeatured', is_featured,
   'publishedAt', published_at, 'createdAt', created_at, 'updatedAt', updated_at
 )
 FROM articles WHERE ($1 = '' OR clinic_slug = $1) AND ($2 = '' OR (($2 = 'published' AND is_published) OR ($2 = 'draft' AND NOT is_published)))
@@ -77,6 +78,38 @@ WHERE id = $1`,
 func (r *Repository) DeleteArticle(ctx context.Context, id string) error {
 	_, err := r.pool.Exec(ctx, `DELETE FROM articles WHERE id = $1`, id)
 	return err
+}
+
+// FeatureArticle marks one article as the featured one and clears whatever was
+// featured before. Featuring also publishes: a draft cannot head the home page.
+//
+// It clears first and sets second, inside a transaction. A single statement does
+// not work: the partial unique index is checked row by row, so an update that
+// happens to set the new row before clearing the old one sees two featured
+// articles at once and fails.
+func (r *Repository) FeatureArticle(ctx context.Context, id string) error {
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+
+	if _, err := tx.Exec(ctx, `
+UPDATE articles SET is_featured = false, updated_at = now() WHERE is_featured`); err != nil {
+		return err
+	}
+
+	if _, err := tx.Exec(ctx, `
+UPDATE articles SET
+  is_featured = true,
+  is_published = true,
+  published_at = coalesce(published_at, now()),
+  updated_at = now()
+WHERE id = $1`, id); err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 func (r *Repository) PublishArticle(ctx context.Context, id string) error {
@@ -236,6 +269,17 @@ func (h *Handlers) deleteArticle(w http.ResponseWriter, r *http.Request) {
 	}
 	actor := principalFromContext(r)
 	_ = h.repo.InsertAuditLog(r.Context(), actor.UserID, "article.delete", "article", id, nil)
+	writeJSON(w, http.StatusOK, map[string]any{"status": true})
+}
+
+func (h *Handlers) featureArticle(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if err := h.repo.FeatureArticle(r.Context(), id); err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	actor := principalFromContext(r)
+	_ = h.repo.InsertAuditLog(r.Context(), actor.UserID, "article.feature", "article", id, nil)
 	writeJSON(w, http.StatusOK, map[string]any{"status": true})
 }
 
