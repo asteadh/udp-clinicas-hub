@@ -4,7 +4,7 @@ FROM --platform=$BUILDPLATFORM node:24-alpine AS base
 FROM base AS builder
 ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g pnpm@11.11.0 turbo --prefer-offline
+RUN npm install -g pnpm@11.22.0 turbo --prefer-offline
 WORKDIR /app
 COPY . .
 RUN turbo prune @hubnegocios/web --docker
@@ -13,7 +13,7 @@ RUN turbo prune @hubnegocios/web --docker
 FROM base AS installer
 ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g pnpm@11.11.0 --prefer-offline
+RUN npm install -g pnpm@11.22.0 --prefer-offline
 WORKDIR /app
 COPY --from=builder /app/out/json/ .
 RUN --mount=type=cache,id=pnpm-web,target=/root/.local/share/pnpm/store \

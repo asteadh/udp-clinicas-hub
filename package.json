@@ -1,7 +1,7 @@
 {
   "name": "hubnegocios-platform",
   "private": true,
-  "packageManager": "pnpm@11.11.0",
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "turbo run dev --ui=tui --filter=@hubnegocios/api --filter=@hubnegocios/web --filter=@hubnegocios/admin --filter=@hubnegocios/studio",
     "dev:platform": "turbo run dev --ui=tui --filter=@hubnegocios/api --filter=@hubnegocios/web --filter=@hubnegocios/admin --filter=@hubnegocios/studio",
